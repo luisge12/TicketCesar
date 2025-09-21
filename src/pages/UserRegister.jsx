@@ -65,6 +65,7 @@ export default function UserRegister() {
                         type="email"
                         id="email"
                         name="email"
+                        className='user-register-input'
                         autoComplete="email" // Añadido para el autocompletado del navegador
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -75,6 +76,7 @@ export default function UserRegister() {
                         type="text"
                         id="name"
                         name="name"
+                        className='user-register-input'
                         autoComplete="given-name"
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -85,6 +87,7 @@ export default function UserRegister() {
                         type="text"
                         id="lastname"
                         name="lastname"
+                        className='user-register-input'
                         autoComplete="family-name"
                         onChange={(e) => setLastname(e.target.value)}
                     />
@@ -95,6 +98,7 @@ export default function UserRegister() {
                         type="password"
                         id="password"
                         name="password"
+                        className='user-register-input'
                         autoComplete="new-password"
                         onChange={(e) => setPassword(e.target.value)}
                     />
@@ -105,6 +109,7 @@ export default function UserRegister() {
                         type="date"
                         id="birthdate"
                         name="birthdate"
+                        className='user-register-input'
                         autoComplete="bday"
                         onChange={(e) => setBirthdate(e.target.value)}
                     />
@@ -115,6 +120,7 @@ export default function UserRegister() {
                         type="tel"
                         id="phone"
                         name="phone"
+                        className='user-register-input'
                         autoComplete="tel"
                         onChange={(e) => setPhone(e.target.value)}
                     />

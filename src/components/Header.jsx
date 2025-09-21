@@ -15,6 +15,8 @@ export default function Header({  onLogout, inLoginAdmin }) {
   const navigate = useNavigate();
     const [hidden, setHidden] = useState(false);
     const [lastScroll, setLastScroll] = useState(0);
+    const [categories] = useState(['Danza', 'Musica', 'Teatro', 'Grados', 'Recorridos']);
+    const [categoryEvents, setCategoryEvents] = useState({});
 
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -38,8 +40,35 @@ export default function Header({  onLogout, inLoginAdmin }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScroll, isModalOpen]);
 
+  // get the name events for categories
+  useEffect(() => {
+  // Limpia el estado antes de cargar nuevos datos si lo deseas
+  setCategoryEvents({});
 
-     return (
+  for (const category of categories) {
+    fetch(`http://localhost:3000/events/category/${category}`, {
+      credentials: 'include'
+    })
+      .then(response => response.json())
+      .then(data => {
+        setCategoryEvents(prev => ({
+          ...prev,
+          [category]: data
+        }));
+      })
+      .catch(error => {
+        console.error('Error fetching events:', error);
+      });
+  }
+
+}, [categories]);
+/* // Debugging: muestra los eventos de la categoría "Danza" en la consola
+useEffect(() => {
+  console.log("categorias: ", categoryEvents['Danza']);
+}, [categoryEvents]);
+*/
+
+    return (
     <header className={`header-main ${hidden ? 'hidden-header' : ''}`}>
       {/* Modal for user menu */}
       <Modal
@@ -64,43 +93,63 @@ export default function Header({  onLogout, inLoginAdmin }) {
               Espectaculos 
               <ul>
                 <li className="second-menu">
-                  danza
+                  Danza
                   <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
+                    {categoryEvents['Danza'] ? (
+                      categoryEvents['Danza'].map((event) => (
+                        <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{cursor: 'pointer'}}>
+                          {event.name}
+                        </li>
+                      ))) : (<li>Loading...</li>
+                    )}
                   </ul>
                 </li>
                 <li className="second-menu">
-                  musica
+                  Musica
                   <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
+                    {categoryEvents['Musica'] ? (
+                      categoryEvents['Musica'].map((event) => (
+                        <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{cursor: 'pointer'}}>
+                          {event.name}
+                        </li>
+                      ))) : (<li>Loading...</li>
+                    )}
                   </ul>
                 </li>
                 <li className="second-menu">
-                  teatro
+                  Teatro
                   <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
+                    {categoryEvents['Teatro'] ? (
+                      categoryEvents['Teatro'].map((event) => (
+                        <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{cursor: 'pointer'}}>
+                          {event.name}
+                        </li>
+                      ))) : (<li>Loading...</li>
+                    )}
                   </ul>
                 </li>
                 <li className="second-menu">
-                  grados
+                  Grados
                   <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
+                    {categoryEvents['Grados'] ? (
+                      categoryEvents['Grados'].map((event) => (
+                        <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{cursor: 'pointer'}}>
+                          {event.name}
+                        </li>
+                      ))) : (<li>Loading...</li>
+                    )}
                   </ul>
                 </li>
                 <li className="second-menu">
-                  recorridos
+                  Recorridos
                   <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
+                    {categoryEvents['Recorridos'] ? (
+                      categoryEvents['Recorridos'].map((event) => (
+                        <li key={event.id} onClick={() => navigate(`/event/${event.id}`)} style={{cursor: 'pointer'}}>
+                          {event.name}
+                        </li>
+                      ))) : (<li>Loading...</li>
+                    )}
                   </ul>
                 </li>
               </ul>

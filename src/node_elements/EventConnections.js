@@ -61,6 +61,17 @@ export class EventConnections{
             console.log(error);
         }
     }
+
+    async getEventsByCategory(category) {
+        const query = 'SELECT * FROM event WHERE category = $1';
+        try {
+            const res = await this.pool.query(query, [category]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching events by category:', error);
+            throw error;
+        }
+    }
     
 }
 

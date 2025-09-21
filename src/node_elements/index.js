@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  console.log('get /'); // Para debug
+  //console.log('get /'); // Para debug
   const token = req.cookies['access_token'];
   if (token) {
     try {
@@ -192,6 +192,18 @@ app.post('/create-event', async (req, res) => {
     res.status(201).json(newEvent);
   } catch (error) {
     console.error('Error creating event:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/events/category/:category', async (req, res) => {
+  const { category } = req.params;
+  //console.log('Category to fetch:', category); // Para debug
+  try {
+    const events = await eventconnect.getEventsByCategory(category);
+    res.json(events);
+  } catch (error) {
+    console.error('Error fetching events by category:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

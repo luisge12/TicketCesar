@@ -10,7 +10,7 @@
     width: 20rem;
     margin: 2rem 2rem 5rem 5rem;
     padding: 1rem;
-    background-color: rgba(255, 238, 0, 0.705);
+    background-color: var(--beige);
     align-items: center;
 
 }
@@ -18,7 +18,7 @@
 /* Título del formulario */
 .registro-container h2 {
     margin-bottom: 0rem;
-    color: #333;
+    color: var(--grey);
     font-size: 1.5rem;
 }
 
@@ -33,32 +33,26 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    color: #555;
+    color: var(--grey);
 }
 
 /* Estilos para los campos de entrada de texto y fecha */
-.form-group input {
+.user-register-input {
     width: 15rem;
     height: 2.5rem;
     padding: 0.5rem;
-    border: 0.15rem solid #ddd;
+    border: 0.15rem solid var(--grey);
     border-radius: 10px;
     box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
     font-size: 16px;
     transition: border-color 0.3s;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: #f05158;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
-}
-
 /* Estilos para el botón de envío */
-.registro-container button {
-    width: 100%;
+.user-register-input {
+    width: 100%;              /* Ya está correcto */
     padding: 15px;
-    background-color: rgb(230, 28, 28);
+    background-color: transparent;
     color: white;
     font-size: 18px;
     font-weight: bold;
@@ -66,12 +60,13 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border: 1px solid var(--grey);
 }
 
 .registro-container button:hover {
-    background-color: gold;
+    background-color: var(--grey);
 }
 
 .registro-container button:active {
-    background-color: black;
+    background-color: var(--black);
 }
