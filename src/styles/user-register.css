@@ -1,0 +1,77 @@
+/* this file is a part of TicketCesar
+ * Created by Luis González
+ */
+
+
+.registro-container {
+
+    position: relative;
+    top: 2.5rem;
+    width: 20rem;
+    margin: 2rem 2rem 5rem 5rem;
+    padding: 1rem;
+    background-color: rgba(255, 238, 0, 0.705);
+    align-items: center;
+
+}
+
+/* Título del formulario */
+.registro-container h2 {
+    margin-bottom: 0rem;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* Estilos para cada grupo de formulario (label + input) */
+.form-group {
+    margin-bottom: 0rem;
+    padding: 0.25rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Estilos para los campos de entrada de texto y fecha */
+.form-group input {
+    width: 15rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border: 0.15rem solid #ddd;
+    border-radius: 10px;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #f05158;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Estilos para el botón de envío */
+.registro-container button {
+    width: 100%;
+    padding: 15px;
+    background-color: rgb(230, 28, 28);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.registro-container button:hover {
+    background-color: gold;
+}
+
+.registro-container button:active {
+    background-color: black;
+}

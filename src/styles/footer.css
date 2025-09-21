@@ -1,0 +1,207 @@
+@import "tailwindcss";
+
+/* ===== FOOTER BASE ===== */
+.foot-main{
+  background-color: var(--black);
+  position: relative;
+  color: white;
+  width: 100%; 
+  padding: 2rem 0rem; 
+}
+
+.footerContainer {
+  width: 100%;
+  display: flex;  
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 0.25rem;
+} 
+
+.colum{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 20vw;
+  margin: 1rem;
+} 
+
+@media (max-width: 768px) {
+  .colum{
+    max-width: 23vw;
+    margin: 0.5rem;
+  }
+  
+}
+
+.colum p{
+  font-family: var(--text);
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .colum p{
+    font-size: 0.5rem;
+  }
+  
+}
+
+.logo-h-foot{
+  display: flex;
+  width: 8rem;
+}
+
+.logo-foot {
+  margin-right: 0;
+  margin-top: 0rem; 
+  padding: 0rem; 
+  border-radius: 0.25rem;
+  transition: background-color 300ms ease-in-out; 
+}
+
+.logo-foot:hover {
+  cursor: pointer; 
+}
+
+
+.titulo-con-linea {
+  font-family: var(--subtitle);
+  display: flex;
+  color: white; /* Color del texto */
+  font-size: 16px; /* Tamaño del texto */
+  font-weight: bold; /* Grosor del texto */
+  padding-bottom: 2px; /* Espacio entre el texto y la línea */
+  margin: 2rem 10rem 1rem 0rem;
+}
+
+@media (max-width: 768px) {
+  .titulo-con-linea {
+    width: 100px; /* Ajusta el ancho para pantallas pequeñas */
+    font-size: 10px; /* Ajusta el tamaño de fuente para pantallas pequeñas */
+    margin: 0rem 0rem 0rem 0rem;
+  }
+  
+}
+
+.footerContainer a {
+  font-family: var(--text);
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+.leftMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* espacio entre ítems */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+@media (max-width: 768px) {
+  .leftMenu {
+    gap: 0px; /* reduce el espacio entre ítems en pantallas pequeñas */
+  }
+  
+}
+
+.link-name {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .link-name {
+    font-size: 10px; /* Ajusta el tamaño de fuente para pantallas pequeñas */
+  }
+  
+}
+
+.flex-col-container {
+    display: flex;
+    display: flex;
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: flex-start; /* Alinea los elementos a la izquierda de su contenedor */
+
+}
+
+.items-right {
+    display: flex;
+    flex-direction: column; /* Apila los elementos de la lista verticalmente */
+    align-items: flex-end; /* Alinea los elementos de la lista a la derecha */
+}
+
+/* ===== REDES SOCIALES A LA DERECHA ===== */
+.social {
+  display: flex;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0.25;
+  margin-right: 0rem;
+  align-self: flex-start;
+}
+
+@media (max-width: 768px){
+  .social{
+    margin-right: 0;
+    gap: 0.5rem;
+  }
+}
+
+.social-links {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+  padding: 0.1rem;
+}
+
+.social img {
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  align-self: flex-start
+}
+
+@media (max-width: 768px){
+  .social img{
+    height: 16px;
+    width: 16px;
+  }
+}
+
+
+
+.social img:hover {
+  transform: scale(1.1);
+}
+
+/* ===== COPYRIGHT EN COLUMNA ===== */
+.foot-text {
+  position: relative;
+  margin: 8rem 0rem 0rem ;
+  flex-direction: column;
+}
+
+@media  (max-width: 768px) {
+  .foot-text{
+    margin: 6rem 0 0;
+  }
+  
+}
+
+.foot-text p {
+  position: flex;
+  text-align: center;
+  font-size: 12px;
+}
+
+@media (max-width: 768px)
+{
+  .foot-text p{
+    font-size: 8px;
+  }
+}
+
