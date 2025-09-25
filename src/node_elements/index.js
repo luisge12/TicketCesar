@@ -208,6 +208,17 @@ app.get('/events/category/:category', async (req, res) => {
   }
 });
 
+app.get('/event/:id', async (req, res) => {
+  console.log('GET /event/:id called', req.params); // Para debug
+  const { id } = req.params;
+  try {
+    const event = await eventconnect.getEventById(id);
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.listen(PORT, HOST, () => {
   console.log(`Server running at http://${HOST}:${PORT}/`);
 })

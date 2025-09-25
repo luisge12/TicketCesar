@@ -72,6 +72,18 @@ export class EventConnections{
             throw error;
         }
     }
+
+    async getEventById(id) {
+        const query = 'SELECT * FROM event WHERE id = $1';
+        try {
+            const res = await this.pool.query(query, [id]);
+            return res.rows[0];
+        }
+        catch (error) {
+            console.error('Error fetching event by ID:', error);
+            throw error;
+        }
+    }
     
 }
 

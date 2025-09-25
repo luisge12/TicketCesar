@@ -7,6 +7,7 @@ import UserRegister from './pages/UserRegister';
 import AdminBar from './pages/Admin';
 import ModalContent from './components/Modal-login';
 import InsertEvent from './pages/InsertEvent';
+import ReservEvent from './pages/ReservEvent';
 import './styles/app.css'
 
 export default function App() {
@@ -71,12 +72,14 @@ export default function App() {
                 inLoginAdmin={inLoginAdmin}
             />
             <div className="page-with-admin-bar">
-                <div className="main-content">
+                <div className="mainpage-div">
+
                     <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/UserRegister" element={<UserRegister />} />
                         <Route path="/event" element={<div>Acá vamos a ver los eventos y el manejo de ventas</div>} />
                         <Route path="/insertEvent" element={ <InsertEvent /> } />
+                        <Route path="/event/:id" element={<ReservEvent />} />
                             {/*//the logic to handle insertevent after testing it
                             isLoading ? (
                                 <div>Cargando...</div>
