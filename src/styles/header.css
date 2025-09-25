@@ -126,8 +126,9 @@ input:-webkit-autofill:active {
 .div-right {
   display: flex;
   align-items: center;
-  gap: 1rem; /* space-x-4 */
+  gap: 0.25rem; /* space-x-4 */
   padding: 0rem;
+  margin: 0rem;
 }
 
 @media (max-width: 768px) {
@@ -277,6 +278,18 @@ input:-webkit-autofill:active {
   
 }
 
+.user-button {
+  width: 2rem;
+  height: 2rem;
+  margin: 0rem 0rem;
+  
+  padding: 0rem; 
+  border-radius: 0.25rem; 
+  cursor: pointer;
+  align-items: center;
+  transition: background-color 300ms ease-in-out; 
+}
+
 .user-img {
   height: 2rem; 
   width: 2rem; 
@@ -329,8 +342,12 @@ input:-webkit-autofill:active {
 }
 
 .second-menu li {
+  display: flex;
   background-color: var(--black);
   height: 2.75rem;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }
 
 .second-menu li:hover{

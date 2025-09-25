@@ -202,7 +202,25 @@ useEffect(() => {
                 </li>
               </ul>
             </li>
-            <li className="first-menu">
+            <li
+              className="first-menu"
+              onClick={() => {
+                const scrollToProximos = () => {
+                  const section = document.getElementById("proximos-espectaculos");
+                  if (section) {
+                    const y = section.getBoundingClientRect().top + window.scrollY ;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }
+                };
+
+                if (window.location.pathname !== "/") {
+                  navigate("/", { replace: false });
+                  setTimeout(scrollToProximos, 300);
+                } else {
+                  scrollToProximos();
+                }
+              }}
+            >
               Comprar Entradas
             </li>
             <li className="first-menu">

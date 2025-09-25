@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import '../styles/reserv-event.css';
 
 const plateaRows = [
@@ -19,9 +19,14 @@ const palcoRows = [
 ];
 
 export default function ReservEvent() {
+  const location = useLocation();
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
 
   useEffect(() => {
     fetch(`http://localhost:3000/event/${id}`, {

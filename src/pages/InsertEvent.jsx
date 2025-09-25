@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './../styles/insert-event.css'
 
 export default function EventForm() {
+    const location = useLocation();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -27,6 +29,10 @@ export default function EventForm() {
             [name]: type === 'checkbox' ? checked : value
         });
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -97,7 +103,7 @@ export default function EventForm() {
 
 
     return (
-        <div className="mainpage-div">
+        <div className="mainpage-insert-event">
             <div className="insert-event-container">
                 <h2>Registrar Evento</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: 500 }}>

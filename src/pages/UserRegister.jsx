@@ -1,17 +1,22 @@
 // This file is a part of TicketCesar
 // Created by Luis González
 
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import './../styles/user-register.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function UserRegister() {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [password, setPassword] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [phone, setPhone] = useState("");
+    const location = useLocation();
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [password, setPassword] = useState("");
+    const [birthdate, setBirthdate] = useState("");
+    const [phone, setPhone] = useState("");
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
 
   const handleSubmit = async (e) => {
         e.preventDefault();

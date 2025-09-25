@@ -1,12 +1,11 @@
 /* insert-event.css */
 
-.mainpage-div {
+.mainpage-insert-event {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('../assets/fondo.png');
-    padding-bottom: 2rem;
+    padding: 2.5rem;
 }
 
 .insert-event-container {

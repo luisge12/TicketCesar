@@ -6,6 +6,7 @@ import img3 from '../assets/carousel/3.webp';
 import img4 from '../assets/carousel/4.webp';
 import img5 from '../assets/carousel/5.webp';
 import img6 from '../assets/carousel/6.webp';
+import { useNavigate, useLocation } from 'react-router-dom';
 // Importa más imágenes si tienes
 
 const images = [
@@ -18,6 +19,8 @@ const images = [
 ];
 
 export default function MainPage() {
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
     const extendedImages = [images[images.length - 1], ...images, images[0]];
     const [current, setCurrent] = useState(1);
     const [transition, setTransition] = useState(true);
@@ -25,7 +28,9 @@ export default function MainPage() {
     const intervalRef = useRef(null);
     const [events, setEvents] = useState([]);
 
-
+useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
 useEffect(() => {
     console.log('Fetching events...');
@@ -147,7 +152,7 @@ useEffect(() => {
 
             {/* ==== Events Slider Section ==== */}
 
-            <div className='events-slider'>
+            <div className='events-slider' id='proximos-espectaculos'>
                 <h1>Próximos Espectaculos</h1>
                 
                 <div className='events-container'>
@@ -175,7 +180,7 @@ useEffect(() => {
                             <p>No hay eventos disponibles.</p>
                         ) : (
                             events.map(event => (
-                                <div key={event.id} className="event-item">
+                                <div key={event.id} className="event-item" onClick={() => navigate(`/event/${event.id}`)}>
                                     <img src={event.image} alt={event.name} className="event-image" />
                                     <h2 className="event-title">{event.name}</h2>
                                     <p className="event-date">
