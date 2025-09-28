@@ -1,0 +1,322 @@
+@import "tailwindcss";
+
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+.mainpage-div {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* o center si quieres todo centrado */
+    background-image: url('../assets/fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat-y;
+}
+
+.mainpage-container {
+    width: 90vw;
+    height: 90vh;       
+    background-color: var(--beige);
+    color: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+    top: 4rem;
+    margin: 2rem auto;  /* <-- Cambia aquí */
+}
+
+@media (max-width: 768px) {
+    .mainpage-container {
+        width: 80vw;
+        height: 80vh;       
+        margin: 1rem auto; 
+        padding-bottom: 0rem;
+    }
+    
+}
+
+.image-slider {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Cambia a la relación que prefieras, por ejemplo 16/9 o 4/3 */
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0rem;
+    background: #eee;
+}
+
+.slider-text-overlay1 {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    width: 100%;
+    color: var(--beige);
+    padding: 1rem;
+    text-align: center;
+    text-shadow: 0 2px 8px #000;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .slider-text-overlay1 {
+        top: 5%;
+        padding: 0.5rem;
+    }
+    
+}
+
+
+
+.slider-text-overlay1 h1 {
+    font-family: var(--title);
+    margin: 0;
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 0 3px 6px rgba(0,0,0,1);
+}
+
+@media (max-width: 768px) {
+    .slider-text-overlay1 h1 {
+        font-size: 1.5rem;
+    }
+    
+}
+.slider-text-overlay2 {
+    position: absolute;
+    top: 75%;
+    left: 0;
+    width: 100%;
+    color: var(--beige);
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 0 2px 8px #000;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+
+.slider-text-overlay2 h1 {
+    font-family: var(--title);
+    top: 75%;
+    margin: 0;
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 0 3px 6px rgba(0,0,0,1);
+}
+
+@media (max-width: 768px) {
+    .slider-text-overlay2 h1 {
+        font-size: 1.5rem;
+
+    }
+    
+}
+
+.slider-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+.slider-track img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.events-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.events-scroll-btn:hover {
+    background: #444;
+    opacity: 1;
+}
+
+.events-scroll-btn.left {
+    left: 0.5rem;
+}
+
+.events-scroll-btn.right {
+    right: 0.5rem;
+}
+
+
+/* ====== ESTILOS PARA LA SECCION DE EVENTOS ====== */
+
+.events-slider {
+    width: 100%;
+    height: 100%;
+    margin: rem;
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.events-slider h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--beige);
+    text-shadow: 0 2px 8px #000;
+}
+
+@media (max-width: 768px) {
+    .events-slider h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+}
+
+.events-container {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 1rem;
+    width: 100vw;
+    height: 550px;
+    box-sizing: border-box;
+    justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+    .events-container {
+        height: auto;
+        padding: 0.5rem;
+
+    }
+    
+}
+
+.event-card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 1rem;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .event-card {
+        gap: 0.5rem;
+        height: auto;
+    }
+    
+}
+
+.event-item {
+    flex: 0 0 25%;
+    min-width: 20%;
+    max-width: calc(25% - 1rem);
+    height: 100%;              
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .event-item {
+        flex: 0 0 50%;
+        min-width: 40%;
+        max-width: calc(50% - 0.5rem);
+        height: 100%;              
+        padding: 0.5rem;
+    }
+    
+}
+
+.event-item:hover {
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transform: translateY(-4px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.event-image {
+    width: 100%;
+    height: 19vw;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.event-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0.5rem 0 0.25rem 0;
+    color: var(--beige);
+}
+
+.event-date {
+    font-size: 1rem;
+    color: var(--beige);
+    margin-bottom: 0.5rem;
+}
+
+.event-description {
+    font-size: 0.95rem;
+    color: var(--beige);
+}
+
+.events-container::-webkit-scrollbar {
+    background-color: transparent;
+    display: none;
+    height: 10px;                       
+    background: transparent;                
+    border-radius: 8px;
+}
+
+.events-container::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+.events-container::-webkit-scrollbar-thumb:hover {
+    background: #555;                   /* Color al pasar el mouse */
+}
+
+.events-container::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}

@@ -1,0 +1,371 @@
+@import "tailwindcss";
+
+/* ====== STYLES FOR MODAL CONTAINER ====== */
+
+.modal-main {
+  position: fixed;
+  top: 4rem; 
+  right: 1rem; 
+  width: 18rem; 
+  height: 24rem; 
+  background-color: var(--beige); 
+  border-radius: 0.375rem; 
+  outline: none; 
+  z-index: 60;
+  padding: 2.5rem;
+}
+
+.form-modal-container {
+  width: 12rem;   
+  display: flex;     
+  flex-direction: column;
+  gap: 0.5rem;     
+
+
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7); 
+  z-index: 50;
+}
+
+.modal-labels {
+  color: #000000;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start; 
+}
+
+.modal-input{
+  width: 12rem;
+  height: 2rem;
+  outline: none; 
+  border-color: #000; 
+  background-color: transparent;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--beige) inset;
+  -webkit-text-fill-color: #000;
+}
+
+.modal-labels input:focus{
+  background-color: var(--beige);
+}
+
+.modal-buttons {
+  font-size: 1rem;
+  background-color: transparent;
+  border: 1px solid var(--black); 
+  border-radius: 9999px;
+  padding: 0.5rem 2rem;
+}
+
+
+.modal-buttons:hover{
+  background-color: var(--black);
+  color: white;
+}
+
+
+
+/* Estilos del placeholder */
+.modal-buttons::placeholder {
+  color: var(--grey);
+}
+
+.modal-buttons:focus {
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--black);
+}
+
+
+/* ====== HEADER BAR ====== */
+.header-main {
+  position: fixed;
+  width: 100vw;
+  height: 3.5 rem;
+  background-color: var(--black);
+  color: white;
+  z-index: 50;
+  top: 0; 
+  justify-content: space-between;
+  display: flex;
+  padding: 0 1rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .header-main {
+    height: 2.5rem;
+    padding: 0 0.25rem;
+  }
+  
+}
+
+.hidden-header {
+  transform: translateY(-100%);
+}
+
+.div-left {
+  display: flex;
+  align-items: center;
+  gap: 0rem;
+}
+
+.div-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* space-x-4 */
+  padding: 0rem;
+  margin: 0rem;
+}
+
+@media (max-width: 768px) {
+  .div-right {
+    gap: 0.2rem; /* space-x-4 */
+  }
+  
+}
+
+.nav-buttons-cont {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+.first-hover{
+  position: relative;
+  
+}
+
+.nav-buttons {
+  font-size: 0.75rem; /* text-xs */
+  margin-top: 0.25rem; /* mt-1 */
+}
+
+@media (max-width: 768px) {
+  .nav-buttons {
+    font-size: 0.1rem; /* text-xs */
+    margin-top: 0rem; /* mt-1 */
+  }
+  
+}
+
+
+.first-menu {
+  position: relative;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-family: var(--subtitle);
+  font-size: 1rem;
+  align-items: center;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .first-menu {
+    font-size: 0.5rem; /* text-xs */
+    padding: 0.25rem;
+  }
+  
+}
+
+.first-menu:hover{
+  background-color: var(--grey);
+}
+
+.first-menu > ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--grey);
+  min-width: 150px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.first-menu:hover > ul {
+  display: block;
+}
+
+.second-menu {
+  padding: 10px 15px;
+}
+
+.second-menu:hover {
+  background-color: var(--black);
+}
+
+.nav-searcher {
+  width: 8rem; 
+  height: 1.5rem;
+  background-color: transparent !important;
+  border: 1px solid var(--grey); 
+  border-radius: 9999px; 
+  padding: 0.25rem 1rem; 
+  margin: 0rem 1rem;
+  color: white; 
+}
+
+@media (max-width: 768px) {
+  .nav-searcher {
+    width: 1rem; 
+    height: 1rem;
+    padding: 0.1rem 0.5rem; 
+  }
+  
+}
+
+.nav-searcher::placeholder {
+  color: var(--grey); 
+}
+
+.nav-searcher:focus {
+  outline: 0; 
+  box-shadow: 0 0 0 2px var(--beige); 
+}
+
+.navigation-button {
+  margin-right: 0; 
+  margin-top: 0.25rem;
+  padding: 0.25rem; 
+  border-radius: 0.25rem; 
+  transition: background-color 300ms ease-in-out; 
+  cursor: pointer;
+}
+
+.navigation-button:hover {
+  background-color: #4b5563; 
+}
+
+.logo-button {
+  margin: 0rem 0rem;
+  padding: 0rem; 
+  border-radius: 0.25rem; 
+  cursor: pointer;
+  align-items: center;
+  transition: background-color 300ms ease-in-out; 
+}
+
+@media (max-width: 768px) {
+  .logo-button {
+    margin: 0.25rem 0rem;
+    padding: 0rem; 
+  }
+  
+}
+
+.logo-button:hover {
+  background-color: var(--grey); /* hover:bg-gray-600 */
+}
+
+.logo-img {
+  height: 2.5rem; 
+  width: 2.5rem; 
+}
+
+@media (max-width: 768px) {
+  .logo-img {
+    height: 1.5rem; 
+    width: 1.5rem; 
+  }
+  
+}
+
+.user-button {
+  width: 2rem;
+  height: 2rem;
+  margin: 0rem 0rem;
+  
+  padding: 0rem; 
+  border-radius: 0.25rem; 
+  cursor: pointer;
+  align-items: center;
+  transition: background-color 300ms ease-in-out; 
+}
+
+.user-img {
+  height: 2rem; 
+  width: 2rem; 
+  border-radius: 9999px; 
+  padding: 0;
+  margin: 0rem; 
+}
+
+@media (max-width: 768px) {
+  .user-img {
+    height: 1.5rem; 
+    width: 1.5rem; 
+  }
+  
+}
+
+/* Base styles for the menu container */
+.nav-buttons-cont ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base styles for all menu items */
+.nav-buttons-cont li {
+  position: relative;
+
+}
+
+/* Style for hover state on all menu items */
+.first-menu:hover {
+  background-color: var(--grey);
+  cursor: pointer;
+}
+
+/* Base styles for all sub-menus */
+.first-menu ul {
+  display: none;
+  position: absolute;
+  min-width: 10rem;
+  background-color: var(--grey);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+/* Position the second-level sub-menu to expand to the right */
+.second-menu > ul {
+  top: 0;
+  left: 100%;
+}
+
+.second-menu li {
+  display: flex;
+  background-color: var(--black);
+  height: 2.75rem;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.second-menu li:hover{
+  background-color: var(--grey);
+}
+
+/* Show any sub-menu on hover */
+.nav-buttons-cont li:hover > ul {
+  display: block;
+}
+
