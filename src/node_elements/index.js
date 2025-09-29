@@ -87,7 +87,7 @@ app.post('/register', async (req, res) => {
         // La ejecución espera a que createUser termine
       const newUser = await userconnect.createUser(user); 
       const token = jwt.sign(
-      { email: user.email, name:user.name, lastname: user.lastname, phone: user.phone, role: user.role }, 
+      { email: newUser.email, name:newUser.name, lastname: newUser.lastname, phone: newUser.phone, role: newUser.role }, 
       JWT_SECRET,
       {expiresIn: '1h'}
       );
@@ -185,7 +185,7 @@ app.get('/get-events', async (req, res) => {
 });
 
 app.post('/create-event', async (req, res) => {
-  console.log('POST /create-event body:', req.body); // Para debug
+  //console.log('POST /create-event body:', req.body); // Para debug
   const eventData = req.body;
   try {
     const newEvent = await eventconnect.insertEvent(eventData);
@@ -209,7 +209,7 @@ app.get('/events/category/:category', async (req, res) => {
 });
 
 app.get('/event/:id', async (req, res) => {
-  console.log('GET /event/:id called', req.params); // Para debug
+  //console.log('GET /event/:id called', req.params); // Para debug
   const { id } = req.params;
   try {
     const event = await eventconnect.getEventById(id);

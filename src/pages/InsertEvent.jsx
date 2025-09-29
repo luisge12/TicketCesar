@@ -48,7 +48,7 @@ export default function EventForm() {
                 // Si está autenticado, guardar el rol del usuario
                 if (data.isAuthenticated && data.user) {
                     setUserRole(data.user.role);
-                    console.log('Usuario autenticado con rol:', data.user.role);
+                    //console.log('Usuario autenticado con rol:', data.user.role);
                 } else {
                     setUserRole(null);
                 }
@@ -61,7 +61,7 @@ export default function EventForm() {
                 setLoading(false);
             }
         };
-        console.log('Checking auth status...', userRole);
+        //console.log('Checking auth status...', userRole);
 
         checkAuthStatus();
     }, [userRole]);
@@ -74,7 +74,7 @@ export default function EventForm() {
     }, [loading, userRole]);
 
     const handleSubmit = async (e) => {
-        console.log('Submitting form:', form); // Para debug
+        //console.log('Submitting form:', form); // Para debug
         e.preventDefault();
         try {
             const response = await fetch('http://localhost:3000/create-event', {

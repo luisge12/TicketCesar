@@ -20,7 +20,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
             credentials: 'include',
         });
         const data = await response.json();
-        console.log('Login status data:', data);
+        //console.log('Login status data:', data); // Para debug
         setIsAuthenticated(data.isAuthenticated);
         setUserData(data.user || null);
         

@@ -30,9 +30,9 @@ export default function UserRegister() {
             phone: phone,
         };
 
-        console.log('User data to send:', userData);
+        //console.log('User data to send:', userData);
         try {
-            console.log('Attempting to log in with:', userData);
+            //console.log('Attempting to log in with:', userData);
             const response = await fetch('http://localhost:3000/register', {
                 method: 'POST',
                 headers: {
@@ -44,7 +44,7 @@ export default function UserRegister() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('User created successfully:', data);
+                //console.log('User created successfully:', data);
                 alert('usuario creado con exito');
                 window.location.href = '/'
             } else {

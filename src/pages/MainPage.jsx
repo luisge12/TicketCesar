@@ -33,14 +33,14 @@ useEffect(() => {
   }, [pathname]);
 
 useEffect(() => {
-    console.log('Fetching events...');
+    //console.log('Fetching events...');
     const fetchEvents = async () => {
     const response = await fetch('http://localhost:3000/get-events', {
         credentials: 'include'
     });
     const data = await response.json();
     setEvents(data);
-    console.log(data);
+    //console.log(data);
     };
 
     fetchEvents();

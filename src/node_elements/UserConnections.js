@@ -1,69 +1,148 @@
-import pg from 'pg';
-import { Pool } from 'pg';
-import crypto from 'crypto';
+import { supabase } from './config.js';
 import bcrypt from 'bcrypt';
-import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT, SALT_ROUNDS } from './config.js'
-import { Console } from 'console';
-
+import { SALT_ROUNDS } from './config.js';
 
 export class UserConnections {
-    constructor() {
-        this.pool = new Pool({
-            user: DB_USER,
-            host: DB_HOST,
-            database: DB_DATABASE,
-            password: DB_PASSWORD,
-            port: parseInt(DB_PORT, 10),
-        });
-    }
-    async close() {
-        await this.pool.end();
-    }
+    // No necesitas constructor ni pool con Supabase
 
     async createUser(user) {
         const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
 
-        const query = 'INSERT INTO users (email, name, lastname, birthdate, created_at, password, phone) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
-        const values = [user.email, user.name, user.lastname, user.birthdate, new Date(), hashedPassword, user.phone];
+        const userData = {
+            email: user.email,
+            name: user.name,
+            lastname: user.lastname,
+            birthdate: user.birthdate,
+            created_at: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+            password: hashedPassword,
+            phone: user.phone,
+            role: 'user' // Valor por defecto
+        };
 
         try {
-            const res = await this.pool.query(query, values);
-            return res.rows[0];
-        } catch (err) {
-            console.error('Error creating user:', err);
-            
-            // Verifica si el error es de duplicidad
-            if (err.code === '23505') {
-                // Lanza un error con un mensaje específico para el cliente
-                throw new Error('User with this email already exists.');
-            } else {
-                // Lanza otros errores sin cambiar el mensaje
-                throw err;
+            const { data, error } = await supabase
+                .from('users')
+                .insert([userData])
+                .select();
+
+            if (error) {
+                console.error('Error creating user:', error);
+                
+                // Verifica si el error es de duplicidad
+                if (error.code === '23505') {
+                    throw new Error('User with this email already exists.');
+                } else {
+                    throw error;
+                }
             }
+            
+            return data[0];
+        } catch (err) {
+            console.error('Error in createUser:', err);
+            throw err;
         }
     }
 
     async loginUser(email, password) {
-        
-        const query = 'SELECT * FROM users WHERE email = $1';
-        const values = [email];
         try {
-            const res = await this.pool.query(query, values);
-            if (res.rows.length === 0) {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') { // Código cuando no encuentra registros
+                    throw new Error('User not found');
+                }
+                throw error;
+            }
+
+            if (!data) {
                 throw new Error('User not found');
             }
-            const hashedPassword = res.rows[0].password;
-            const match = await bcrypt.compare(password, hashedPassword);
+
+            const match = await bcrypt.compare(password, data.password);
             if (!match) {
                 throw new Error('Invalid password');
             }
-            return {user: res.rows[0]};
+
+            // Eliminar password del objeto de respuesta por seguridad
+            const { password: _, ...userWithoutPassword } = data;
+            return { user: userWithoutPassword };
+            
         } catch (err) {
             console.error('Error logging in user:', err);
             throw err;
         }
     }
+
+    async getUserByEmail(email) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+
+            if (error) throw error;
+            
+            // Eliminar password por seguridad
+            if (data) {
+                const { password: _, ...userWithoutPassword } = data;
+                //console.log(userWithoutPassword);
+                return userWithoutPassword;
+            }
+            return null;
+            
+        } catch (error) {
+            console.error('Error fetching user by email:', error);
+            throw error;
+        }
+    }
+
+    async updateUser(email, updates) {
+        try {
+            // Asegurarse de no actualizar el password aquí
+            const { password, ...safeUpdates } = updates;
+            
+            const { data, error } = await supabase
+                .from('users')
+                .update(safeUpdates)
+                .eq('email', email)
+                .select();
+
+            if (error) throw error;
+            return data[0];
+            
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error;
+        }
+    }
+
+    async changePassword(email, newPassword) {
+        try {
+            const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+            
+            const { data, error } = await supabase
+                .from('users')
+                .update({ password: hashedPassword })
+                .eq('email', email)
+                .select();
+
+            if (error) throw error;
+            return data[0];
+            
+        } catch (error) {
+            console.error('Error changing password:', error);
+            throw error;
+        }
+    }
+
+    // No necesitas el método close() con Supabase
 }
+
 /* //CODIGO PARA PROBAR LAS CONEXIONES
 const prueba = new UserConnections();
 let user;
@@ -73,6 +152,4 @@ try {
     console.error('Login failed:', error);
 }
 console.log(user);
-prueba.close()
-
 */
