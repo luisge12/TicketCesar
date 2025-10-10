@@ -34,10 +34,10 @@ form {
     gap: 1rem;
 }
 
-input[type="text"],
-input[type="date"],
-input[type="number"],
-textarea {
+ .insert-event-input[type="text"],
+ .insert-event-input[type="date"],
+ .insert-event-input[type="number"],
+ .insert-event-input {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid var(--grey);
@@ -48,10 +48,10 @@ textarea {
     transition: border 0.2s;
 }
 
-input[type="text"]:focus,
-input[type="date"]:focus,
-input[type="number"]:focus,
-textarea:focus {
+ .insert-event-input[type="text"]:focus,
+ .insert-event-input[type="date"]:focus,
+ .insert-event-input[type="number"]:focus,
+ .insert-event-input:focus {
     border: 1.5px solid var(--black);
     outline: none;
 }

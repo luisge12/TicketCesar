@@ -41,10 +41,19 @@ export default function Footer() {
 
                 {/* Redes sociales a la derecha */}
                 <ul className="social">
-                    <li><a /*onClick={() => navigate('/direccion')}*/ className='social-links'><img src="./src/assets/facebook.png" alt="facebook" className="inline-block h-6 w-6 mr-2"/></a></li>
-                    <li><a /*onClick={() => navigate('/direccion')}*/ className='social-links'><img src="./src/assets/ig.png" alt="ig" className="inline-block h-6 w-6 mr-2"/></a></li>
-                </ul>
-            </div>
+                    <li><a 
+                    className='social-links'
+                    href="https://www.tiktok.com/@teatrocesarrengifoula"
+                    target="_blank"
+                    rel="noopener noreferrer"><img src="./src/assets/tiktok.png" alt="facebook" className="inline-block h-6 w-6 mr-2"/></a></li>
+                    <li><a 
+                    className='social-links'
+                    href="https://www.instagram.com/teatrocesarrengifoula/?hl=es"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                ><img src="./src/assets/ig.png" alt="ig" className="inline-block h-6 w-6 mr-2"/></a></li>
+                    </ul>
+                </div>
 
             {/* Copyright centrado */}
             <div className="foot-text">

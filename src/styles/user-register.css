@@ -4,11 +4,10 @@
 
 
 .registro-container {
-
     position: relative;
     top: 2.5rem;
     width: 20rem;
-    margin: 2rem 2rem 5rem 5rem;
+    margin: 2rem 5rem 5rem 5rem;
     padding: 1rem;
     background-color: var(--beige);
     align-items: center;
@@ -17,51 +16,61 @@
 
 /* Título del formulario */
 .registro-container h2 {
+    font-family: var(--title);
     margin-bottom: 0rem;
-    color: var(--grey);
+    color: var(--black);
     font-size: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.user-register-form {
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Estilos para cada grupo de formulario (label + input) */
-.form-group {
+ .user-register-form-group {
     margin-bottom: 0rem;
-    padding: 0.25rem;
+    padding: 0;
     text-align: left;
 }
 
-.form-group label {
+.user-register-label {
+    font-family: var(--subtitle);
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: bold;
-    color: var(--grey);
+    color: var(--black);
 }
 
-/* Estilos para los campos de entrada de texto y fecha */
-.user-register-input {
-    width: 15rem;
+
+/* Unificar estilos para autofill */
+.user-register-input:-webkit-autofill,
+.user-register-input:-webkit-autofill:hover,
+.user-register-input:-webkit-autofill:focus,
+.user-register-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--beige) inset !important;
+    -webkit-text-fill-color: var(--black) !important;
+    border-radius: 10px !important;
+    border: 0.15rem solid var(--grey) !important;
+}
+
+/* Unificar estilos para todos los tipos de input */
+.user-register-input[type="email"],
+.user-register-input[type="text"],
+.user-register-input[type="password"],
+.user-register-input[type="date"],
+.user-register-input[type="tel"] {
+    width: 100%;
     height: 2.5rem;
-    padding: 0.5rem;
-    border: 0.15rem solid var(--grey);
-    border-radius: 10px;
-    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
-    font-size: 16px;
-    transition: border-color 0.3s;
+    background-color: var(--beige) !important;
+    color: var(--black) !important;
+    border-radius: 10px !important;
+    border: 0.1rem solid var(--black) !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-/* Estilos para el botón de envío */
-.user-register-input {
-    width: 100%;              /* Ya está correcto */
-    padding: 15px;
-    background-color: transparent;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border: 1px solid var(--grey);
-}
 
 .registro-container button:hover {
     background-color: var(--grey);

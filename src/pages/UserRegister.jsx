@@ -11,6 +11,7 @@ export default function UserRegister() {
     const [name, setName] = useState("");
     const [lastname, setLastname] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [birthdate, setBirthdate] = useState("");
     const [phone, setPhone] = useState("");
 
@@ -20,7 +21,10 @@ export default function UserRegister() {
 
   const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        if (password !== confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+        }
         const userData = {
             email: email,
             name: name,
@@ -29,10 +33,7 @@ export default function UserRegister() {
             birthdate: birthdate,
             phone: phone,
         };
-
-        //console.log('User data to send:', userData);
         try {
-            //console.log('Attempting to log in with:', userData);
             const response = await fetch('http://localhost:3000/register', {
                 method: 'POST',
                 headers: {
@@ -41,10 +42,7 @@ export default function UserRegister() {
                 credentials: 'include',
                 body: JSON.stringify(userData),
             });
-
             if (response.ok) {
-                const data = await response.json();
-                //console.log('User created successfully:', data);
                 alert('usuario creado con exito');
                 window.location.href = '/'
             } else {
@@ -52,7 +50,6 @@ export default function UserRegister() {
                 console.error('register failed:', errorData);
                 alert('Register failed: ' + errorData.error);
             }
-
         } catch (error) {
             console.error('Error during register:', error);
             alert('An error occurred during register. Please try again.');
@@ -63,67 +60,71 @@ export default function UserRegister() {
     return (
         <div className="registro-container">
             <h2>Crear una cuenta</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="email">Email:</label>
+            <form className='user-register-form' onSubmit={handleSubmit}>
+                <div className="user-register-form-group">
+                    <label htmlFor="email" className="user-register-label">Email:</label>
                     <input
                         type="email"
-                        id="email"
                         name="email"
                         className='user-register-input'
                         autoComplete="email" // Añadido para el autocompletado del navegador
                         onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="name">Nombre:</label>
+                <div className="user-register-form-group">
+                    <label htmlFor="name" className="user-register-label">Nombre:</label>
                     <input
                         type="text"
-                        id="name"
                         name="name"
                         className='user-register-input'
                         autoComplete="given-name"
                         onChange={(e) => setName(e.target.value)}
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="lastname">Apellido:</label>
+                <div className="user-register-form-group">
+                    <label htmlFor="lastname" className="user-register-label">Apellido:</label>
                     <input
                         type="text"
-                        id="lastname"
                         name="lastname"
                         className='user-register-input'
                         autoComplete="family-name"
                         onChange={(e) => setLastname(e.target.value)}
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="password">Contraseña:</label>
+                <div className="user-register-form-group">
+                    <label htmlFor="password" className="user-register-label">Contraseña:</label>
                     <input
                         type="password"
-                        id="password"
                         name="password"
                         className='user-register-input'
                         autoComplete="new-password"
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="birthdate">Fecha de Nacimiento:</label>
+                <div className="user-register-form-group">
+                    <label htmlFor="confirmPassword" className="user-register-label">Confirmar Contraseña:</label>
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        className='user-register-input'
+                        autoComplete="new-password"
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                </div>
+                <div className="user-register-form-group">
+                    <label htmlFor="birthdate" className="user-register-label">Fecha de Nacimiento:</label>
                     <input
                         type="date"
-                        id="birthdate"
                         name="birthdate"
                         className='user-register-input'
                         autoComplete="bday"
                         onChange={(e) => setBirthdate(e.target.value)}
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="phone">Número de Teléfono:</label>
+                <div className="user-register-form-group">
+                    <label htmlFor="phone" className="user-register-label">Número de Teléfono:</label>
                     <input
                         type="tel"
-                        id="phone"
                         name="phone"
                         className='user-register-input'
                         autoComplete="tel"

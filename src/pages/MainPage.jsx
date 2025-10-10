@@ -1,5 +1,5 @@
 import './../styles/main-page.css' 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import img1 from '../assets/carousel/1.webp';
 import img2 from '../assets/carousel/2.webp';
 import img3 from '../assets/carousel/3.webp';
@@ -7,7 +7,10 @@ import img4 from '../assets/carousel/4.webp';
 import img5 from '../assets/carousel/5.webp';
 import img6 from '../assets/carousel/6.webp';
 import { useNavigate, useLocation } from 'react-router-dom';
-// Importa más imágenes si tienes
+import Modal from "react-modal";
+import ModalContent from "../components/Modal-login";
+
+Modal.setAppElement('#root');
 
 const images = [
     img1,
@@ -18,7 +21,7 @@ const images = [
     img6,
 ];
 
-export default function MainPage() {
+export default function MainPage({ inLoginAdmin }) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const extendedImages = [images[images.length - 1], ...images, images[0]];
@@ -27,48 +30,48 @@ export default function MainPage() {
     const sliderRef = useRef();
     const intervalRef = useRef(null);
     const [events, setEvents] = useState([]);
+    const [isModalOpen, setModalOpen] = useState(false);
 
-useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-useEffect(() => {
-    //console.log('Fetching events...');
-    const fetchEvents = async () => {
-    const response = await fetch('http://localhost:3000/get-events', {
-        credentials: 'include'
-    });
-    const data = await response.json();
-    setEvents(data);
-    //console.log(data);
+    const setIsModalOpen = () => {
+        setModalOpen(!isModalOpen);
     };
 
-    fetchEvents();
-}, []);
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
-    const startAutoSlide = () => {
+    useEffect(() => {
+        const fetchEvents = async () => {
+            const response = await fetch('http://localhost:3000/get-events', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            setEvents(data);
+        };
+        fetchEvents();
+    }, []);
+
+    const nextImage = useCallback(() => {
+        setCurrent((prev) => prev + 1);
+        setTransition(true);
+    }, []);
+
+    const prevImage = useCallback(() => {
+        setCurrent((prev) => prev - 1);
+        setTransition(true);
+    }, []);
+
+    const startAutoSlide = useCallback(() => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
             nextImage();
         }, 3000);
-    };
-
-    const nextImage = () => {
-        setCurrent((prev) => prev + 1);
-        setTransition(true);
-        startAutoSlide(); // Reinicia el conteo
-    };
-    const prevImage = () => {
-        setCurrent((prev) => prev - 1);
-        setTransition(true);
-        startAutoSlide(); // Reinicia el conteo
-    };
+    }, [nextImage]);
 
     useEffect(() => {
         startAutoSlide();
         return () => clearInterval(intervalRef.current);
-        // eslint-disable-next-line
-    }, []);
+    }, [startAutoSlide]);
 
     useEffect(() => {
         if (current === extendedImages.length - 1) {
@@ -92,12 +95,37 @@ useEffect(() => {
     }, [transition]);
 
     function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
     }
+
+    // Verifica la sesión igual que en Header.jsx
+    async function checkSession() {
+        try {
+            const response = await fetch('http://localhost:3000/', {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const data = await response.json();
+            return data.isAuthenticated;
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            return false;
+        }
+    }
+
+    const handleEventClick = async (eventId) => {
+        const isLoggedIn = await checkSession();
+        if (isLoggedIn) {
+            navigate(`/event/${eventId}`);
+        } else {
+            alert('Debes iniciar sesión para ver el evento.');
+            setIsModalOpen();
+        }
+    };
 
     return (
         <div className="mainpage-div">
@@ -112,13 +140,13 @@ useEffect(() => {
                     <div
                         className="slider-track"
                         ref={sliderRef}
-                            style={{
-                                display: 'flex',
-                                transition: transition ? 'transform 0.5s ease' : 'none',
-                                transform: `translateX(-${current * (100 / extendedImages.length)}%)`,
-                                width: `${extendedImages.length * 100}%`,
-                                height: '100%',
-                            }}
+                        style={{
+                            display: 'flex',
+                            transition: transition ? 'transform 0.5s ease' : 'none',
+                            transform: `translateX(-${current * (100 / extendedImages.length)}%)`,
+                            width: `${extendedImages.length * 100}%`,
+                            height: '100%',
+                        }}
                     >
                         {extendedImages.map((img, idx) => (
                             <img
@@ -157,11 +185,11 @@ useEffect(() => {
                 
                 <div className='events-container'>
                     <button
-                    onClick={() => {
-                        const container = document.querySelector('.event-card');
-                        container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
-                    }}
-                    className='events-scroll-btn left'
+                        onClick={() => {
+                            const container = document.querySelector('.event-card');
+                            container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+                        }}
+                        className='events-scroll-btn left'
                     >
                         &lt;
                     </button>
@@ -180,24 +208,34 @@ useEffect(() => {
                             <p>No hay eventos disponibles.</p>
                         ) : (
                             events.map(event => (
-                                <div key={event.id} className="event-item" onClick={() => navigate(`/event/${event.id}`)}>
-                                    <img src={event.image} alt={event.name} className="event-image" />
+                                <div key={event.id} className="event-item" onClick={() => handleEventClick(event.id)}>
+                                    <img src={event.image_url ? event.image_url : null} alt={event.name} className="event-image" />
                                     <h2 className="event-title">{event.name}</h2>
                                     <p className="event-date">
                                         {formatDate(event.date_start) === formatDate(event.date_end)
                                             ? formatDate(event.date_start)
                                             : `${formatDate(event.date_start)} - ${formatDate(event.date_end)}`}
-                                        </p>
+                                    </p>
                                     <p className="event-description">{event.description}</p>
                                     <p className="event-description">{event.category}</p>  
                                 </div>
-                            )))}
+                            ))
+                        )}
                     </div>
-
                 </div>
-
             </div>
 
+            {/* Modal para login, igual que Header.jsx */}
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={setIsModalOpen}
+                contentLabel="User Menu"
+                className="modal-main"
+                overlayClassName="modal-overlay"
+                ariaHideApp={false}
+            >
+                <ModalContent onLogout={() => {}} inLoginAdmin={inLoginAdmin}/>
+            </Modal>
         </div>
     );
 }

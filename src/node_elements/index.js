@@ -2,6 +2,9 @@ import express from 'express';
 import { PORT, HOST, JWT_SECRET } from './config.js';
 import { UserConnections } from './UserConnections.js'; 
 import { EventConnections } from './EventConnections.js';
+import { BlogConnections } from './BlogConnections.js';
+
+const blogconnect = new BlogConnections();
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
@@ -218,6 +221,45 @@ app.get('/event/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// --- BLOG ARTICLE ENDPOINTS ---
+
+// Get all articles
+app.get('/get-articles', async (req, res) => {
+  try {
+    const articles = await blogconnect.getAllArticles();
+    res.json(articles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get article by ID
+app.get('/get-article-by-id/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const article = await blogconnect.getArticleById(id);
+    if (!article) {
+      return res.status(404).json({ error: 'Article not found' });
+    }
+    res.json(article);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Insert new article
+app.post('/insert-article', async (req, res) => {
+  try {
+    const articleData = req.body;
+    const newArticle = await blogconnect.insertArticle(articleData);
+    res.status(201).json(newArticle);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 app.listen(PORT, HOST, () => {
   console.log(`Server running at http://${HOST}:${PORT}/`);

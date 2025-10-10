@@ -77,7 +77,7 @@ useEffect(() => {
         contentLabel="User Menu"
         className="modal-main"
         overlayClassName="modal-overlay"
-        ariaHideApp={false} // Cambiado a false para evitar el error en la consola
+        ariaHideApp={false}
       >
         <ModalContent onLogout={onLogout} inLoginAdmin={inLoginAdmin}/>
       </Modal>

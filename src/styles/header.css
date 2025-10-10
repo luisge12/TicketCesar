@@ -49,6 +49,8 @@
   outline: none; 
   border-color: #000; 
   background-color: transparent;
+  border: solid 1px var(--grey);
+  border-radius: 0.25rem;
 }
 
 input:-webkit-autofill,
