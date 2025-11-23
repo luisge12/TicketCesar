@@ -1,0 +1,88 @@
+/* Styles for QuienesSomos page — only use var(--grey), var(--beige), var(--black) and white */
+
+.quienes-page {
+  width: 90vw;
+  padding: 2rem;
+  margin: 3rem;
+  min-height: 100vh;
+  background-color: var(--beige);
+  color: var(--black);
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.quienes-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  color: var(--black);
+}
+
+.quienes-page h2 {
+  font-size: 1.25rem;
+  color: var(--black);
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  padding-left: 10px;
+  border-left: 6px solid var(--grey);
+}
+
+.quienes-page h3 {
+  font-size: 1rem;
+  color: var(--black);
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.quienes-page p {
+  color: var(--black);
+  line-height: 1.6;
+  margin: 0.5rem 0;
+}
+
+.quienes-page ul {
+  color: var(--black);
+  margin: 0.5rem 0 1rem 1.25rem;
+}
+
+.quienes-page section {
+  background: white;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--grey);
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+}
+
+/* Box that groups Objetivo, Misión y Visión */
+.qsv-box {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.qsv-item {
+  background: #fff;
+  border: 1px solid var(--grey);
+  padding: 0.85rem;
+  border-radius: 6px;
+}
+
+.qsv-item h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--black);
+}
+
+@media (min-width: 900px) {
+  .qsv-box {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.quienes-page strong, .quienes-page b {
+  color: var(--black);
+}
+
+@media (min-width: 900px) {
+  .quienes-page {
+    padding: 3rem;
+  }
+}

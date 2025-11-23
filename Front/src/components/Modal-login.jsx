@@ -57,7 +57,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
                 const data = await response.json();
                 data.user.role === 'admin' && inLoginAdmin()
                 setIsAuthenticated(true); 
-                setMessage("¡Login exitoso! Cerrando la ventana...");
+                setMessage("");
                 setTimeout(onClose, 2000); 
             } else {
                 const errorData = await response.json();
@@ -67,7 +67,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
 
         } catch (error) {
             console.error('Error during login:', error);
-            setMessage('Ocurrió un error durante el login. Por favor, intenta de nuevo.');
+            setMessage('Ocurrió un error durante el login');
         }
     };
 

@@ -91,6 +91,9 @@ useEffect(() => {
         }
     }, [transition]);
 
+    //useEffect para datos de usuarios
+    
+
     function formatDate(dateString) {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');

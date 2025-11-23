@@ -1,7 +1,9 @@
 // This code is a part of TicketCesar 
 // Created by Luis González
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+
+const BLOG_SECTIONS = ['Articulos', 'Reportajes', 'Critica', 'Entrevistas', 'Noticias'];
 import Modal from "react-modal";
 import './../styles/header.css';
 import ModalContent from "./Modal-login";
@@ -17,6 +19,8 @@ export default function Header({  onLogout, inLoginAdmin }) {
     const [lastScroll, setLastScroll] = useState(0);
     const [categories] = useState(['Danza', 'Musica', 'Teatro', 'Grados', 'Recorridos']);
     const [categoryEvents, setCategoryEvents] = useState({});
+    const [articles, setArticles] = useState([]);
+    const [loadingArticles, setLoadingArticles] = useState(true);
 
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -62,6 +66,60 @@ export default function Header({  onLogout, inLoginAdmin }) {
   }
 
 }, [categories]);
+
+  // get blog articles
+    useEffect(() => {
+    setArticles([]);
+    setLoadingArticles(true);
+    fetch('http://localhost:3000/get-articles', { credentials: 'include' })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Fetched /articles response:', data);
+        const arr = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.articles)
+          ? data.articles
+          : [];
+        setArticles(arr);
+      })
+      .catch((error) => {
+        console.error('Error fetching articles:', error);
+      })
+      .finally(() => setLoadingArticles(false));
+  }, []);
+
+  // Log articles state when it changes so the user can inspect the array in console
+  useEffect(() => {
+    console.log('Articles state updated:', articles);
+  }, [articles]);
+
+  // Group articles into sections defined by `blogSections`.
+  const groupedArticles = useMemo(() => {
+    const groups = {};
+    for (const s of BLOG_SECTIONS) groups[s] = [];
+
+    // Place each article in the group that matches its category exactly (case-insensitive).
+    // We check `category` and `categoria` fields (common variants).
+    for (const a of articles) {
+      const cat = (a.category || a.categoria || '').toString().trim().toLowerCase();
+      let placed = false;
+      for (const s of BLOG_SECTIONS) {
+        const key = s.toLowerCase();
+        if (cat === key) {
+          groups[s].push(a);
+          placed = true;
+          break;
+        }
+      }
+
+      if (!placed) {
+        // Default bucket: 'Articulos'
+        groups['Articulos'].push(a);
+      }
+    }
+
+    return groups;
+  }, [articles]);
 /* // Debugging: muestra los eventos de la categoría "Danza" en la consola
 useEffect(() => {
   console.log("categorias: ", categoryEvents['Danza']);
@@ -154,52 +212,36 @@ useEffect(() => {
                 </li>
               </ul>
             </li>
-            <li className="first-menu">
+            <li className="first-menu" onClick={() => navigate('/visitanos')} style={{ cursor: 'pointer' }}>
               Visitanos
             </li>
             <li className="first-menu">
-              Blog
+              <button className="menu-link" onClick={() => navigate('/blog')} style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}>
+                Blog
+              </button>
               <ul>
-                <li className="second-menu">
-                  Articulos
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </li>
-                <li className="second-menu">
-                  Reportajes
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </li>
-                <li className="second-menu">
-                  Critica
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </li>
-                <li className="second-menu">
-                  Entrevistas
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </li>
-                <li className="second-menu">
-                  Noticias
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                  </ul>
-                </li>
+                {BLOG_SECTIONS.map((section) => (
+                  <li className="second-menu" key={section}>
+                    {section}
+                    <ul>
+                      {loadingArticles ? (
+                        <li>Loading...</li>
+                      ) : (groupedArticles[section] && groupedArticles[section].length === 0) ? (
+                        <li>No hay artículos</li>
+                      ) : (
+                        groupedArticles[section].map((article) => (
+                          <li
+                            key={article.id || article._id}
+                            onClick={() => navigate(`/blog/${article.id || article._id}`)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {article.title || article.name || 'Sin título'}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </li>
+                ))}
               </ul>
             </li>
             <li

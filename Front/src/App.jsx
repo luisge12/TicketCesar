@@ -7,7 +7,12 @@ import UserRegister from './pages/UserRegister';
 import AdminBar from './pages/Admin';
 import ModalContent from './components/Modal-login';
 import InsertEvent from './pages/InsertEvent';
+import InsertArticle from './pages/InsertArticle';
 import ReservEvent from './pages/ReservEvent';
+import Blog from './pages/Blog';
+import BlogArticle from './pages/BlogArticle';
+import QuienesSomos from './pages/QuienesSomos';
+import Visitanos from './pages/Visitanos';
 import './styles/app.css'
 
 export default function App() {
@@ -73,22 +78,23 @@ export default function App() {
             />
             <div className="page-with-admin-bar">
                 <div className="mainpage-div">
+                    { (isLoading) && (
+                        <div className='color-white bg-black'>Cargando...</div>
+                    )
+                    }
+                    
 
                     <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/UserRegister" element={<UserRegister />} />
                         <Route path="/event" element={<div>Acá vamos a ver los eventos y el manejo de ventas</div>} />
                         <Route path="/insertEvent" element={ <InsertEvent /> } />
+                        <Route path="/insertArticle" element={ <InsertArticle /> } />
                         <Route path="/event/:id" element={<ReservEvent />} />
-                            {/*//the logic to handle insertevent after testing it
-                            isLoading ? (
-                                <div>Cargando...</div>
-                            ) : isAuthenticated && userRole === 'admin' ? (
-                                <Navigate to="/InsertEvent" replace />
-                            ) : (
-                                <Navigate to="/" replace />
-                            )
-                         /> */}
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:id" element={<BlogArticle />} />
+                        <Route path="/quienes-somos" element={<QuienesSomos />} />
+                        <Route path="/visitanos" element={<Visitanos />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>
@@ -106,4 +112,5 @@ export default function App() {
             <Footer />
         </Router>
     );
+
 }

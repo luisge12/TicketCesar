@@ -1,0 +1,135 @@
+
+
+.insert-article-page {
+  max-width: 480px;
+  width: 100%;
+  margin: 2.5rem auto;
+  background: var(--beige);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2rem 2.5rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.insert-article-page h2 {
+  margin-bottom: 1.5rem;
+  color: var(--black);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+
+.insert-article-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+
+
+.insert-article-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 0.2rem;
+  width: 100%;
+}
+
+
+
+.insert-article-form input,
+.insert-article-form textarea,
+.insert-article-form select,
+.insert-article-form input[type="date"],
+.insert-article-form input[type="file"] {
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--grey);
+  font-size: 1rem;
+  background: var(--beige);
+  color: var(--black);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Improve file input appearance: keep native button but match sizing */
+.insert-article-form input[type="file"] {
+  padding: 0.45rem 0.6rem;
+}
+
+.insert-article-form textarea {
+  resize: vertical;
+}
+
+
+
+.insert-article-btn {
+  background: var(--black);
+  color: var(--beige);
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s, transform 0.2s;
+  width: 100%;
+}
+
+.insert-article-btn:hover {
+  background: var(--grey);
+  color: var(--beige);
+  transform: translateY(-1px) scale(1.03);
+}
+
+
+.insert-article-error {
+  color: var(--black);
+  background: var(--grey);
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  margin-top: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+
+.insert-article-success {
+  color: var(--beige);
+  background: var(--black);
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  margin-top: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+
+
+.insert-article-back {
+  background: var(--grey);
+  color: var(--black);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.insert-article-back:hover {
+  background: var(--black);
+  color: var(--beige);
+}

@@ -2,16 +2,21 @@ import express from 'express';
 import { PORT, HOST, JWT_SECRET } from './config.js';
 import { UserConnections } from './UserConnections.js'; 
 import { EventConnections } from './EventConnections.js';
+import { BlogConnections } from './BlogConnections.js';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
 
 const userconnect = new UserConnections();
 const eventconnect = new EventConnections();
+const blogconnect = new BlogConnections();
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173', // Cambia al puerto de tu frontend si es diferente
+  origin: [
+    'http://localhost:5173', 
+    'https://ticketcesar.onrender.com',
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -175,6 +180,7 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/get-events', async (req, res) => {
+  //console.log('GET /get-events called'); // Para debug
   try {
     const events = await eventconnect.getEvents();
     res.json(events);
@@ -219,6 +225,65 @@ app.get('/event/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+// --- BLOG ARTICLES endpoints ---
+app.get('/get-articles', async (req, res) => {
+  try {
+    const articles = await blogconnect.getAllArticles();
+    res.json(articles);
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/articles/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const article = await blogconnect.getArticleById(id);
+    if (!article) return res.status(404).json({ error: 'Article not found' });
+    res.json(article);
+  } catch (error) {
+    console.error('Error fetching article by id:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/create-article', async (req, res) => {
+  const articleData = req.body;
+  try {
+    const newArticle = await blogconnect.insertArticle(articleData);
+    res.status(201).json(newArticle);
+  } catch (error) {
+    console.error('Error creating article:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/articles/:id', async (req, res) => {
+  const { id } = req.params;
+  const articleData = req.body;
+  try {
+    const updated = await blogconnect.updateArticle(id, articleData);
+    if (!updated) return res.status(404).json({ error: 'Article not found or no fields to update' });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating article:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/articles/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await blogconnect.deleteArticle(id);
+    if (!deleted) return res.status(404).json({ error: 'Article not found' });
+    res.json({ message: 'Article deleted', article: deleted });
+  } catch (error) {
+    console.error('Error deleting article:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST} ${PORT} `);
 });
