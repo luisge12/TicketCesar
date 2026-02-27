@@ -1,4 +1,6 @@
 import express from 'express';
+import crypto from 'crypto';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../mailService.js';
 
 export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
   const router = express.Router();
@@ -29,13 +31,19 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
   router.post('/register', async (req, res) => {
     const user = req.body;
     try {
-      const newUser = await userconnect.createUser(user);
-      const token = jwt.sign(
-        { email: user.email, name: user.name, lastname: user.lastname, phone: user.phone, role: user.role },
-        JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      res.cookie('access_token', token, { httpOnly: true }).send({ user, token });
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const newUser = await userconnect.createUser(user, verificationToken);
+
+      try {
+        await sendVerificationEmail(user.email, verificationToken);
+      } catch (emailError) {
+        console.error('Error enviando correo de verificación:', emailError);
+        // We log the error but still return success for registration.
+      }
+
+      res.status(201).json({
+        message: 'Usuario registrado exitosamente. Por favor verifica tu correo electrónico para poder iniciar sesión.'
+      });
     } catch (error) {
       console.error('Error creating user:', error);
       if (error.message === 'User with this email already exists.') {
@@ -93,6 +101,64 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
       secure: process.env.NODE_ENV === 'production',
     });
     res.json({ message: 'Sesión cerrada correctamente' });
+  });
+
+  router.get('/verify-email', async (req, res) => {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ error: 'Token requerido' });
+
+    try {
+      const user = await userconnect.verifyUserToken(token);
+      if (!user) {
+        return res.status(400).json({ error: 'Token inválido o cuenta ya verificada' });
+      }
+      res.json({ message: 'Correo verificado exitosamente. Ya puedes iniciar sesión.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error del servidor al verificar correo' });
+    }
+  });
+
+  router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+      const token = crypto.randomBytes(32).toString('hex');
+      // Format local timestamp correctly for PostgreSQL TIMESTAMP type
+      const date = new Date(Date.now() + 3600000); // 1 hour from now
+      const expires = date.toISOString().replace('T', ' ').substring(0, 19);
+
+      await userconnect.savePasswordResetToken(email, token, expires);
+
+      try {
+        await sendPasswordResetEmail(email, token);
+      } catch (mailErr) {
+        console.error('Error enviando correo de recuperación:', mailErr);
+      }
+
+      res.json({ message: 'Si existe una cuenta con ese correo, recibirás un enlace para recuperar tu contraseña.' });
+    } catch (error) {
+      if (error.message === 'User not found') {
+        // Por seguridad, no revelamos qué correos existen o no. Respondemos igual.
+        res.json({ message: 'Si existe una cuenta con ese correo, recibirás un enlace para recuperar tu contraseña.' });
+      } else {
+        res.status(500).json({ error: 'Error al procesar la solicitud' });
+      }
+    }
+  });
+
+  router.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ error: 'Faltan parámetros' });
+
+    try {
+      await userconnect.resetPassword(token, newPassword);
+      res.json({ message: 'Contraseña actualizada exitosamente. Ya puedes iniciar sesión.' });
+    } catch (error) {
+      if (error.message === 'invalid_token') {
+        res.status(400).json({ error: 'El enlace de recuperación es inválido o ha expirado.' });
+      } else {
+        res.status(500).json({ error: 'Error al restablecer contraseña' });
+      }
+    }
   });
 
   return router;

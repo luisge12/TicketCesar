@@ -18,7 +18,7 @@ export class EventConnections {
         await this.pool.end();
     }
 
-    async insertEvent(event_data){
+    async insertEvent(event_data) {
         const id = crypto.randomUUID();
         const rawExcerpt = typeof event_data.excerpt === 'string'
             ? event_data.excerpt.trim()
@@ -35,8 +35,8 @@ export class EventConnections {
                 : null;
 
         const query = `
-        INSERT INTO event (id, name, excerpt, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        INSERT INTO event (id, name, excerpt, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category, hour) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING *
         `;
 
@@ -52,26 +52,95 @@ export class EventConnections {
             0,
             0,
             event_data.ticket_price,
-            event_data.category
+            event_data.category,
+            event_data.hour
         ];
         try {
             const res = await this.pool.query(query, values);
             return res.rows[0];
-        } catch(error){
+        } catch (error) {
             console.error(error);
-            if (error.code === '23505'){
+            if (error.code === '23505') {
                 throw new Error('this event id already exist, try again')
             }
         }
     }
 
-    async getEvents(){
+    async updateEvent(id, event_data) {
+        let query = '';
+        let values = [];
+
+        // Check if excerpt needs to be truncated
+        const rawExcerpt = typeof event_data.excerpt === 'string'
+            ? event_data.excerpt.trim()
+            : '';
+
+        if (rawExcerpt && rawExcerpt.length > 240) {
+            throw new Error('El excerpt debe tener máximo 240 caracteres');
+        }
+
+        const excerpt = rawExcerpt
+            ? rawExcerpt
+            : (typeof event_data.description === 'string' && event_data.description.trim())
+                ? event_data.description.trim().slice(0, 240)
+                : null;
+
+        if (event_data.image) {
+            query = `
+            UPDATE event 
+            SET name = $1, excerpt = $2, description = $3, date_start = $4, image = $5, ticket_price = $6, category = $7, hour = $8
+            WHERE id = $9
+            RETURNING *
+            `;
+            values = [
+                event_data.name,
+                excerpt,
+                event_data.description,
+                event_data.date_start,
+                event_data.image,
+                event_data.ticket_price,
+                event_data.category,
+                event_data.hour,
+                id
+            ];
+        } else {
+            query = `
+            UPDATE event 
+            SET name = $1, excerpt = $2, description = $3, date_start = $4, ticket_price = $5, category = $6, hour = $7
+            WHERE id = $8
+            RETURNING *
+            `;
+            values = [
+                event_data.name,
+                excerpt,
+                event_data.description,
+                event_data.date_start,
+                event_data.ticket_price,
+                event_data.category,
+                event_data.hour,
+                id
+            ];
+        }
+
+        try {
+            const res = await this.pool.query(query, values);
+            if (res.rowCount === 0) {
+                throw new Error('Event not found');
+            }
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error updating event:', error);
+            throw error;
+        }
+    }
+
+    async getEvents() {
         const query = 'SELECT * FROM event'
 
-        try{
+        try {
             const res = await this.pool.query(query);
             return res.rows;
-        } catch(error){
+        } catch (error) {
             console.log(error);
         }
     }

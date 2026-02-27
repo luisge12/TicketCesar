@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API_URL } from '../config.js';
 import './../styles/insert-event.css'
 
-export default function EventForm() {
+export default function EditEvent() {
     const MAX_EXCERPT_LENGTH = 240; // Límite de caracteres para el excerpt
 
     const [imagePreview, setImagePreview] = useState('');
@@ -41,6 +41,7 @@ export default function EventForm() {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const { id } = useParams();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -113,6 +114,48 @@ export default function EventForm() {
         }
     }, [loading, userRole, isAuthenticated, navigate]);
 
+    // Fetch existing event data
+    useEffect(() => {
+        if (!id) return;
+        const fetchEvent = async () => {
+            try {
+                const response = await fetch(`${API_URL}/event/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Format dates for input type="date"
+                    const formattedDateStart = data.date_start ? data.date_start.split('T')[0] : '';
+
+                    setForm({
+                        attendance: data.attendance || '',
+                        date_end: data.date_end || '',
+                        date_start: formattedDateStart,
+                        description: data.description || '',
+                        excerpt: data.excerpt || '',
+                        id: data.id || '',
+                        image: data.image || '',
+                        is_active: data.is_active || false,
+                        name: data.name || '',
+                        ticket_price: data.ticket_price || '',
+                        tickets_sold: data.tickets_sold || '',
+                        category: data.category || '',
+                        hour: data.hour || ''
+                    });
+
+                    if (data.image) {
+                        setImagePreview(data.image);
+                    }
+                } else {
+                    alert('Error al obtener los datos del evento');
+                }
+            } catch (error) {
+                console.error('Error fetching event data:', error);
+            }
+        };
+
+        fetchEvent();
+    }, [id]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -121,8 +164,9 @@ export default function EventForm() {
             alert('Por favor, espera a que la imagen se termine de subir.');
             return;
         }
-        if (!form.image) {
-            alert('Debes subir una imagen para el evento.');
+        // image uploading check is kept, but it's okay if it's already uploaded (i.e., !form.image is only an error if there wasn't an old one)
+        if (!form.image && !imagePreview) {
+            alert('Debes tener una imagen para el evento.');
             return;
         }
 
@@ -133,28 +177,17 @@ export default function EventForm() {
         }
 
         try {
-            const response = await fetch(`${API_URL}/create-event`, {
-                method: 'POST',
+            const response = await fetch(`${API_URL}/edit-event/${id}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify(form)
             });
             if (response.ok) {
-                alert('Evento guardado correctamente');
-                setForm((prev) => ({
-                    ...prev,
-                    date_start: '',
-                    excerpt: '',
-                    description: '',
-                    image: '',
-                    name: '',
-                    ticket_price: '',
-                    category: '',
-                    hour: '',
-                }));
-                setImagePreview('');
+                alert('Evento actualizado correctamente');
+                navigate('/');
             } else {
-                alert('Error al guardar el evento');
+                alert('Error al actualizar el evento');
             }
         } catch (error) {
             alert('Error de conexión', error);
@@ -172,7 +205,7 @@ export default function EventForm() {
     return (
         <div className="mainpage-insert-event">
             <div className="insert-event-container">
-                <h2>Registrar Evento</h2>
+                <h2>Editar Evento</h2>
                 <form onSubmit={handleSubmit} className="insert-event-form">
                     <label className="insert-event-label">
                         Nombre del evento
@@ -226,7 +259,7 @@ export default function EventForm() {
                         {imageUploading && <span className="insert-event-hint">Subiendo imagen...</span>}
                         {imagePreview && (
                             <div className="insert-event-preview">
-                                <span>Imagen subida:</span>
+                                <span>Imagen actual:</span>
                                 <img src={imagePreview} alt="Preview" />
                             </div>
                         )}
@@ -255,7 +288,7 @@ export default function EventForm() {
                         </select>
                     </label>
 
-                    <button type="submit">Guardar Evento</button>
+                    <button type="submit">Actualizar Evento</button>
                 </form>
             </div>
         </div>

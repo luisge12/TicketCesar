@@ -27,6 +27,24 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
+  router.put('/edit-event/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    const eventData = req.body;
+    try {
+      const updatedEvent = await eventconnect.updateEvent(id, eventData);
+      res.json(updatedEvent);
+    } catch (error) {
+      console.error('Error updating event:', error);
+      if (error.message === 'El excerpt debe tener máximo 240 caracteres') {
+        return res.status(400).json({ error: error.message });
+      }
+      if (error.message === 'Event not found') {
+        return res.status(404).json({ error: error.message });
+      }
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   router.get('/events/category/:category', async (req, res) => {
     const { category } = req.params;
     try {
@@ -58,18 +76,18 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     catch (error) {
       res.status(500).json({ error: 'Internal Server Error' });
     }
-    });
+  });
 
   router.put('/update_seat_state', requireAdmin, async (req, res) => {
-      const { eventId, seatId, newState } = req.body;
-        try {
-            await eventconnect.updateSeatState(eventId, seatId, newState);
-            res.json({ message: 'Seat state updated successfully' });
-        } catch (error) {
-            console.error('Error updating seat state:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    });
+    const { eventId, seatId, newState } = req.body;
+    try {
+      await eventconnect.updateSeatState(eventId, seatId, newState);
+      res.json({ message: 'Seat state updated successfully' });
+    } catch (error) {
+      console.error('Error updating seat state:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
   return router;
 }

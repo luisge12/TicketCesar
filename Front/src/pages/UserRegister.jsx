@@ -19,9 +19,9 @@ export default function UserRegister() {
         window.scrollTo(0, 0);
     }, [location]);
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const userData = {
             email: email,
             name: name,
@@ -46,8 +46,8 @@ export default function UserRegister() {
             if (response.ok) {
                 const data = await response.json();
                 console.log('User created successfully:', data);
-                alert('usuario creado con exito');
-                window.location.href = '/'
+                alert('Usuario registrado con éxito. Te hemos enviado un correo de verificación. Por favor revisa tu bandeja de entrada o spam para poder iniciar sesión.');
+                window.location.href = '/';
             } else {
                 const errorData = await response.json();
                 console.error('register failed:', errorData);

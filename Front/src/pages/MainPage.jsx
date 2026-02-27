@@ -1,5 +1,5 @@
 import { API_URL } from '../config.js';
-import './../styles/main-page.css' 
+import './../styles/main-page.css'
 import { useState, useEffect, useRef } from 'react';
 import img1 from '../assets/carousel/1.webp';
 import img2 from '../assets/carousel/2.webp';
@@ -28,22 +28,23 @@ export default function MainPage() {
     const sliderRef = useRef();
     const intervalRef = useRef(null);
     const [events, setEvents] = useState([]);
+    const [userRole, setUserRole] = useState(null);
 
-useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
-useEffect(() => {
-    const fetchEvents = async () => {
-    const response = await fetch(`${API_URL}/get-events`, {
-        credentials: 'include'
-    });
-    const data = await response.json();
-    setEvents(data);
-    };
+    useEffect(() => {
+        const fetchEvents = async () => {
+            const response = await fetch(`${API_URL}/get-events`, {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            setEvents(data);
+        };
 
-    fetchEvents();
-}, []);
+        fetchEvents();
+    }, []);
 
     const startAutoSlide = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
@@ -91,14 +92,44 @@ useEffect(() => {
     }, [transition]);
 
     //useEffect para datos de usuarios
-    
+    useEffect(() => {
+        const checkAuthStatus = async () => {
+            try {
+                const response = await fetch(`${API_URL}/session`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                const data = await response.json();
 
+                if (data.isAuthenticated && data.user) {
+                    setUserRole(data.user.role);
+                } else {
+                    setUserRole(null);
+                }
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                setUserRole(null);
+            }
+        };
+
+        checkAuthStatus();
+    }, []);
     function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
+    function formatTime(timeString) {
+        if (!timeString) return '';
+        const [hourStr, minuteStr] = timeString.split(':');
+        let hour = parseInt(hourStr, 10);
+        const ampm = hour >= 12 ? 'pm' : 'am';
+        hour = hour % 12;
+        hour = hour ? hour : 12; // la hora '0' deberia ser '12'
+        return `${hour}:${minuteStr} ${ampm}`;
     }
 
     return (
@@ -114,13 +145,13 @@ useEffect(() => {
                     <div
                         className="slider-track"
                         ref={sliderRef}
-                            style={{
-                                display: 'flex',
-                                transition: transition ? 'transform 0.5s ease' : 'none',
-                                transform: `translateX(-${current * (100 / extendedImages.length)}%)`,
-                                width: `${extendedImages.length * 100}%`,
-                                height: '100%',
-                            }}
+                        style={{
+                            display: 'flex',
+                            transition: transition ? 'transform 0.5s ease' : 'none',
+                            transform: `translateX(-${current * (100 / extendedImages.length)}%)`,
+                            width: `${extendedImages.length * 100}%`,
+                            height: '100%',
+                        }}
                     >
                         {extendedImages.map((img, idx) => (
                             <img
@@ -142,7 +173,7 @@ useEffect(() => {
                     >
                         &lt;
                     </button>
-                    
+
                     <button
                         onClick={nextImage}
                         className='events-scroll-btn right'
@@ -156,18 +187,18 @@ useEffect(() => {
 
             <div className='events-slider' id='proximos-espectaculos'>
                 <h1>Próximos Espectaculos</h1>
-                
+
                 <div className='events-container'>
                     <button
-                    onClick={() => {
-                        const container = document.querySelector('.event-card');
-                        container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
-                    }}
-                    className='events-scroll-btn left'
+                        onClick={() => {
+                            const container = document.querySelector('.event-card');
+                            container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+                        }}
+                        className='events-scroll-btn left'
                     >
                         &lt;
                     </button>
-                        
+
                     <button
                         onClick={() => {
                             const container = document.querySelector('.event-card');
@@ -186,12 +217,21 @@ useEffect(() => {
                                     <img src={event.image} alt={event.name} className="event-image" />
                                     <h2 className="event-title">{event.name}</h2>
                                     <p className="event-date">
-                                        {formatDate(event.date_start) === formatDate(event.date_end)
-                                            ? formatDate(event.date_start)
-                                            : `${formatDate(event.date_start)} - ${formatDate(event.date_end)}`}
-                                        </p>
-                                    <p className="event-description">{event.excerpt }</p>
-                                    <p className="event-description">{event.category}</p>  
+                                        {formatDate(event.date_start)} {event.hour ? `- ${formatTime(event.hour)}` : ''}
+                                    </p>
+                                    <p className="event-description">{event.excerpt}</p>
+                                    <p className="event-category">{event.category}</p>
+                                    {userRole === 'admin' && (
+                                        <button
+                                            className="edit-event-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/editEvent/${event.id}`);
+                                            }}
+                                        >
+                                            Editar Evento
+                                        </button>
+                                    )}
                                 </div>
                             )))}
                     </div>

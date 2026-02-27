@@ -7,9 +7,13 @@ import UserRegister from './pages/UserRegister';
 import AdminBar from './pages/Admin';
 import ModalContent from './components/Modal-login';
 import InsertEvent from './pages/InsertEvent';
+import EditEvent from './pages/EditEvent';
 import InsertArticle from './pages/InsertArticle';
 import ReservEvent from './pages/ReservEvent';
 import Blog from './pages/Blog';
+import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import BlogArticle from './pages/BlogArticle';
 import QuienesSomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
@@ -31,9 +35,9 @@ export default function App() {
                     credentials: 'include',
                 });
                 const data = await response.json();
-                
+
                 setIsAuthenticated(data.isAuthenticated);
-                
+
                 // Si está autenticado, guardar el rol del usuario
                 if (data.isAuthenticated && data.user) {
                     setUserRole(data.user.role);
@@ -41,7 +45,7 @@ export default function App() {
                 } else {
                     setUserRole(null);
                 }
-                
+
             } catch (error) {
                 console.error('Error verificando autenticación:', error);
                 setIsAuthenticated(false);
@@ -58,20 +62,20 @@ export default function App() {
         setIsModalOpen(!isModalOpen);
     };
 
-    const onLogout = () => { 
+    const onLogout = () => {
         setIsAuthenticated(false);
         setUserRole(null);
     };
 
-    const inLoginAdmin = () =>  {
+    const inLoginAdmin = () => {
         setIsAuthenticated(true);
         setUserRole('admin');
     }
 
     return (
         <Router>
-            <Header 
-                onLoginClick={toggleModal} 
+            <Header
+                onLoginClick={toggleModal}
                 isModalOpen={isModalOpen}
                 onModalClose={() => setIsModalOpen(false)}
                 onLogout={onLogout}
@@ -79,18 +83,22 @@ export default function App() {
             />
             <div className="page-with-admin-bar">
                 <div className="mainpage-div">
-                    { (isLoading) && (
+                    {(isLoading) && (
                         <div className='color-white bg-black'>Cargando...</div>
                     )
                     }
-                    
+
 
                     <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/UserRegister" element={<UserRegister />} />
+                        <Route path="/verify-email" element={<VerifyEmail />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/event" element={<div>Acá vamos a ver los eventos y el manejo de ventas</div>} />
-                        <Route path="/insertEvent" element={ <InsertEvent /> } />
-                        <Route path="/insertArticle" element={ <InsertArticle /> } />
+                        <Route path="/insertEvent" element={<InsertEvent />} />
+                        <Route path="/editEvent/:id" element={<EditEvent />} />
+                        <Route path="/insertArticle" element={<InsertArticle />} />
                         <Route path="/event/:id" element={<ReservEvent />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogArticle />} />
@@ -103,8 +111,8 @@ export default function App() {
                 {isModalOpen && (
                     <div className="modal-backdrop" onClick={toggleModal}>
                         <div className="modal-container" onClick={e => e.stopPropagation()}>
-                            
-                            <ModalContent inLoginAdmin = {inLoginAdmin} onClose={toggleModal} onLogout={onLogout} />
+
+                            <ModalContent inLoginAdmin={inLoginAdmin} onClose={toggleModal} onLogout={onLogout} />
                         </div>
                     </div>
                 )}
