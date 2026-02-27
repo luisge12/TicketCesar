@@ -71,11 +71,7 @@
   color: var(--black);
 }
 
-@media (min-width: 900px) {
-  .qsv-box {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+/* Keep them vertical on all screen sizes */
 
 .quienes-page strong, .quienes-page b {
   color: var(--black);
