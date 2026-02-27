@@ -1,8 +1,9 @@
+import crypto from 'crypto';
 import { Pool } from 'pg';
-import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } from './config.js'
+import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } from './config.js';
 
 
-export class EventConnections{
+export class EventConnections {
     constructor() {
         this.pool = new Pool({
             user: DB_USER,
@@ -38,9 +39,7 @@ export class EventConnections{
             event_data.ticket_price,
             event_data.category
         ];
-        console.log('Inserting event with values:', values); // Para debug
-
-        try{
+        try {
             const res = await this.pool.query(query, values);
             return res.rows[0];
         } catch(error){
@@ -84,7 +83,45 @@ export class EventConnections{
             throw error;
         }
     }
-    
+
+    async getStateSeats(eventId) {
+        const query = 'SELECT * FROM event_seats WHERE event_id = $1 ORDER BY seat_id';
+        try {
+            const res = await this.pool.query(query, [eventId]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching seats:', error);
+            throw error;
+        }
+    }
+
+    async getSeatState(eventId, seatId) {
+        const query = 'SELECT state FROM event_seats WHERE event_id = $1 AND seat_id = $2';
+        try {
+            const res = await this.pool.query(query, [eventId, seatId]);
+            if (res.rows.length === 0) {
+                return { exists: false, state: null };
+            }
+            return { exists: true, state: res.rows[0].state };
+        } catch (error) {
+            console.error('Error fetching seat state:', error);
+            throw error;
+        }
+    }
+
+    async updateSeatState(eventId, seatId, newState) {
+        const query = 'UPDATE event_seats SET state = $3 WHERE event_id = $1 AND seat_id = $2 RETURNING *';
+        try {
+            const res = await this.pool.query(query, [eventId, seatId, newState]);
+            if (res.rowCount === 0) {
+                throw new Error('Seat not found');
+            }
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error updating seat state:', error);
+            throw error;
+        }
+    }
 }
 
 /*//code for test the class

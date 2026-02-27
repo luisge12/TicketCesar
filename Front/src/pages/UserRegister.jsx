@@ -2,6 +2,7 @@
 // Created by Luis González
 
 import { Navigate, useLocation } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import './../styles/user-register.css';
 import { useState, useEffect } from 'react';
 
@@ -33,7 +34,7 @@ export default function UserRegister() {
         console.log('User data to send:', userData);
         try {
             console.log('Attempting to log in with:', userData);
-            const response = await fetch('http://localhost:3000/register', {
+            const response = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

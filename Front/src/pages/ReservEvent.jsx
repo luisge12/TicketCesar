@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import '../styles/reserv-event.css';
 
 const plateaRows = [
@@ -29,7 +30,7 @@ export default function ReservEvent() {
   }, [location]);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/event/${id}`, {
+    fetch(`${API_URL}/event/${id}`, {
       credentials: 'include'
     })
       .then(res => res.json())

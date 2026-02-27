@@ -20,11 +20,57 @@
     align-items: center;
 }
 
-.mainpage-container h2 {
+.mainpage-container h2,
+.insert-event-container h2 {
     margin-bottom: 1.5rem;
     color: var(--black);
     font-size: 2rem;
     font-weight: 700;
+}
+
+.insert-event-form {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.insert-event-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--black);
+}
+
+.insert-event-label .insert-event-input,
+.insert-event-label select {
+    margin-top: 0;
+}
+
+.insert-event-hint {
+    font-size: 0.9rem;
+    color: orange;
+}
+
+.insert-event-preview {
+    margin-top: 0.5rem;
+}
+
+.insert-event-preview span {
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.insert-event-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid var(--grey);
+    display: block;
 }
 
 form {
@@ -37,7 +83,8 @@ form {
  .insert-event-input[type="text"],
  .insert-event-input[type="date"],
  .insert-event-input[type="number"],
- .insert-event-input {
+ .insert-event-input,
+ .insert-event-form select.insert-event-input {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid var(--grey);
@@ -51,7 +98,8 @@ form {
  .insert-event-input[type="text"]:focus,
  .insert-event-input[type="date"]:focus,
  .insert-event-input[type="number"]:focus,
- .insert-event-input:focus {
+ .insert-event-input:focus,
+ .insert-event-form select.insert-event-input:focus {
     border: 1.5px solid var(--black);
     outline: none;
 }

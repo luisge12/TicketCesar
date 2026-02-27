@@ -1,6 +1,7 @@
 // BlogArticle.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import './../styles/blog-article.css';
 
 
@@ -14,7 +15,7 @@ export default function BlogArticle() {
   useEffect(() => {
     console.log('Solicitando artículo con id:', id);
     setArticle(null);
-  fetch(`http://localhost:3000/articles/${id}`)
+  fetch(`${API_URL}/articles/${id}`)
       .then(res => {
         console.log('Respuesta fetch:', res);
         return res.json();

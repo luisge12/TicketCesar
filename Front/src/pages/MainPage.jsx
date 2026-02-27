@@ -1,3 +1,4 @@
+import { API_URL } from '../config.js';
 import './../styles/main-page.css' 
 import { useState, useEffect, useRef } from 'react';
 import img1 from '../assets/carousel/1.webp';
@@ -33,14 +34,12 @@ useEffect(() => {
   }, [pathname]);
 
 useEffect(() => {
-    console.log('Fetching events...');
     const fetchEvents = async () => {
-    const response = await fetch('http://localhost:3000/get-events', {
+    const response = await fetch(`${API_URL}/get-events`, {
         credentials: 'include'
     });
     const data = await response.json();
     setEvents(data);
-    console.log(data);
     };
 
     fetchEvents();

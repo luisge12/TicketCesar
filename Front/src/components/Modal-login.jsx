@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_URL } from '../config.js';
 import './../styles/header.css';
 
 export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
@@ -15,12 +16,11 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
     useEffect(() => {
     const checkLoginStatus = async () => {
         try {
-        const response = await fetch('http://localhost:3000/', {
+        const response = await fetch(`${API_URL}/session`, {
             method: 'GET',
             credentials: 'include',
         });
         const data = await response.json();
-        console.log('Login status data:', data);
         setIsAuthenticated(data.isAuthenticated);
         setUserData(data.user || null);
         
@@ -44,7 +44,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/login', {
+            const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', 
@@ -77,7 +77,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
 
     const handleLogout = async () => {
     try {
-        await fetch('http://localhost:3000/logout', {
+        await fetch(`${API_URL}/logout`, {
             method: 'POST',
             credentials: 'include',
         });

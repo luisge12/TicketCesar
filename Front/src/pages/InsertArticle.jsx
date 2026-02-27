@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import './../styles/insert-event.css'
 
 export default function InsertArticle() {
@@ -55,7 +56,7 @@ export default function InsertArticle() {
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
-                const response = await fetch('http://localhost:3000/', {
+                const response = await fetch(`${API_URL}/session`, {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -105,7 +106,7 @@ export default function InsertArticle() {
         console.log('Submitting article payload:', payload);
 
         try {
-            const response = await fetch('http://localhost:3000/create-article', {
+            const response = await fetch(`${API_URL}/create-article`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),

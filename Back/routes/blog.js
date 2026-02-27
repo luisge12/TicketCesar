@@ -1,6 +1,6 @@
 import express from 'express';
 
-export default function createBlogRouter({ blogconnect }) {
+export default function createBlogRouter({ blogconnect, requireAdmin }) {
   const router = express.Router();
 
   router.get('/get-articles', async (req, res) => {
@@ -25,7 +25,7 @@ export default function createBlogRouter({ blogconnect }) {
     }
   });
 
-  router.post('/create-article', async (req, res) => {
+  router.post('/create-article', requireAdmin, async (req, res) => {
     const articleData = req.body;
     try {
       const newArticle = await blogconnect.insertArticle(articleData);
@@ -36,7 +36,7 @@ export default function createBlogRouter({ blogconnect }) {
     }
   });
 
-  router.put('/articles/:id', async (req, res) => {
+  router.put('/articles/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
     const articleData = req.body;
     try {
@@ -49,7 +49,7 @@ export default function createBlogRouter({ blogconnect }) {
     }
   });
 
-  router.delete('/articles/:id', async (req, res) => {
+  router.delete('/articles/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
     try {
       const deleted = await blogconnect.deleteArticle(id);

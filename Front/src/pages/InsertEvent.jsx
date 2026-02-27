@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import './../styles/insert-event.css'
 
 export default function EventForm() {
@@ -69,7 +70,7 @@ export default function EventForm() {
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
-                const response = await fetch('http://localhost:3000/', {
+                const response = await fetch(`${API_URL}/session`, {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -114,9 +115,10 @@ export default function EventForm() {
         //console.log('Submitting form:', form); // Para debug
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3000/create-event', {
+            const response = await fetch(`${API_URL}/create-event`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(form)
             });
             if (response.ok) {
@@ -143,42 +145,58 @@ export default function EventForm() {
         <div className="mainpage-insert-event">
             <div className="insert-event-container">
                 <h2>Registrar Evento</h2>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: 500 }}>
-                    <input type="text" name="name" className="insert-event-input" placeholder="Nombre del evento" value={form.name} onChange={handleChange} required />
-                    <textarea name="description" className="insert-event-input" placeholder="Descripción" value={form.description} onChange={handleChange} required />
-                    <input type="date" name="date_start" className="insert-event-input" placeholder="Fecha inicio" value={form.date_start} onChange={handleChange} required />
-                    <input
-                        type="file"
-                        name="image"
-                        className="insert-event-input"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={imageUploading}
-                    />
-                    {imageUploading && <span style={{ fontSize: '0.9rem', color: 'orange' }}>Subiendo imagen...</span>}
-                    {imagePreview && (
-                        <div style={{ marginTop: '0rem' }}>
-                            <span style={{ fontSize: '0.9rem' }}>Imagen subida:</span>
-                            <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', border: '1px solid var(--grey)', display: 'block', marginTop: '0.5rem' }} />
-                        </div>
-                    )}
-                    
-                    <input type="number" name="ticket_price" className="insert-event-input" placeholder="Precio de entrada" value={form.ticket_price} onChange={handleChange} min="0" step="0.01" />
-                    <select
-                        name="category"
-                        value={form.category}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option 
-                        className='insert-event-option'
-                        value="" disabled>Seleccione una categoría</option>
-                        <option value="Danza">Danza</option>
-                        <option value="Musica">Música</option>
-                        <option value="Teatro">Teatro</option>
-                        <option value="Grados">Grados</option>
-                        <option value="Recorridos">Recorridos</option>
-                    </select>
+                <form onSubmit={handleSubmit} className="insert-event-form">
+                    <label className="insert-event-label">
+                        Nombre del evento
+                        <input type="text" name="name" className="insert-event-input" value={form.name} onChange={handleChange} required />
+                    </label>
+                    <label className="insert-event-label">
+                        Descripción
+                        <textarea name="description" className="insert-event-input" value={form.description} onChange={handleChange} required />
+                    </label>
+                    <label className="insert-event-label">
+                        Fecha de inicio
+                        <input type="date" name="date_start" className="insert-event-input" value={form.date_start} onChange={handleChange} required />
+                    </label>
+                    <label className="insert-event-label">
+                        Imagen del evento
+                        <input
+                            type="file"
+                            name="image"
+                            className="insert-event-input"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={imageUploading}
+                        />
+                        {imageUploading && <span className="insert-event-hint">Subiendo imagen...</span>}
+                        {imagePreview && (
+                            <div className="insert-event-preview">
+                                <span>Imagen subida:</span>
+                                <img src={imagePreview} alt="Preview" />
+                            </div>
+                        )}
+                    </label>
+                    <label className="insert-event-label">
+                        Precio de entrada
+                        <input type="number" name="ticket_price" className="insert-event-input" value={form.ticket_price} onChange={handleChange} min="0" step="0.01" placeholder="0.00" />
+                    </label>
+                    <label className="insert-event-label">
+                        Categoría
+                        <select
+                            name="category"
+                            value={form.category}
+                            onChange={handleChange}
+                            className="insert-event-input"
+                            required
+                        >
+                            <option value="" disabled>Seleccione una categoría</option>
+                            <option value="Danza">Danza</option>
+                            <option value="Musica">Música</option>
+                            <option value="Teatro">Teatro</option>
+                            <option value="Grados">Grados</option>
+                            <option value="Recorridos">Recorridos</option>
+                        </select>
+                    </label>
                     <button type="submit">Guardar Evento</button>
                 </form>
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { API_URL } from '../config.js';
 import './../styles/user-profile.css';
 
 export default function UserProfile() {
@@ -71,7 +72,7 @@ export default function UserProfile() {
         const fetchSessionUser = async () => {
             setLoading(true);
             try {
-                const res = await fetch('http://localhost:3000/', { credentials: 'include' });
+                const res = await fetch(`${API_URL}/session`, { credentials: 'include' });
                 const data = await res.json();
                 if (data.isAuthenticated && data.user) {
                     setUser(data.user);

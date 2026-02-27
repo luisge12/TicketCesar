@@ -59,10 +59,11 @@ export class BlogConnections {
 
   async insertArticle(articleData) {
     try {
+      const author = articleData.author || articleData.autor || '';
       const res = await pool.query(
         `INSERT INTO articles (id, title, excerpt, image, category, date, author, content)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-        [randomUUID(), articleData.title, articleData.excerpt, articleData.image, articleData.category, articleData.date, articleData.author, articleData.content]
+        [randomUUID(), articleData.title, articleData.excerpt, articleData.image, articleData.category, articleData.date, author, articleData.content]
       );
       return res.rows[0];
     } catch (error) {

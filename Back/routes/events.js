@@ -1,6 +1,6 @@
 import express from 'express';
 
-export default function createEventsRouter({ eventconnect }) {
+export default function createEventsRouter({ eventconnect, requireAdmin }) {
   const router = express.Router();
 
   router.get('/get-events', async (req, res) => {
@@ -13,7 +13,7 @@ export default function createEventsRouter({ eventconnect }) {
     }
   });
 
-  router.post('/create-event', async (req, res) => {
+  router.post('/create-event', requireAdmin, async (req, res) => {
     const eventData = req.body;
     try {
       const newEvent = await eventconnect.insertEvent(eventData);
@@ -57,7 +57,7 @@ export default function createEventsRouter({ eventconnect }) {
     }
     });
 
-    router.put('/update_seat_state', async (req, res) => {
+  router.put('/update_seat_state', requireAdmin, async (req, res) => {
       const { eventId, seatId, newState } = req.body;
         try {
             await eventconnect.updateSeatState(eventId, seatId, newState);

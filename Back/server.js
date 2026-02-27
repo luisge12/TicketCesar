@@ -3,16 +3,20 @@ import { PORT, HOST, JWT_SECRET } from './config.js';
 import { UserConnections } from './UserConnections.js';
 import { EventConnections } from './EventConnections.js';
 import { BlogConnections } from './BlogConnections.js';
+import { ReservationsConnections } from './ReservationsConnections.js';
 import createUserRouter from './routes/users.js';
 import createEventsRouter from './routes/events.js';
 import createBlogRouter from './routes/blog.js';
+import createReservationsRouter from './routes/reservations.js';
+import { requireAuth, requireAdmin } from './middleware/auth.js';
 import cors from 'cors';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 
 const userconnect = new UserConnections();
 const eventconnect = new EventConnections();
 const blogconnect = new BlogConnections();
+const reservationsConnect = new ReservationsConnections();
 
 const app = express();
 app.use(cors({
@@ -50,14 +54,13 @@ app.use((req, res, next) => {
 
 // Routers (grouped by request type) -- registered after app and middleware
 app.use('/', createUserRouter({ userconnect, jwt, JWT_SECRET }));
-app.use('/', createEventsRouter({ eventconnect }));
-app.use('/', createBlogRouter({ blogconnect }));
+app.use('/', createEventsRouter({ eventconnect, requireAdmin }));
+app.use('/', createBlogRouter({ blogconnect, requireAdmin }));
+app.use('/', createReservationsRouter({ reservationsConnect, requireAuth }));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor funcionando' });
 });
-
-// Event and blog routes moved to `routes/events.js` and `routes/blog.js`
 
 app.listen(PORT, HOST, () => {
   console.log(`Server running on ${HOST} ${PORT} `);

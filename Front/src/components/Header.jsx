@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 
+import { API_URL } from '../config.js';
 const BLOG_SECTIONS = ['Articulos', 'Reportajes', 'Critica', 'Entrevistas', 'Noticias'];
 import Modal from "react-modal";
 import './../styles/header.css';
@@ -50,7 +51,7 @@ export default function Header({  onLogout, inLoginAdmin }) {
   setCategoryEvents({});
 
   for (const category of categories) {
-    fetch(`http://localhost:3000/events/category/${category}`, {
+    fetch(`${API_URL}/events/category/${category}`, {
       credentials: 'include'
     })
       .then(response => response.json())
@@ -71,10 +72,9 @@ export default function Header({  onLogout, inLoginAdmin }) {
     useEffect(() => {
     setArticles([]);
     setLoadingArticles(true);
-    fetch('http://localhost:3000/get-articles', { credentials: 'include' })
+    fetch(`${API_URL}/get-articles`, { credentials: 'include' })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Fetched /articles response:', data);
         const arr = Array.isArray(data)
           ? data
           : Array.isArray(data?.articles)
@@ -87,11 +87,6 @@ export default function Header({  onLogout, inLoginAdmin }) {
       })
       .finally(() => setLoadingArticles(false));
   }, []);
-
-  // Log articles state when it changes so the user can inspect the array in console
-  useEffect(() => {
-    console.log('Articles state updated:', articles);
-  }, [articles]);
 
   // Group articles into sections defined by `blogSections`.
   const groupedArticles = useMemo(() => {

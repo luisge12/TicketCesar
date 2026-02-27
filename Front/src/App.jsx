@@ -13,6 +13,7 @@ import Blog from './pages/Blog';
 import BlogArticle from './pages/BlogArticle';
 import QuienesSomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
+import { API_URL } from './config.js';
 import './styles/app.css'
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
-                const response = await fetch('http://localhost:3000/', {
+                const response = await fetch(`${API_URL}/session`, {
                     method: 'GET',
                     credentials: 'include',
                 });

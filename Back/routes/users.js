@@ -87,7 +87,11 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
   });
 
   router.post('/logout', (req, res) => {
-    res.clearCookie('access_token', { httpOnly: true, sameSite: 'lax', secure: false });
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
     res.json({ message: 'Sesión cerrada correctamente' });
   });
 

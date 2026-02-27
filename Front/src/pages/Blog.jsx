@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import './../styles/blog.css';
 
 const BlogHome = () => {
@@ -23,7 +24,7 @@ const BlogHome = () => {
   // Cargar artículos desde el backend
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3000/get-articles')
+    fetch(`${API_URL}/get-articles`)
       .then(res => res.json())
       .then(data => {
           console.log('Artículos recibidos del backend:', data);
