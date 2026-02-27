@@ -190,7 +190,7 @@ useEffect(() => {
                                             ? formatDate(event.date_start)
                                             : `${formatDate(event.date_start)} - ${formatDate(event.date_end)}`}
                                         </p>
-                                    <p className="event-description">{event.description}</p>
+                                    <p className="event-description">{event.excerpt }</p>
                                     <p className="event-description">{event.category}</p>  
                                 </div>
                             )))}

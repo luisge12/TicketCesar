@@ -20,6 +20,9 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
       res.status(201).json(newEvent);
     } catch (error) {
       console.error('Error creating event:', error);
+      if (error.message === 'El excerpt debe tener máximo 240 caracteres') {
+        return res.status(400).json({ error: error.message });
+      }
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });

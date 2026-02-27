@@ -20,15 +20,30 @@ export class EventConnections {
 
     async insertEvent(event_data){
         const id = crypto.randomUUID();
+        const rawExcerpt = typeof event_data.excerpt === 'string'
+            ? event_data.excerpt.trim()
+            : '';
+
+        if (rawExcerpt && rawExcerpt.length > 240) {
+            throw new Error('El excerpt debe tener máximo 240 caracteres');
+        }
+
+        const excerpt = rawExcerpt
+            ? rawExcerpt
+            : (typeof event_data.description === 'string' && event_data.description.trim())
+                ? event_data.description.trim().slice(0, 240)
+                : null;
+
         const query = `
-        INSERT INTO event (id, name, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        INSERT INTO event (id, name, excerpt, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *
         `;
 
         const values = [
             id,
             event_data.name,
+            excerpt,
             event_data.description,
             event_data.date_start,
             null,

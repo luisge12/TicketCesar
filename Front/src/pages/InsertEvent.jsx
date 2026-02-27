@@ -46,6 +46,7 @@ export default function EventForm() {
         date_end: '',
         date_start: '',
         description: '',
+        excerpt: '',
         id: '',
         image: '',
         is_active: false,
@@ -57,10 +58,10 @@ export default function EventForm() {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setForm({
-            ...form,
+        setForm((prev) => ({
+            ...prev,
             [name]: type === 'checkbox' ? checked : value
-        });
+        }));
     };
 
     useEffect(() => {
@@ -123,14 +124,16 @@ export default function EventForm() {
             });
             if (response.ok) {
                 alert('Evento guardado correctamente');
-                setForm({
+                setForm((prev) => ({
+                    ...prev,
                     date_start: '',
+                    excerpt: '',
                     description: '',
                     image: '',
                     name: '',
                     ticket_price: '',
                     category: '',
-                });
+                }));
             } else {
                 alert('Error al guardar el evento');
             }
@@ -149,6 +152,18 @@ export default function EventForm() {
                     <label className="insert-event-label">
                         Nombre del evento
                         <input type="text" name="name" className="insert-event-input" value={form.name} onChange={handleChange} required />
+                    </label>
+                    <label className="insert-event-label">
+                        Extracto (resumen corto)
+                        <textarea
+                            name="excerpt"
+                            className="insert-event-input"
+                            value={form.excerpt}
+                            onChange={handleChange}
+                            required
+                            maxLength={240}
+                            placeholder="Máx. 240 caracteres"
+                        />
                     </label>
                     <label className="insert-event-label">
                         Descripción
