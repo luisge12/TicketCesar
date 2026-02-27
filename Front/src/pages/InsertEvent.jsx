@@ -4,9 +4,12 @@ import { API_URL } from '../config.js';
 import './../styles/insert-event.css'
 
 export default function EventForm() {
+    const MAX_EXCERPT_LENGTH = 140; // Límite de caracteres para el excerpt
+
     const [imagePreview, setImagePreview] = useState('');
     const IMGBB_API_KEY = 'ea4c603101243f497005da25b031c07f';
     const [imageUploading, setImageUploading] = useState(false);
+    
     // Subir imagen a ImgBB y guardar la URL en form.image
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -35,6 +38,7 @@ export default function EventForm() {
         }
         setImageUploading(false);
     };
+
     const location = useLocation();
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,10 +83,8 @@ export default function EventForm() {
                 
                 setIsAuthenticated(data.isAuthenticated);
                 
-                // Si está autenticado, guardar el rol del usuario
                 if (data.isAuthenticated && data.user) {
                     setUserRole(data.user.role);
-                    //console.log('Usuario autenticado con rol:', data.user.role);
                 } else {
                     setUserRole(null);
                 }
@@ -95,14 +97,12 @@ export default function EventForm() {
                 setLoading(false);
             }
         };
-        //console.log('Checking auth status...', userRole);
 
         checkAuthStatus();
-    }, [userRole]);
+    }, []); // Eliminada dependencia de userRole para evitar bucles
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
-            // not authenticated -> go to main page
             navigate('/');
             return;
         }
@@ -113,8 +113,14 @@ export default function EventForm() {
     }, [loading, userRole, isAuthenticated, navigate]);
 
     const handleSubmit = async (e) => {
-        //console.log('Submitting form:', form); // Para debug
         e.preventDefault();
+
+        // Validar longitud del excerpt
+        if (form.excerpt.length > MAX_EXCERPT_LENGTH) {
+            alert(`El extracto no puede exceder los ${MAX_EXCERPT_LENGTH} caracteres. Actualmente tiene ${form.excerpt.length}.`);
+            return;
+        }
+
         try {
             const response = await fetch(`${API_URL}/create-event`, {
                 method: 'POST',
@@ -142,7 +148,13 @@ export default function EventForm() {
         }
     };
 
-
+    // Determinar clase para el contador según la longitud
+    const getCounterClass = () => {
+        const len = form.excerpt.length;
+        if (len > MAX_EXCERPT_LENGTH) return 'counter-exceeded';
+        if (len >= MAX_EXCERPT_LENGTH - 20) return 'counter-warning'; // opcional
+        return '';
+    };
 
     return (
         <div className="mainpage-insert-event">
@@ -153,6 +165,7 @@ export default function EventForm() {
                         Nombre del evento
                         <input type="text" name="name" className="insert-event-input" value={form.name} onChange={handleChange} required />
                     </label>
+                    
                     <label className="insert-event-label">
                         Extracto (resumen corto)
                         <textarea
@@ -161,18 +174,27 @@ export default function EventForm() {
                             value={form.excerpt}
                             onChange={handleChange}
                             required
-                            maxLength={240}
-                            placeholder="Máx. 240 caracteres"
+                            maxLength={MAX_EXCERPT_LENGTH} // Limita la entrada a 140 caracteres
+                            placeholder={`Máx. ${MAX_EXCERPT_LENGTH} caracteres`}
                         />
+                        <div className={`excerpt-counter ${getCounterClass()}`}>
+                            {form.excerpt.length} / {MAX_EXCERPT_LENGTH} caracteres
+                            {form.excerpt.length > MAX_EXCERPT_LENGTH && (
+                                <span className="exceeded-message"> (excede el límite)</span>
+                            )}
+                        </div>
                     </label>
+
                     <label className="insert-event-label">
                         Descripción
                         <textarea name="description" className="insert-event-input" value={form.description} onChange={handleChange} required />
                     </label>
+
                     <label className="insert-event-label">
                         Fecha de inicio
                         <input type="date" name="date_start" className="insert-event-input" value={form.date_start} onChange={handleChange} required />
                     </label>
+
                     <label className="insert-event-label">
                         Imagen del evento
                         <input
@@ -191,10 +213,12 @@ export default function EventForm() {
                             </div>
                         )}
                     </label>
+
                     <label className="insert-event-label">
                         Precio de entrada
                         <input type="number" name="ticket_price" className="insert-event-input" value={form.ticket_price} onChange={handleChange} min="0" step="0.01" placeholder="0.00" />
                     </label>
+
                     <label className="insert-event-label">
                         Categoría
                         <select
@@ -212,6 +236,7 @@ export default function EventForm() {
                             <option value="Recorridos">Recorridos</option>
                         </select>
                     </label>
+
                     <button type="submit">Guardar Evento</button>
                 </form>
             </div>
