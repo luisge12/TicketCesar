@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../config.js';
 import '../styles/reserv-event.css';
+import PaymentModal from '../components/PaymentModal.jsx';
 
 const plateaRows = [
   { row: 'A', seats: 10 }, { row: 'C', seats: 11 }, { row: 'E', seats: 10 }, { row: 'G', seats: 10 },
@@ -24,22 +25,57 @@ export default function ReservEvent() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [seatStates, setSeatStates] = useState({});
+  const [userRole, setUserRole] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [adminTargetSeat, setAdminTargetSeat] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
 
   useEffect(() => {
+    fetch(`${API_URL}/session`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.isAuthenticated) {
+          setUserRole(data.user.role);
+        }
+      })
+      .catch(err => console.error(err));
+
     fetch(`${API_URL}/event/${id}`, {
       credentials: 'include'
     })
       .then(res => res.json())
       .then(data => setEvent(data))
       .catch(err => console.error(err));
+
+    fetch(`${API_URL}/get_state_seat/${id}`, {
+      credentials: 'include'
+    })
+      .then(res => res.json())
+      .then(data => {
+        const stateMap = {};
+        data.forEach(seat => {
+          stateMap[seat.seat_id] = seat.state;
+        });
+        setSeatStates(stateMap);
+      })
+      .catch(err => console.error(err));
   }, [id]);
 
   const handleSelect = (section, row, seat) => {
     const seatId = `${section}-${row}-${seat}`;
+    const state = seatStates[seatId] || 'available';
+
+    if (userRole?.toLowerCase() === 'admin') {
+      setAdminTargetSeat(seatId);
+      return;
+    }
+
+    if (state !== 'available') return;
+
     setSelectedSeats(prev =>
       prev.includes(seatId)
         ? prev.filter(s => s !== seatId)
@@ -47,15 +83,62 @@ export default function ReservEvent() {
     );
   };
 
+  const handleAdminUpdateState = (newState) => {
+    if (!adminTargetSeat) return;
+
+    fetch(`${API_URL}/update_seat_state`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventId: id,
+        seatId: adminTargetSeat,
+        newState
+      }),
+      credentials: 'include'
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert('Error actualizando estado: ' + data.error);
+        } else {
+          // Actualizar estado localmente
+          setSeatStates(prev => ({ ...prev, [adminTargetSeat]: newState }));
+          setAdminTargetSeat(null);
+        }
+      })
+      .catch(err => console.error(err));
+  };
+
   const handleReserve = () => {
-    alert(`Reservaste: ${selectedSeats.join(', ')}`);
-    // Aquí puedes hacer el fetch para guardar la reserva
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleReservationSuccess = () => {
+    setSelectedSeats([]);
+    // Reload event and seat states
+    fetch(`${API_URL}/event/${id}`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setEvent(data))
+      .catch(err => console.error(err));
+
+    fetch(`${API_URL}/get_state_seat/${id}`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        const stateMap = {};
+        data.forEach(seat => {
+          stateMap[seat.seat_id] = seat.state;
+        });
+        setSeatStates(stateMap);
+      })
+      .catch(err => console.error(err));
+
+    alert('¡Reserva realizada con éxito!');
   };
 
   if (!event) return <div>Cargando...</div>;
 
   return (
-    <div className="seat-reservation-container">
+    <div className={`seat-reservation-container ${userRole?.toLowerCase() === 'admin' ? 'admin-view' : ''}`}>
       <h2>{event.name}</h2>
       <p>{event.description}</p>
       {/* Palco */}
@@ -68,11 +151,15 @@ export default function ReservEvent() {
               {[...Array(seats)].map((_, i) => {
                 const seatNum = i + 1;
                 const seatId = `Palco-${row}-${seatNum}`;
+                const state = seatStates[seatId] || 'available';
+                const isSelected = selectedSeats.includes(seatId);
+
                 return (
                   <button
                     key={seatId}
-                    className={`seat-btn${selectedSeats.includes(seatId) ? ' selected' : ''}`}
+                    className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
                     onClick={() => handleSelect('Palco', row, seatNum)}
+                    disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                   >
                     {seatNum}
                   </button>
@@ -93,11 +180,15 @@ export default function ReservEvent() {
                 {[...Array(seats)].map((_, i) => {
                   const seatNum = i + 1;
                   const seatId = `Platea-${row}-${seatNum}`;
+                  const state = seatStates[seatId] || 'available';
+                  const isSelected = selectedSeats.includes(seatId);
+
                   return (
                     <button
                       key={seatId}
-                      className={`seat-btn${selectedSeats.includes(seatId) ? ' selected' : ''}`}
+                      className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
                       onClick={() => handleSelect('Platea', row, seatNum)}
+                      disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                     >
                       {seatNum}
                     </button>
@@ -113,11 +204,15 @@ export default function ReservEvent() {
                 {[...Array(seats)].map((_, i) => {
                   const seatNum = i + 1;
                   const seatId = `Platea-${row}-${seatNum}`;
+                  const state = seatStates[seatId] || 'available';
+                  const isSelected = selectedSeats.includes(seatId);
+
                   return (
                     <button
                       key={seatId}
-                      className={`seat-btn${selectedSeats.includes(seatId) ? ' selected' : ''}`}
+                      className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
                       onClick={() => handleSelect('Platea', row, seatNum)}
+                      disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                     >
                       {seatNum}
                     </button>
@@ -128,9 +223,34 @@ export default function ReservEvent() {
           </div>
         </div>
       </div>
-      <button className="reserve-btn" onClick={handleReserve} disabled={selectedSeats.length === 0}>
-        Reservar seleccionadas
-      </button>
+      {userRole?.toLowerCase() !== 'admin' && (
+        <button className="reserve-btn" onClick={handleReserve} disabled={selectedSeats.length === 0}>
+          Reservar
+        </button>
+      )}
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onRequestClose={() => setIsPaymentModalOpen(false)}
+        event={event}
+        selectedSeats={selectedSeats}
+        onReservationSuccess={handleReservationSuccess}
+      />
+
+      {/* Admin Quick Action Modal */}
+      {adminTargetSeat && (
+        <div className="admin-seat-modal-overlay">
+          <div className="admin-seat-modal">
+            <h4>Gestionar Asiento: {adminTargetSeat}</h4>
+            <div className="admin-actions">
+              <button onClick={() => handleAdminUpdateState('available')} className="btn-available">Disponible</button>
+              <button onClick={() => handleAdminUpdateState('reserved')} className="btn-reserved">Reservar</button>
+              <button onClick={() => handleAdminUpdateState('occupied')} className="btn-occupied">Ocupado</button>
+              <button onClick={() => setAdminTargetSeat(null)} className="btn-close">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

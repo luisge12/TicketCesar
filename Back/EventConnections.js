@@ -2,6 +2,20 @@ import crypto from 'crypto';
 import { Pool } from 'pg';
 import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } from './config.js';
 
+const PALCO_ROWS = [
+    { row: 'A', seats: 15 }, { row: 'B', seats: 15 }, { row: 'C', seats: 15 }, { row: 'D', seats: 15 },
+    { row: 'E', seats: 15 }, { row: 'F', seats: 15 }
+];
+
+const PLATEA_ROWS = [
+    { row: 'A', seats: 10 }, { row: 'C', seats: 11 }, { row: 'E', seats: 10 }, { row: 'G', seats: 10 },
+    { row: 'I', seats: 10 }, { row: 'K', seats: 10 }, { row: 'M', seats: 10 }, { row: 'Ñ', seats: 9 },
+    { row: 'P', seats: 10 }, { row: 'R', seats: 9 }, { row: 'T', seats: 10 },
+    { row: 'B', seats: 10 }, { row: 'D', seats: 11 }, { row: 'F', seats: 10 }, { row: 'H', seats: 10 },
+    { row: 'J', seats: 10 }, { row: 'L', seats: 10 }, { row: 'N', seats: 10 }, { row: 'O', seats: 9 },
+    { row: 'Q', seats: 10 }, { row: 'S', seats: 9 }, { row: 'U', seats: 10 }
+];
+
 
 export class EventConnections {
     constructor() {
@@ -57,7 +71,12 @@ export class EventConnections {
         ];
         try {
             const res = await this.pool.query(query, values);
-            return res.rows[0];
+            const newEvent = res.rows[0];
+
+            // Generate seats automatically for the new event
+            await this.generateSeatsForEvent(newEvent.id);
+
+            return newEvent;
         } catch (error) {
             console.error(error);
             if (error.code === '23505') {
@@ -131,6 +150,28 @@ export class EventConnections {
         } catch (error) {
             console.error('Error updating event:', error);
             throw error;
+        }
+    }
+
+    async generateSeatsForEvent(eventId) {
+        // Palco
+        for (const group of PALCO_ROWS) {
+            for (let i = 1; i <= group.seats; i++) {
+                await this.pool.query(
+                    'INSERT INTO event_seats (event_id, seat_id, state) VALUES ($1, $2, $3);',
+                    [eventId, `Palco-${group.row}-${i}`, 'available']
+                );
+            }
+        }
+
+        // Platea
+        for (const group of PLATEA_ROWS) {
+            for (let i = 1; i <= group.seats; i++) {
+                await this.pool.query(
+                    'INSERT INTO event_seats (event_id, seat_id, state) VALUES ($1, $2, $3);',
+                    [eventId, `Platea-${group.row}-${i}`, 'available']
+                );
+            }
         }
     }
 

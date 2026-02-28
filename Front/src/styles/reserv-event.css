@@ -1,10 +1,12 @@
 .seat-reservation-container {
-  max-width: 90vw; /* Más grande */
+  max-width: 90vw;
+  /* Más grande */
   margin: 2rem auto;
   background: var(--beige);
-  padding: 3rem;     /* Más espacio */
+  padding: 3rem;
+  /* Más espacio */
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .seat-section {
@@ -16,7 +18,7 @@ h3 {
   color: var(--black);
   margin-bottom: 0.5rem;
   text-align: center;
-  font-size: 1.5rem;  
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
@@ -48,19 +50,54 @@ h3 {
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background: #541014;
+  background: #ccc;
+  /* Default gray for unknown or fallback */
   color: var(--beige);
   border: none;
   border-radius: 6px;
   margin: 0 2px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+}
+
+.seat-btn.available {
+  background: #ff0000;
+  /* Rojo brillante para disponible */
+}
+
+.seat-btn.available:hover {
+  background: #cc0000;
+}
+
+.seat-btn.reserved {
+  background: #541014;
+  /* Vinotinto para reservado */
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.seat-btn.occupied {
+  background: var(--grey);
+  /* Gris para ocupado */
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.admin-view .seat-btn {
+  cursor: pointer !important;
+}
+
+.admin-view .seat-btn.reserved,
+.admin-view .seat-btn.occupied {
+  opacity: 1;
 }
 
 .seat-btn.selected {
-  background: #d82b2b;
+  background: #2e7d32 !important;
+  /* Verde para selección actual */
   color: var(--beige);
-  font-weight: bold;
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(46, 125, 50, 0.5);
 }
 
 .reserve-btn {
@@ -86,4 +123,74 @@ h3 {
   display: flex;
   gap: 2rem;
   justify-content: center;
+}
+
+/* Admin Modal Styles */
+.admin-seat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.admin-seat-modal {
+  background: var(--beige);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.admin-seat-modal h4 {
+  margin-bottom: 1.5rem;
+  font-family: var(--title);
+  color: var(--black);
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-actions button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.admin-actions button:hover {
+  opacity: 0.9;
+}
+
+.btn-available {
+  background: #ff0000;
+  color: #fff;
+}
+
+.btn-reserved {
+  background: #541014;
+  color: #fff;
+}
+
+.btn-occupied {
+  background: var(--grey);
+  color: var(--black);
+}
+
+.btn-close {
+  background: var(--black);
+  color: var(--beige);
+  margin-top: 0.5rem;
 }

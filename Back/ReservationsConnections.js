@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { EventConnections } from './EventConnections.js';
 
 
-export class ReservationsConnections{
+export class ReservationsConnections {
     constructor() {
         this.pool = new Pool({
             user: DB_USER,
@@ -28,12 +28,23 @@ export class ReservationsConnections{
         // Create reservation
         const reservationId = crypto.randomUUID();
         const buyId = crypto.randomUUID();
-        const insertQuery = `INSERT INTO reservations (id, event_id, seat_id, user_email, buy_id) VALUES ($1, $2, $3, $4, $5)`;
-        await this.pool.query(insertQuery, [reservationId, eventId, seatId, userEmail, buyId]);
+        const insertQuery = `INSERT INTO reservations ("id", "event_id", "seat_id", "user_email", "buy_id") VALUES ($1, $2, $3, $4, $5)`;
+        const values = [reservationId, eventId, seatId, userEmail, buyId];
+
+        console.log('Executing reservation insert:');
+        console.log('Query:', insertQuery);
+        console.log('Values:', values);
+
+        try {
+            await this.pool.query(insertQuery, values);
+        } catch (error) {
+            console.error('Database error in makeReservation:', error);
+            throw error;
+        }
         // Update seat state to 'reserved'
         await this.eventConnections.updateSeatState(eventId, seatId, 'reserved');
         return { reservationId, buyId };
     }
 
-    
+
 }
