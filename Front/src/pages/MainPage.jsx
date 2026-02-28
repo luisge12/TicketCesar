@@ -134,11 +134,11 @@ export default function MainPage() {
 
     return (
         <div className="mainpage-div">
+            <div className="slider-text-overlay1">
+                <h1>Ticket Cesar</h1>
+            </div>
             <div className='mainpage-container'>
                 <div className='image-slider' style={{ overflow: 'hidden', width: '100%', height: '100%', position: 'relative' }}>
-                    <div className="slider-text-overlay1">
-                        <h1>Ticket Cesar</h1>
-                    </div>
                     <div className="slider-text-overlay2">
                         <h1>A Mérida lo que es del Cesar</h1>
                     </div>
