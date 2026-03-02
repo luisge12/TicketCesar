@@ -7,6 +7,109 @@
   /* Más espacio */
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.event-hero {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2.5rem;
+  border-bottom: 2px solid var(--black);
+  padding-bottom: 2.5rem;
+  margin-bottom: 1rem;
+  align-items: start;
+}
+
+.event-image-container {
+  background-color: transparent;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.event-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.event-image:hover {
+  transform: scale(1.02);
+}
+
+.event-info-container {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--black);
+}
+
+.event-title {
+  font-family: var(--title);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--black);
+  text-transform: uppercase;
+}
+
+.event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  font-family: var(--subtitle);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.event-description {
+  grid-column: 1 / span 2;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  margin: 1.5rem 0 0 0;
+  color: #333;
+  font-family: var(--text);
+}
+
+@media (max-width: 1024px) {
+  .event-hero {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .event-info-container,
+  .event-image-container,
+  .event-description {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .event-image-container {
+    max-width: 100%;
+    order: -1;
+    /* Image first on mobile */
+  }
+
+  .event-title {
+    font-size: 2.25rem;
+  }
 }
 
 .seat-section {
@@ -70,14 +173,14 @@ h3 {
 }
 
 .seat-btn.reserved {
-  background: #541014;
+  background: var(--grey) !important;
   /* Vinotinto para reservado */
   cursor: not-allowed;
   opacity: 0.8;
 }
 
 .seat-btn.occupied {
-  background: var(--grey);
+  background: #272757 !important;
   /* Gris para ocupado */
   cursor: not-allowed;
   opacity: 0.8;
@@ -93,7 +196,7 @@ h3 {
 }
 
 .seat-btn.selected {
-  background: #2e7d32 !important;
+  background: #800020 !important;
   /* Verde para selección actual */
   color: var(--beige);
   transform: scale(1.1);
@@ -101,6 +204,7 @@ h3 {
 }
 
 .reserve-btn {
+  width: 10rem;
   margin-top: 2rem;
   padding: 0.75rem 2rem;
   background: var(--black);
@@ -180,13 +284,13 @@ h3 {
 }
 
 .btn-reserved {
-  background: #541014;
+  background: #545454;
   color: #fff;
 }
 
 .btn-occupied {
-  background: var(--grey);
-  color: var(--black);
+  background: #272757;
+  color: #fff;
 }
 
 .btn-close {

@@ -186,6 +186,7 @@ html {
     margin-bottom: 1rem;
     color: var(--beige);
     text-shadow: 0 2px 8px #000;
+    font-family: var(--title);
 }
 
 @media (max-width: 768px) {
@@ -272,31 +273,48 @@ html {
 }
 
 .event-image {
-    width: 100%;
-    height: 19vw;
+    width: 20vw;
+    height: 19vw !important;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 0.5rem;
 }
 
 .event-title {
-    font-size: 1.2rem;
+    font-size: 2rem !important;
     font-weight: bold;
     margin: 0.5rem 0 0.25rem 0;
-    color: var(--beige);
+    color: var(--beige) !important;
+    font-family: var(--subtitle);
+}
+.event-title_ {
+    font-size: 3rem !important;
+    font-weight: bold;
+    margin: 0.5rem 0 0.25rem 0;
+    color: var(--black) !important;
+    font-family: var(--title);
 }
 
 .event-date {
     font-size: 1rem;
     color: var(--beige);
-    margin-bottom: 0.5rem;
+    font-family: var(--text);
 }
 
 .event-description {
     font-size: 0.95rem;
-    color: var(--beige);
+    color: var(--beige) !important;
     margin-bottom: 1rem;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
+    font-family: var(--text);
+}
+
+.event-description_{
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+    font-family: var(--text);
+    color: var(--black);
 }
 
 .event-category {
@@ -312,6 +330,7 @@ html {
     border: 1px solid rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: var(--subtitle);
 }
 
 .edit-event-btn {
@@ -329,6 +348,7 @@ html {
     width: 80%;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: var(--subtitle);
 }
 
 .edit-event-btn:hover {

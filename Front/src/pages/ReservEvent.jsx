@@ -135,12 +135,51 @@ export default function ReservEvent() {
     alert('¡Reserva realizada con éxito!');
   };
 
-  if (!event) return <div>Cargando...</div>;
+  const formatTime12h = (timeStr) => {
+    if (!timeStr) return 'Hora no disponible';
+    try {
+      const [hours, minutes] = timeStr.split(':');
+      let h = parseInt(hours, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      h = h ? h : 12; // la hora '0' debe ser '12'
+      return `${h}:${minutes} ${ampm}`;
+    } catch (e) {
+      return timeStr;
+    }
+  };
+
+  if (!event) return <div className="loading-container">Cargando...</div>;
 
   return (
     <div className={`seat-reservation-container ${userRole?.toLowerCase() === 'admin' ? 'admin-view' : ''}`}>
-      <h2>{event.name}</h2>
-      <p>{event.description}</p>
+      <div className="event-hero">
+        <div className="event-info-container">
+          <h1 className="event-title_">{event.name}</h1>
+          <div className="event-meta">
+            <div className="meta-item">
+              📅 {event.date_start ? new Date(event.date_start).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
+            </div>
+            <div className="meta-item">
+              ⏰ {formatTime12h(event.hour)}
+            </div>
+            <div className="meta-item">
+              🏷️ {event.category || 'Sin categoría'}
+            </div>
+            <div className="meta-item">
+              🎟️ ${event.ticket_price || '0.00'}
+            </div>
+          </div>
+        </div>
+        <div className="event-image-container">
+          <img
+            src={event.image || 'https://via.placeholder.com/500x300?text=No+Image'}
+            alt={event.name}
+            className="event-image"
+          />
+        </div>
+        <p className="event-description_">{event.description}</p>
+      </div>
       {/* Palco */}
       <div className="seat-section">
         <h3>Palco</h3>
@@ -225,7 +264,7 @@ export default function ReservEvent() {
       </div>
       {userRole?.toLowerCase() !== 'admin' && (
         <button className="reserve-btn" onClick={handleReserve} disabled={selectedSeats.length === 0}>
-          Reservar
+          Comprar
         </button>
       )}
 
@@ -244,8 +283,8 @@ export default function ReservEvent() {
             <h4>Gestionar Asiento: {adminTargetSeat}</h4>
             <div className="admin-actions">
               <button onClick={() => handleAdminUpdateState('available')} className="btn-available">Disponible</button>
-              <button onClick={() => handleAdminUpdateState('reserved')} className="btn-reserved">Reservar</button>
-              <button onClick={() => handleAdminUpdateState('occupied')} className="btn-occupied">Ocupado</button>
+              <button onClick={() => handleAdminUpdateState('reserved')} className="btn-reserved">Vendido</button>
+              <button onClick={() => handleAdminUpdateState('occupied')} className="btn-occupied">Reserva interna</button>
               <button onClick={() => setAdminTargetSeat(null)} className="btn-close">Cancelar</button>
             </div>
           </div>

@@ -140,7 +140,7 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
                         Iniciar Sesión
                     </button>
                     <div style={{ textAlign: 'center', margin: '0.5rem 0' }}>
-                        <a href="/forgot-password" style={{ color: 'var(--beige)', textDecoration: 'underline', fontSize: '0.9rem' }}>
+                        <a href="/forgot-password" style={{ color: 'black', textDecoration: 'underline', fontSize: '0.9rem' }}>
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>

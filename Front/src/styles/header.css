@@ -4,22 +4,22 @@
 
 .modal-main {
   position: fixed;
-  top: 4rem; 
-  right: 1rem; 
-  width: 18rem; 
-  height: 24rem; 
-  background-color: var(--beige); 
-  border-radius: 0.375rem; 
-  outline: none; 
+  top: 4rem;
+  right: 1rem;
+  width: 18rem;
+  height: 24rem;
+  background-color: var(--beige);
+  border-radius: 0.375rem;
+  outline: none;
   z-index: 60;
   padding: 2.5rem;
 }
 
 .form-modal-container {
-  width: 12rem;   
-  display: flex;     
+  width: 12rem;
+  display: flex;
   flex-direction: column;
-  gap: 0.5rem;     
+  gap: 0.5rem;
 
 
 }
@@ -30,24 +30,25 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.7); 
+  background-color: rgba(0, 0, 0, 0.7);
   z-index: 50;
 }
 
 .modal-labels {
   color: #000000;
   font-size: 1rem;
+  font-family: var(--subtitle);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  align-items: flex-start; 
+  align-items: flex-start;
 }
 
-.modal-input{
+.modal-input {
   width: 12rem;
   height: 2rem;
-  outline: none; 
-  border-color: #000; 
+  outline: none;
+  border-color: #000;
   background-color: transparent;
 }
 
@@ -59,20 +60,21 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #000;
 }
 
-.modal-labels input:focus{
+.modal-labels input:focus {
   background-color: var(--beige);
 }
 
 .modal-buttons {
   font-size: 1rem;
+  font-family: var(--subtitle);
   background-color: transparent;
-  border: 1px solid var(--black); 
+  border: 1px solid var(--black);
   border-radius: 9999px;
   padding: 0.5rem 2rem;
 }
 
 
-.modal-buttons:hover{
+.modal-buttons:hover {
   background-color: var(--black);
   color: white;
 }
@@ -98,7 +100,7 @@ input:-webkit-autofill:active {
   background-color: var(--black);
   color: white;
   z-index: 50;
-  top: 0; 
+  top: 0;
   justify-content: space-between;
   display: flex;
   padding: 0 1rem;
@@ -110,7 +112,7 @@ input:-webkit-autofill:active {
     height: 2.5rem;
     padding: 0 0.25rem;
   }
-  
+
 }
 
 .hidden-header {
@@ -126,42 +128,49 @@ input:-webkit-autofill:active {
 .div-right {
   display: flex;
   align-items: center;
-  gap: 0.25rem; /* space-x-4 */
+  gap: 0.25rem;
+  /* space-x-4 */
   padding: 0rem;
   margin: 0rem;
 }
 
 @media (max-width: 768px) {
   .div-right {
-    gap: 0.2rem; /* space-x-4 */
+    gap: 0.2rem;
+    /* space-x-4 */
   }
-  
+
 }
 
 .nav-buttons-cont {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 
-.first-hover{
+.first-hover {
   position: relative;
-  
+
 }
 
 .nav-buttons {
-  font-size: 0.75rem; /* text-xs */
-  margin-top: 0.25rem; /* mt-1 */
+  font-size: 0.75rem;
+  /* text-xs */
+  margin-top: 0.25rem;
+  /* mt-1 */
+  font-family: var(--text);
 }
 
 @media (max-width: 768px) {
   .nav-buttons {
-    font-size: 0.1rem; /* text-xs */
-    margin-top: 0rem; /* mt-1 */
+    font-size: 0.1rem;
+    /* text-xs */
+    margin-top: 0rem;
+    /* mt-1 */
   }
-  
+
 }
 
 
@@ -177,17 +186,18 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
   .first-menu {
-    font-size: 0.5rem; /* text-xs */
+    font-size: 0.5rem;
+    /* text-xs */
     padding: 0.25rem;
   }
-  
+
 }
 
-.first-menu:hover{
+.first-menu:hover {
   background-color: var(--grey);
 }
 
-.first-menu > ul {
+.first-menu>ul {
   display: none;
   position: absolute;
   top: 100%;
@@ -200,7 +210,7 @@ input:-webkit-autofill:active {
   margin: 0;
 }
 
-.first-menu:hover > ul {
+.first-menu:hover>ul {
   display: block;
 }
 
@@ -213,97 +223,98 @@ input:-webkit-autofill:active {
 }
 
 .nav-searcher {
-  width: 3rem; 
+  width: 3rem;
   height: 1.5rem;
   background-color: transparent !important;
-  border: 1px solid var(--grey); 
-  border-radius: 9999px; 
-  padding: 0.25rem 1rem; 
-  color: white; 
+  border: 1px solid var(--grey);
+  border-radius: 9999px;
+  padding: 0.25rem 1rem;
+  color: white;
 }
 
 .nav-searcher::placeholder {
-  color: var(--grey); 
+  color: var(--grey);
 }
 
 .nav-searcher:focus {
-  outline: 0; 
-  box-shadow: 0 0 0 2px var(--beige); 
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--beige);
 }
 
 .navigation-button {
-  margin-right: 0; 
+  margin-right: 0;
   margin-top: 0.25rem;
-  padding: 0.25rem; 
-  border-radius: 0.25rem; 
-  transition: background-color 300ms ease-in-out; 
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 300ms ease-in-out;
   cursor: pointer;
 }
 
 .navigation-button:hover {
-  background-color: #4b5563; 
+  background-color: #4b5563;
 }
 
 .logo-button {
   margin: 0rem 0rem;
-  padding: 0rem; 
-  border-radius: 0.25rem; 
+  padding: 0rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   align-items: center;
-  transition: background-color 300ms ease-in-out; 
+  transition: background-color 300ms ease-in-out;
 }
 
 @media (max-width: 768px) {
   .logo-button {
     margin: 0.25rem 0rem;
-    padding: 0rem; 
+    padding: 0rem;
   }
-  
+
 }
 
 .logo-button:hover {
-  background-color: var(--grey); /* hover:bg-gray-600 */
+  background-color: var(--grey);
+  /* hover:bg-gray-600 */
 }
 
 .logo-img {
-  height: 2.5rem; 
-  width: 2.5rem; 
+  height: 2.5rem;
+  width: 2.5rem;
 }
 
 @media (max-width: 768px) {
   .logo-img {
-    height: 1.5rem; 
-    width: 1.5rem; 
+    height: 1.5rem;
+    width: 1.5rem;
   }
-  
+
 }
 
 .user-button {
   width: 2rem;
   height: 2rem;
   margin: 0rem 0rem;
-  
-  padding: 0rem; 
-  border-radius: 0.25rem; 
+
+  padding: 0rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   align-items: center;
-  transition: background-color 300ms ease-in-out; 
+  transition: background-color 300ms ease-in-out;
 }
 
 .user-img {
-  height: 2rem; 
-  width: 2rem; 
-  border-radius: 9999px; 
+  height: 2rem;
+  width: 2rem;
+  border-radius: 9999px;
   padding: 0;
-  margin: 0rem; 
+  margin: 0rem;
 }
 
 @media (max-width: 768px) {
   .user-img {
-    height: 1.5rem; 
-    width: 1.5rem; 
+    height: 1.5rem;
+    width: 1.5rem;
   }
-  
+
 }
 
 /* Base styles for the menu container */
@@ -336,7 +347,7 @@ input:-webkit-autofill:active {
 }
 
 /* Position the second-level sub-menu to expand to the right */
-.second-menu > ul {
+.second-menu>ul {
   top: 0;
   left: 100%;
 }
@@ -350,12 +361,11 @@ input:-webkit-autofill:active {
   justify-content: center;
 }
 
-.second-menu li:hover{
+.second-menu li:hover {
   background-color: var(--grey);
 }
 
 /* Show any sub-menu on hover */
-.nav-buttons-cont li:hover > ul {
+.nav-buttons-cont li:hover>ul {
   display: block;
 }
-
