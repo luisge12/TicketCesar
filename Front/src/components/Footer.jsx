@@ -17,7 +17,7 @@ export default function Footer() {
                         <img src="src/assets/TCR_H.png" className="logo-h-foot" alt="Logo" />
                     </button>
                     <p>
-                        Texto de introduccion del teatro que va a llevar varias lineas de texto probablemente
+                        Un escenario con más de dos siglos de historia. Descubre su cartelera y visítanos.
                     </p>
                 </div>
 
@@ -27,6 +27,7 @@ export default function Footer() {
                     <ul className="leftMenu">
                         <li className="item-lista-derecha"><button onClick={() => navigate('/quienes-somos')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Quienes somos</button></li>
                         <li className="item-lista-derecha"><a /*onClick={() => navigate('/direccion')}*/ className="link-name">Equipo</a></li>
+                        <li className="item-lista-derecha"><a /*onClick={() => navigate('/direccion')}*/ className="link-name">Programación</a></li>
                     </ul>
                 </div>
                 {/* Lista derecha */}
@@ -49,7 +50,7 @@ export default function Footer() {
 
             {/* Copyright centrado */}
             <div className="foot-text">
-                <p className="m-3">© 2025 TicketCesar | All rights reserved.</p>
+                <p className="m-3">© 2025 TicketCésar | All rights reserved.</p>
 
             </div>
         </footer>

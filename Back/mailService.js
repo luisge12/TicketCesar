@@ -24,9 +24,9 @@ export const sendVerificationEmail = async (to, token) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to,
-        subject: 'Verifica tu correo electrónico - Ticket Cesar',
+        subject: 'Verifica tu correo electrónico - Ticket César',
         html: `
-      <h1>¡Bienvenido a Ticket Cesar!</h1>
+      <h1>¡Bienvenido a Ticket César!</h1>
       <p>Gracias por registrarte. Para completar tu registro y poder iniciar sesión, por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:</p>
       <a href="${verificationUrl}" style="display:inline-block;padding:10px 20px;background-color:#000;color:#ddc092;text-decoration:none;border-radius:5px;">Verificar mi correo</a>
       <p>O copia y pega este enlace en tu navegador:</p>
@@ -55,7 +55,7 @@ export const sendPasswordResetEmail = async (to, token) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to,
-        subject: 'Recuperación de contraseña - Ticket Cesar',
+        subject: 'Recuperación de contraseña - Ticket César',
         html: `
       <h1>Recuperación de contraseña</h1>
       <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para crear una nueva:</p>

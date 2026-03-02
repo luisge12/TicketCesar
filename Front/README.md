@@ -1,5 +1,5 @@
 # Ticket-Cesar
-This project is the main webpage of theater Cesar Rengifo 
+This project is the main webpage of theater César Rengifo 
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

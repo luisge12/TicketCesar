@@ -207,9 +207,40 @@ useEffect(() => {
                 </li>
               </ul>
             </li>
+            
+            
+            <li
+              className="first-menu"
+              onClick={() => {
+                const scrollToProximos = () => {
+                  const section = document.getElementById("proximos-espectaculos");
+                  if (section) {
+                    const y = section.getBoundingClientRect().top + window.scrollY ;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }
+                };
+
+                if (window.location.pathname !== "/") {
+                  navigate("/", { replace: false });
+                  setTimeout(scrollToProximos, 300);
+                } else {
+                  scrollToProximos();
+                }
+              }}
+            >
+              Adquirir entradas
+            </li>
+            <li className="first-menu">
+              Alquiler
+            </li>
+            {/* For shop*/}
+            <li className="first-menu">
+              Kiosco César
+            </li>
             <li className="first-menu" onClick={() => navigate('/visitanos')} style={{ cursor: 'pointer' }}>
               Visitanos
             </li>
+            
             <li className="first-menu">
               <button className="menu-link" onClick={() => navigate('/blog')} style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}>
                 Blog
@@ -239,35 +270,8 @@ useEffect(() => {
                 ))}
               </ul>
             </li>
-            <li
-              className="first-menu"
-              onClick={() => {
-                const scrollToProximos = () => {
-                  const section = document.getElementById("proximos-espectaculos");
-                  if (section) {
-                    const y = section.getBoundingClientRect().top + window.scrollY ;
-                    window.scrollTo({ top: y, behavior: "smooth" });
-                  }
-                };
-
-                if (window.location.pathname !== "/") {
-                  navigate("/", { replace: false });
-                  setTimeout(scrollToProximos, 300);
-                } else {
-                  scrollToProximos();
-                }
-              }}
-            >
-              Comprar Entradas
-            </li>
-            <li className="first-menu">
-              Alquiler
-            </li>
-            {/* For shop
-            <li className="first-menu">
-              Tienda
-            </li>
-            */}
+            
+            
 
           </ul>
         </div>
