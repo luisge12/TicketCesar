@@ -24,9 +24,14 @@ export default function Visitanos() {
         <p>
           El Teatro César es un espacio dedicado a la difusión de las artes escénicas: música, danza, teatro y actividades culturales. Contamos con programación variada durante todo el año, ciclos de formación y espacios para muestras locales.
         </p>
+        
+      </section>
+      <section>
+        <h2>Conoce el César</h2>
         <p>
-          Horario de atención: Lunes a Viernes 10:00 - 18:00. Taquilla abierta 2 horas antes de cada función.
+          Recorrido patrimonial por el teatro, su historia, arquitectura y su importancia en la cultura de Mérida. Descubre los espacios que lo componen, desde el escenario hasta los camerinos.
         </p>
+        
       </section>
 
       <section>
@@ -54,7 +59,7 @@ export default function Visitanos() {
             referrerPolicy="no-referrer-when-downgrade"
           />
         </div>
-        <p><strong>Ubicación:</strong> Teatro César Rengifo — coordenadas 8.597837825828972, -71.14532011966672</p>
+        
       </section>
 
       

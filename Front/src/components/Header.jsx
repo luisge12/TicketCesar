@@ -143,7 +143,7 @@ useEffect(() => {
         <div className="">
           <ul className="nav-buttons-cont">
             <li className="first-menu">
-              Espectaculos 
+              Espectáculos 
               <ul>
                 <li className="second-menu">
                   Danza
@@ -238,7 +238,7 @@ useEffect(() => {
               Kiosco César
             </li>
             <li className="first-menu" onClick={() => navigate('/visitanos')} style={{ cursor: 'pointer' }}>
-              Visitanos
+              Visítanos
             </li>
             
             <li className="first-menu">
