@@ -17,6 +17,7 @@ import ResetPassword from './pages/ResetPassword';
 import BlogArticle from './pages/BlogArticle';
 import QuienesSomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
+import Equipo from './pages/Equipo';
 import { API_URL } from './config.js';
 import './styles/app.css'
 
@@ -104,6 +105,7 @@ export default function App() {
                         <Route path="/blog/:id" element={<BlogArticle />} />
                         <Route path="/quienes-somos" element={<QuienesSomos />} />
                         <Route path="/visitanos" element={<Visitanos />} />
+                        <Route path="/equipo" element={<Equipo />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>

@@ -1,0 +1,116 @@
+/* Styles for Equipo page */
+
+.equipo-page {
+  width: 90vw;
+  padding: 2rem;
+  margin: 3rem auto;
+  min-height: 100vh;
+  background-color: var(--beige);
+  color: var(--black);
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.equipo-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: var(--black);
+}
+
+.equipo-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--black);
+  margin-bottom: 2.5rem;
+  opacity: 0.8;
+}
+
+.equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.equipo-card {
+  background: white;
+  border: 1px solid var(--grey);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.equipo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.equipo-card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: var(--grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.equipo-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.equipo-card-content {
+  padding: 1.5rem;
+}
+
+.equipo-nombre {
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--black);
+}
+
+.equipo-rol {
+  display: inline-block;
+  background: var(--grey);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.equipo-descripcion {
+  color: var(--black);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .equipo-page {
+    padding: 1.5rem;
+    margin: 2rem 1rem;
+  }
+
+  .equipo-title {
+    font-size: 2rem;
+  }
+
+  .equipo-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .equipo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

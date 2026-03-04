@@ -25,8 +25,8 @@ export default function Footer() {
                 <div className="colum">
                     <h2 className="titulo-con-linea">Menú</h2>
                     <ul className="leftMenu">
-                        <li className="item-lista-derecha"><button onClick={() => navigate('/quienes-somos')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Quienes somos</button></li>
-                        <li className="item-lista-derecha"><a /*onClick={() => navigate('/direccion')}*/ className="link-name">Equipo</a></li>
+                        <li className="item-lista-derecha"><button onClick={() => navigate('/quienes-somos')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Quiénes somos</button></li>
+                        <li className="item-lista-derecha"><button onClick={() => navigate('/equipo')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Equipo</button></li>
                         <li className="item-lista-derecha"><a /*onClick={() => navigate('/direccion')}*/ className="link-name">Programación</a></li>
                     </ul>
                 </div>
