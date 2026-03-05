@@ -79,7 +79,7 @@
   border-radius: 8px;
 }
 
-.event-description {
+.reserv_event-description {
   grid-column: 1 / span 2;
   font-size: 1.15rem;
   line-height: 1.6;
@@ -96,7 +96,7 @@
 
   .event-info-container,
   .event-image-container,
-  .event-description {
+  .reserv_event-description {
     grid-column: 1;
     grid-row: auto;
   }
@@ -161,6 +161,10 @@ h3 {
   margin: 0 2px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.seat-btn.disabled{
+  background-color: var(--grey);
 }
 
 .seat-btn.available {

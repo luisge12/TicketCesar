@@ -18,12 +18,12 @@ import BlogArticle from './pages/BlogArticle';
 import QuienesSomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
 import Equipo from './pages/Equipo';
+import Alquiler from './pages/Alquiler';
 import { API_URL } from './config.js';
 import './styles/app.css'
 
 export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -37,8 +37,6 @@ export default function App() {
                 });
                 const data = await response.json();
 
-                setIsAuthenticated(data.isAuthenticated);
-
                 // Si está autenticado, guardar el rol del usuario
                 if (data.isAuthenticated && data.user) {
                     setUserRole(data.user.role);
@@ -49,7 +47,6 @@ export default function App() {
 
             } catch (error) {
                 console.error('Error verificando autenticación:', error);
-                setIsAuthenticated(false);
                 setUserRole(null);
             } finally {
                 setIsLoading(false);
@@ -64,12 +61,10 @@ export default function App() {
     };
 
     const onLogout = () => {
-        setIsAuthenticated(false);
         setUserRole(null);
     };
 
     const inLoginAdmin = () => {
-        setIsAuthenticated(true);
         setUserRole('admin');
     }
 
@@ -105,7 +100,8 @@ export default function App() {
                         <Route path="/blog/:id" element={<BlogArticle />} />
                         <Route path="/quienes-somos" element={<QuienesSomos />} />
                         <Route path="/visitanos" element={<Visitanos />} />
-                        <Route path="/equipo" element={<Equipo />} />
+<Route path="/equipo" element={<Equipo />} />
+                        <Route path="/alquiler" element={<Alquiler />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>

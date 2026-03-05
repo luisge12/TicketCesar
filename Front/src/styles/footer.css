@@ -35,7 +35,7 @@
 
 .colum p{
   font-family: var(--text);
-  font-size: 1rem;
+  font-size: 1.25rem;
   margin: 0;
   padding: 0;
 }
@@ -49,7 +49,7 @@
 
 .logo-h-foot{
   display: flex;
-  width: 8rem;
+  width: 9rem;
 }
 
 .logo-foot {
@@ -64,12 +64,15 @@
   cursor: pointer; 
 }
 
-
+.colum h2{
+  font-size: 20px;
+}
 .titulo-con-linea {
+  font-size: 26 !important; /* Tamaño del texto */
   font-family: var(--subtitle);
   display: flex;
   color: white; /* Color del texto */
-  font-size: 16px; /* Tamaño del texto */
+  font-size: 26 !important; /* Tamaño del texto */
   font-weight: bold; /* Grosor del texto */
   padding-bottom: 2px; /* Espacio entre el texto y la línea */
   margin: 2rem 10rem 1rem 0rem;
@@ -109,7 +112,8 @@
 }
 
 .link-name {
-  font-size: 16px;
+  font-family: var(--text);
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {

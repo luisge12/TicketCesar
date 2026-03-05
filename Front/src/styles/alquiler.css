@@ -1,0 +1,187 @@
+/* Alquiler page styles — palette: var(--grey), var(--beige), var(--black), white */
+
+.alquiler-page {
+  width: 90vw;
+  padding: 2rem !important;
+  border-radius: 0.5rem;
+  margin: 3rem;
+  min-height: 100vh;
+  background-color: var(--beige);
+  color: var(--black);
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.alquiler-page h1 {
+  font-size: 2rem;
+  margin: 0 0 1.5rem 0;
+  color: var(--black);
+  text-align: center;
+}
+
+.alquiler-page h2 {
+  font-size: 1.25rem;
+  margin: 10px 0 8px 0;
+  color: var(--black);
+  border-left: 6px solid var(--beige);
+  padding-left: 10px;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 6%, rgba(0,0,0,0.01) 100%);
+}
+
+.alquiler-page h3 {
+  font-size: 1.1rem;
+  margin: 15px 0 10px 0;
+  color: var(--black);
+  border-bottom: 2px solid var(--grey);
+  padding-bottom: 5px;
+}
+
+/* Submission container styles */
+.submission-container {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--grey);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--black);
+  text-align: center;
+}
+
+.sub-title {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--grey);
+  text-align: center;
+  border: none;
+  background: none;
+}
+
+.info-section,
+.deadline-section {
+  margin-bottom: 24px;
+}
+
+.info-section p,
+.deadline-section p {
+  color: var(--grey);
+  line-height: 1.6;
+  margin: 12px 0;
+}
+
+.data-list,
+.deadline-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.data-list li,
+.deadline-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  color: var(--grey);
+  line-height: 1.5;
+}
+
+.data-list li:last-child,
+.deadline-list li:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: bold;
+  color: var(--black);
+}
+
+.quarter {
+  font-weight: bold;
+  color: var(--black);
+}
+
+.format-note {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--beige);
+  border-radius: 4px;
+  color: var(--black);
+}
+
+/* Contact section */
+.contact-section {
+  margin-top: 24px;
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--grey);
+}
+
+.contact-section h3 {
+  font-size: 1.1rem;
+  margin: 15px 0 10px 0;
+  color: var(--black);
+  border-bottom: 2px solid var(--grey);
+  padding-bottom: 5px;
+}
+
+.contact-section p {
+  color: var(--grey);
+  line-height: 1.6;
+  margin: 12px 0;
+}
+
+.contact-email {
+  font-size: 1rem;
+  padding: 12px;
+  background: var(--beige);
+  border-radius: 4px;
+  color: var(--black);
+  text-align: center;
+}
+
+/* Navigation buttons */
+.blog-nav-btn {
+  background: transparent;
+  border: 1px solid var(--grey);
+  color: var(--grey);
+  padding: 8px 16px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.blog-nav-btn:hover {
+  background: var(--grey);
+  color: white;
+}
+
+.blog-nav-btn.active {
+  background: var(--black);
+  border-color: var(--black);
+  color: white;
+}
+
+@media (min-width: 900px) {
+  .alquiler-page {
+    padding: 48px;
+  }
+  
+  .submission-container {
+    padding: 40px;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+  }
+  
+  .sub-title {
+    font-size: 1.5rem;
+  }
+}
+

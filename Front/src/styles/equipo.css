@@ -35,12 +35,12 @@
 }
 
 .equipo-card {
-  background: white;
-  border: 1px solid var(--grey);
+  background: var(--black);
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: aliceblue;
 }
 
 .equipo-card:hover {
@@ -50,7 +50,7 @@
 
 .equipo-card-image {
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--grey);
   display: flex;
@@ -72,7 +72,7 @@
 .equipo-nombre {
   font-size: 1.2rem;
   margin: 0 0 0.5rem 0;
-  color: var(--black);
+  color: white;
 }
 
 .equipo-rol {
@@ -87,7 +87,7 @@
 }
 
 .equipo-descripcion {
-  color: var(--black);
+  color: white;
   line-height: 1.5;
   font-size: 0.85rem;
   margin: 0;

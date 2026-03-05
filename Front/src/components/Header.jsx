@@ -230,7 +230,7 @@ useEffect(() => {
             >
               Adquirir entradas
             </li>
-            <li className="first-menu">
+            <li className="first-menu" onClick={() => navigate('/alquiler')} style={{ cursor: 'pointer' }}>
               Alquiler
             </li>
             {/* For shop*/}

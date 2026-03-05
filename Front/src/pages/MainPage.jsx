@@ -219,7 +219,7 @@ export default function MainPage() {
                                     <p className="event-date">
                                         {formatDate(event.date_start)} {event.hour ? `- ${formatTime(event.hour)}` : ''}
                                     </p>
-                                    <p className="event-description">{event.excerpt}</p>
+                                    <p className="mainpage_event-description">{event.excerpt}</p>
                                     <p className="event-category">{event.category}</p>
                                     {userRole === 'admin' && (
                                         <button

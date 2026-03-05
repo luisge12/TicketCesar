@@ -37,7 +37,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', padding: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', padding: '2rem', marginTop:'5rem'}}>
             <div style={{ background: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', boxSizing: 'border-box' }}>
                 <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', color: 'var(--beige)', textAlign: 'center' }}>
                     Recuperar Contraseña

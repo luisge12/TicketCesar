@@ -65,7 +65,7 @@ export default function ResetPassword() {
 
     if (!token) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', textAlign: 'center', padding: '2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', textAlign: 'center', padding: '2rem', paddingTop: '4rem'}}>
                 <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--beige)' }}>Error</h2>
                 <p style={{ fontSize: '1.2rem', color: 'var(--beige)' }}>{message}</p>
                 <button
@@ -79,7 +79,7 @@ export default function ResetPassword() {
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', padding: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', padding: '2rem', marginTop:'5rem' }}>
             <div style={{ background: 'rgba(0,0,0,0.8)', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', boxSizing: 'border-box' }}>
                 <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', color: 'var(--beige)', textAlign: 'center' }}>
                     Nueva Contraseña

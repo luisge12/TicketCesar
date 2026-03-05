@@ -144,7 +144,7 @@ export default function ReservEvent() {
       h = h % 12;
       h = h ? h : 12; // la hora '0' debe ser '12'
       return `${h}:${minutes} ${ampm}`;
-    } catch (e) {
+    } catch {
       return timeStr;
     }
   };
@@ -158,16 +158,16 @@ export default function ReservEvent() {
           <h1 className="event-title_">{event.name}</h1>
           <div className="event-meta">
             <div className="meta-item">
-              📅 {event.date_start ? new Date(event.date_start).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
+               {event.date_start ? new Date(event.date_start).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
             </div>
             <div className="meta-item">
-              ⏰ {formatTime12h(event.hour)}
+               {formatTime12h(event.hour)}
             </div>
             <div className="meta-item">
-              🏷️ {event.category || 'Sin categoría'}
+               {event.category || 'Sin categoría'}
             </div>
             <div className="meta-item">
-              🎟️ ${event.ticket_price || '0.00'}
+               ${event.ticket_price || '0.00'}
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function ReservEvent() {
             className="event-image"
           />
         </div>
-        <p className="event-description_">{event.description}</p>
+        <p className="reserv_event-description_">{event.description}</p>
       </div>
       {/* Palco */}
       <div className="seat-section">
@@ -196,7 +196,8 @@ export default function ReservEvent() {
                 return (
                   <button
                     key={seatId}
-                    className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
+                    className={`seat-btn ${state !== 'available' && userRole !=='admin' ? 'reserved' : state} 
+                      ${isSelected ? ' selected' : ''}`}
                     onClick={() => handleSelect('Palco', row, seatNum)}
                     disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                   >
@@ -225,7 +226,8 @@ export default function ReservEvent() {
                   return (
                     <button
                       key={seatId}
-                      className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
+                      className={`seat-btn ${state !== 'available' && userRole !=='admin' ? 'reserved' : state} 
+                      ${isSelected ? ' selected' : ''}`}
                       onClick={() => handleSelect('Platea', row, seatNum)}
                       disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                     >
@@ -249,7 +251,8 @@ export default function ReservEvent() {
                   return (
                     <button
                       key={seatId}
-                      className={`seat-btn ${state}${isSelected ? ' selected' : ''}`}
+                      className={`seat-btn ${state !== 'available' && userRole !=='admin' ? 'reserved' : state} 
+                      ${isSelected ? ' selected' : ''}`}
                       onClick={() => handleSelect('Platea', row, seatNum)}
                       disabled={userRole?.toLowerCase() !== 'admin' && state !== 'available'}
                     >

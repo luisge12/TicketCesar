@@ -301,7 +301,7 @@ html {
     font-family: var(--text);
 }
 
-.event-description {
+.mainpage_event-description {
     font-size: 0.95rem;
     color: var(--beige) !important;
     margin-bottom: 1rem;
@@ -309,13 +309,7 @@ html {
     font-family: var(--text);
 }
 
-.event-description_{
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-    padding: 0 0.5rem;
-    font-family: var(--text);
-    color: var(--black);
-}
+
 
 .event-category {
     margin-top: auto;

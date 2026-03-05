@@ -3,6 +3,7 @@ import '../styles/index.css';
 import '../styles/app.css';
 import '../styles/quienes-somos.css';
 import '../styles/equipo.css';
+import { useNavigate } from 'react-router-dom';
 
 const teamMembers = [
   {
@@ -56,6 +57,7 @@ const teamMembers = [
 ];
 
 export default function Equipo() {
+    const navigate = useNavigate();
   useEffect(() => {
     try {
       window.scrollTo(0, 0);
@@ -66,6 +68,13 @@ export default function Equipo() {
 
   return (
     <main className="equipo-page">
+        {/* Navegación */}
+      <nav className="blog-nav" style={{ background: 'none', color: 'var(--black)', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <button className={`blog-nav-btn ${location.pathname === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Menú Inicial</button>
+          <button className={`blog-nav-btn ${location.pathname.startsWith('/equipo') ? 'active' : ''}`} onClick={() => navigate('/equipo')}>Equipo</button>
+        </div>
+      </nav>
       <h1 className="equipo-title">Nuestro Equipo</h1>
       <p className="equipo-subtitle">
         Conoce al equipo detrás del Teatro César Rengifo

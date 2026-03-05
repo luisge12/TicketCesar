@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import '../styles/index.css';
 import '../styles/app.css';
 import '../styles/quienes-somos.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function QuienesSomos() {
+  const navigate = useNavigate();
   useEffect(() => {
     try {
       window.scrollTo(0, 0);
@@ -13,6 +15,14 @@ export default function QuienesSomos() {
   }, []);
   return (
     <main className="quienes-page" style={{ width: '90vw', padding: '2rem', margin: '3rem', minHeight: '100vh', backgroundColor: 'var(--beige)', color: 'var(--black)', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+      {/* Navegación */}
+      <nav className="blog-nav" style={{ background: 'none', color: 'var(--black)', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <button className={`blog-nav-btn ${location.pathname === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Menú Inicial</button>
+          <button className={`blog-nav-btn ${location.pathname.startsWith('/quienes-somos') ? 'active' : ''}`} onClick={() => navigate('/quienes-somos')}>Quienes Somos</button>
+        </div>
+      </nav>
+     
       <h1 style={{ marginBottom: '1.5rem' }}>Quienes somos</h1>
 
       <section style={{ marginBottom: '1.5rem' }}>
