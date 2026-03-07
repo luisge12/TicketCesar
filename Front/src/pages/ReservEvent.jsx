@@ -20,7 +20,7 @@ const palcoRows = [
   { row: 'E', seats: 15 }, { row: 'F', seats: 15 }
 ];
 
-export default function ReservEvent() {
+export default function ReservEvent({ openLoginModal }) {
   const location = useLocation();
   const { id } = useParams();
   const [event, setEvent] = useState(null);
@@ -109,7 +109,28 @@ export default function ReservEvent() {
       .catch(err => console.error(err));
   };
 
-  const handleReserve = () => {
+  const handleReserve = async () => {
+    // Check authentication fresh each time
+    try {
+      const response = await fetch(`${API_URL}/session`, { credentials: 'include' });
+      const data = await response.json();
+      
+      if (!data.isAuthenticated) {
+        // Open login modal if not authenticated
+        openLoginModal();
+        return;
+      }
+      
+      // Update user role if authenticated
+      if (data.user) {
+        setUserRole(data.user.role);
+      }
+    } catch (err) {
+      console.error('Error checking auth:', err);
+      openLoginModal();
+      return;
+    }
+    
     setIsPaymentModalOpen(true);
   };
 
@@ -158,16 +179,16 @@ export default function ReservEvent() {
           <h1 className="event-title_">{event.name}</h1>
           <div className="event-meta">
             <div className="meta-item">
-               {event.date_start ? new Date(event.date_start).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
+              📋 {event.date_start ? new Date(event.date_start).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Fecha no disponible'}
             </div>
             <div className="meta-item">
-               {formatTime12h(event.hour)}
+              🕚 {formatTime12h(event.hour)}
             </div>
             <div className="meta-item">
-               {event.category || 'Sin categoría'}
+              𖤘 {event.category || 'Sin categoría'}
             </div>
             <div className="meta-item">
-               ${event.ticket_price || '0.00'}
+              $ {event.ticket_price || '0.00'}
             </div>
           </div>
         </div>
@@ -296,3 +317,4 @@ export default function ReservEvent() {
     </div>
   );
 }
+

@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 Modal.setAppElement('#root');
 
 
-export default function Header({  onLogout, inLoginAdmin }) {
+export default function Header({ onLogout, inLoginAdmin, isModalOpen, onLoginClick, onModalClose }) {
   const navigate = useNavigate();
     const [hidden, setHidden] = useState(false);
     const [lastScroll, setLastScroll] = useState(0);
@@ -23,17 +23,16 @@ export default function Header({  onLogout, inLoginAdmin }) {
     const [articles, setArticles] = useState([]);
     const [loadingArticles, setLoadingArticles] = useState(true);
 
-    const [isModalOpen, setModalOpen] = useState(false);
-
-    const setIsModalOpen = () => {
-        setModalOpen(!isModalOpen);
-    }
+    // Usar props si se proporcionan, sino usar estado local (para compatibilidad)
+    const isOpen = isModalOpen !== undefined ? isModalOpen : false;
+    const handleModalOpen = onLoginClick || (() => {});
+    const handleModalClose = onModalClose || (() => {});
 
     useEffect(() => {
         const handleScroll = () => {
         const currentScroll = window.scrollY;
       
-        if (currentScroll > lastScroll && currentScroll > 60 && !isModalOpen) {
+        if (currentScroll > lastScroll && currentScroll > 60 && !isOpen) {
             setHidden(true);
         } else if (currentScroll < lastScroll) {
             setHidden(false);
@@ -43,7 +42,7 @@ export default function Header({  onLogout, inLoginAdmin }) {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScroll, isModalOpen]);
+  }, [lastScroll, isOpen]);
 
   // get the name events for categories
   useEffect(() => {
@@ -125,12 +124,12 @@ useEffect(() => {
     <header className={`header-main ${hidden ? 'hidden-header' : ''}`}>
       {/* Modal for user menu */}
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={setIsModalOpen}
+        isOpen={isOpen}
+        onRequestClose={handleModalClose}
         contentLabel="User Menu"
         className="modal-main"
         overlayClassName="modal-overlay"
-        ariaHideApp={false} // Cambiado a false para evitar el error en la consola
+        ariaHideApp={false}
       >
         <ModalContent onLogout={onLogout} inLoginAdmin={inLoginAdmin}/>
       </Modal>
@@ -285,7 +284,7 @@ useEffect(() => {
           className="nav-searcher"
           name="search_input"
         />
-        <button className="user-button" onClick={setIsModalOpen}>
+        <button className="user-button" onClick={handleModalOpen}>
           <img src="./src/assets/user.png" alt="userslogo" className="user-img" />
         </button>
       </div>
@@ -293,3 +292,4 @@ useEffect(() => {
   );
 
 }
+

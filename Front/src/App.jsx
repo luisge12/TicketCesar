@@ -5,7 +5,6 @@ import Footer from './components/Footer';
 import MainPage from './pages/MainPage';
 import UserRegister from './pages/UserRegister';
 import AdminBar from './pages/Admin';
-import ModalContent from './components/Modal-login';
 import InsertEvent from './pages/InsertEvent';
 import EditEvent from './pages/EditEvent';
 import InsertArticle from './pages/InsertArticle';
@@ -15,7 +14,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import BlogArticle from './pages/BlogArticle';
-import QuienesSomos from './pages/QuienesSomos';
+import Quienesomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
 import Equipo from './pages/Equipo';
 import Alquiler from './pages/Alquiler';
@@ -26,6 +25,11 @@ export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Función para abrir el modal de login desde otros componentes
+    const openLoginModal = () => {
+        setIsModalOpen(true);
+    };
 
     // Verificar autenticación al cargar la app
     useEffect(() => {
@@ -40,7 +44,6 @@ export default function App() {
                 // Si está autenticado, guardar el rol del usuario
                 if (data.isAuthenticated && data.user) {
                     setUserRole(data.user.role);
-                    //console.log('Usuario autenticado con rol:', data.user.role);
                 } else {
                     setUserRole(null);
                 }
@@ -95,25 +98,16 @@ export default function App() {
                         <Route path="/insertEvent" element={<InsertEvent />} />
                         <Route path="/editEvent/:id" element={<EditEvent />} />
                         <Route path="/insertArticle" element={<InsertArticle />} />
-                        <Route path="/event/:id" element={<ReservEvent />} />
+                        <Route path="/event/:id" element={<ReservEvent openLoginModal={openLoginModal} />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogArticle />} />
-                        <Route path="/quienes-somos" element={<QuienesSomos />} />
+                        <Route path="/quienes-somos" element={<Quienesomos />} />
                         <Route path="/visitanos" element={<Visitanos />} />
-<Route path="/equipo" element={<Equipo />} />
+                        <Route path="/equipo" element={<Equipo />} />
                         <Route path="/alquiler" element={<Alquiler />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>
-                {/* The ModalContent component is rendered only if isModalOpen is true */}
-                {isModalOpen && (
-                    <div className="modal-backdrop" onClick={toggleModal}>
-                        <div className="modal-container" onClick={e => e.stopPropagation()}>
-
-                            <ModalContent inLoginAdmin={inLoginAdmin} onClose={toggleModal} onLogout={onLogout} />
-                        </div>
-                    </div>
-                )}
             </div>
             {userRole === 'admin' && <AdminBar />}
             <Footer />
@@ -121,3 +115,4 @@ export default function App() {
     );
 
 }
+
