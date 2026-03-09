@@ -14,7 +14,7 @@ export default function Footer() {
                 {/* Lista izquierda */}
                 <div className="colum">
                     <button className="logo-foot" onClick={() => { navigate('/'); }} >
-                        <img src="src/assets/TCR_H.png" className="logo-h-foot" alt="Logo" />
+                        <img src="/src/assets/TCR_H.png" className="logo-h-foot" alt="Logo" />
                     </button>
                     <p>
                         Un escenario con más de dos siglos de historia. Descubre su cartelera y visítanos.
@@ -27,7 +27,7 @@ export default function Footer() {
                     <ul className="leftMenu">
                         <li className="item-lista-derecha"><button onClick={() => navigate('/quienes-somos')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Quiénes somos</button></li>
                         <li className="item-lista-derecha"><button onClick={() => navigate('/equipo')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Equipo</button></li>
-                        <li className="item-lista-derecha"><a /*onClick={() => navigate('/direccion')}*/ className="link-name">Programación</a></li>
+                        <li className="item-lista-derecha"><button onClick={() => navigate('/programacion')} className="link-name" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Programación</button></li>
                     </ul>
                 </div>
                 {/* Lista derecha */}
@@ -43,8 +43,8 @@ export default function Footer() {
 
                 {/* Redes sociales a la derecha */}
                 <ul className="social">
-                    <li><a href='https://www.tiktok.com/@teatrocesarrengifoula' className='social-links'><img src="./src/assets/tiktok.png" alt="tiktok" className="inline-block h-6 w-6 mr-2" /></a></li>
-                    <li><a href='https://www.instagram.com/teatrocesarrengifoula/?hl=es' className='social-links'><img src="./src/assets/ig.png" alt="ig" className="inline-block h-6 w-6 mr-2" /></a></li>
+                    <li><a href='https://www.tiktok.com/@teatrocesarrengifoula' className='social-links'><img src="/src/assets/tiktok.png" alt="tiktok" className="inline-block h-6 w-6 mr-2" /></a></li>
+                    <li><a href='https://www.instagram.com/teatrocesarrengifoula/?hl=es' className='social-links'><img src="/src/assets/ig.png" alt="ig" className="inline-block h-6 w-6 mr-2" /></a></li>
                 </ul>
             </div>
 

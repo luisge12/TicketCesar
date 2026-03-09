@@ -4,15 +4,24 @@ export default function createReservationsRouter({ reservationsConnect, requireA
   const router = express.Router();
 
   router.post('/reservations', requireAuth, async (req, res) => {
-    const { eventId, seatId } = req.body;
+    const { eventId, seatId, paymentMethod, totalPrice } = req.body;
     const userEmail = req.session.user.email;
 
     if (!eventId || !seatId) {
       return res.status(400).json({ error: 'Se requieren eventId y seatId' });
     }
 
+    const seatIds = Array.isArray(seatId) ? seatId : [seatId];
+
     try {
-      const result = await reservationsConnect.makeReservation(eventId, seatId, userEmail);
+      const result = await reservationsConnect.makeBulkReservation(
+        eventId,
+        seatIds,
+        userEmail,
+        paymentMethod,
+        seatIds.length,
+        totalPrice
+      );
       res.status(201).json(result);
     } catch (error) {
       console.error('Error creating reservation:', error);

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import MainPage from './pages/MainPage';
 import UserRegister from './pages/UserRegister';
-import AdminBar from './pages/Admin';
+import AdminBar from './components/AdminBar';
 import InsertEvent from './pages/InsertEvent';
 import EditEvent from './pages/EditEvent';
 import InsertArticle from './pages/InsertArticle';
@@ -18,6 +19,8 @@ import Quienesomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
 import Equipo from './pages/Equipo';
 import Alquiler from './pages/Alquiler';
+import Programacion from './pages/Programacion';
+import InsertProgramacion from './pages/InsertProgramacion';
 import { API_URL } from './config.js';
 import './styles/app.css'
 
@@ -73,6 +76,7 @@ export default function App() {
 
     return (
         <Router>
+            <ScrollToTop />
             <Header
                 onLoginClick={toggleModal}
                 isModalOpen={isModalOpen}
@@ -105,6 +109,8 @@ export default function App() {
                         <Route path="/visitanos" element={<Visitanos />} />
                         <Route path="/equipo" element={<Equipo />} />
                         <Route path="/alquiler" element={<Alquiler />} />
+                        <Route path="/programacion" element={<Programacion />} />
+                        <Route path="/insertProgramacion" element={<InsertProgramacion />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>

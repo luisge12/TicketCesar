@@ -1,15 +1,24 @@
 /* Alquiler page styles — palette: var(--grey), var(--beige), var(--black), white */
 
 .alquiler-page {
-  width: 90vw;
-  padding: 2rem !important;
+  width: 95vw;
+  padding: 1.5rem !important;
   border-radius: 0.5rem;
-  margin: 3rem;
+  margin: 1.5rem auto;
   min-height: 100vh;
   background-color: var(--beige);
   color: var(--black);
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .alquiler-page {
+    width: 100vw;
+    margin: 0;
+    border-radius: 0;
+    padding: 1rem !important;
+  }
 }
 
 .alquiler-page h1 {
@@ -25,7 +34,7 @@
   color: var(--black);
   border-left: 6px solid var(--beige);
   padding-left: 10px;
-  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 6%, rgba(0,0,0,0.01) 100%);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 6%, rgba(0, 0, 0, 0.01) 100%);
 }
 
 .alquiler-page h3 {
@@ -171,17 +180,16 @@
   .alquiler-page {
     padding: 48px;
   }
-  
+
   .submission-container {
     padding: 40px;
   }
-  
+
   .main-title {
     font-size: 2.5rem;
   }
-  
+
   .sub-title {
     font-size: 1.5rem;
   }
 }
-

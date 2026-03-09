@@ -1,12 +1,10 @@
-
-
 .insert-article-page {
   max-width: 480px;
   width: 100%;
   margin: 2.5rem auto;
   background: var(--beige);
   border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   padding: 2rem 2.5rem 2rem 2.5rem;
   display: flex;
   flex-direction: column;
@@ -52,7 +50,7 @@
   margin-top: 0.3rem;
   padding: 0.5rem 0.7rem;
   border-radius: 6px;
-  border: 1px solid var(--grey);
+  border: 1px solid var(--black);
   font-size: 1rem;
   background: var(--beige);
   color: var(--black);

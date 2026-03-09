@@ -26,6 +26,27 @@ export class EventConnections {
             password: DB_PASSWORD,
             port: parseInt(DB_PORT, 10),
         });
+
+        // Create programacion table if it doesn't exist
+        this.initProgramacionTable();
+    }
+
+    async initProgramacionTable() {
+        const query = `
+        CREATE TABLE IF NOT EXISTS programacion (
+            id SERIAL PRIMARY KEY,
+            event_id VARCHAR(255) REFERENCES event(id) ON DELETE CASCADE,
+            mes INTEGER NOT NULL CHECK (mes >= 1 AND mes <= 12),
+            anio INTEGER NOT NULL CHECK (anio >= 2000),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(event_id, mes, anio)
+        );
+        `;
+        try {
+            await this.pool.query(query);
+        } catch (error) {
+            console.error('Error creating programacion table:', error);
+        }
     }
 
     async close() {
@@ -49,8 +70,8 @@ export class EventConnections {
                 : null;
 
         const query = `
-        INSERT INTO event (id, name, excerpt, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category, hour) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        INSERT INTO event (id, name, excerpt, description, date_start, date_end, image, is_active, tickets_sold, attendance, ticket_price, category, hour, agrupacion) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *
         `;
 
@@ -67,7 +88,8 @@ export class EventConnections {
             0,
             event_data.ticket_price,
             event_data.category,
-            event_data.hour
+            event_data.hour,
+            event_data.agrupacion || null
         ];
         try {
             const res = await this.pool.query(query, values);
@@ -107,8 +129,8 @@ export class EventConnections {
         if (event_data.image) {
             query = `
             UPDATE event 
-            SET name = $1, excerpt = $2, description = $3, date_start = $4, image = $5, ticket_price = $6, category = $7, hour = $8
-            WHERE id = $9
+            SET name = $1, excerpt = $2, description = $3, date_start = $4, image = $5, ticket_price = $6, category = $7, hour = $8, agrupacion = $9
+            WHERE id = $10
             RETURNING *
             `;
             values = [
@@ -120,13 +142,14 @@ export class EventConnections {
                 event_data.ticket_price,
                 event_data.category,
                 event_data.hour,
+                event_data.agrupacion || null,
                 id
             ];
         } else {
             query = `
             UPDATE event 
-            SET name = $1, excerpt = $2, description = $3, date_start = $4, ticket_price = $5, category = $6, hour = $7
-            WHERE id = $8
+            SET name = $1, excerpt = $2, description = $3, date_start = $4, ticket_price = $5, category = $6, hour = $7, agrupacion = $8
+            WHERE id = $9
             RETURNING *
             `;
             values = [
@@ -137,6 +160,7 @@ export class EventConnections {
                 event_data.ticket_price,
                 event_data.category,
                 event_data.hour,
+                event_data.agrupacion || null,
                 id
             ];
         }
@@ -244,6 +268,161 @@ export class EventConnections {
             return res.rows[0];
         } catch (error) {
             console.error('Error updating seat state:', error);
+            throw error;
+        }
+    }
+
+    async updateSeatsState(eventId, seatIds, newState) {
+        const client = await this.pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            const query = 'UPDATE event_seats SET state = $3 WHERE event_id = $1 AND seat_id = ANY($2) RETURNING *';
+            const res = await client.query(query, [eventId, seatIds, newState]);
+
+            // If we are liberating seats, remove them from reservation_seat
+            if (newState === 'available') {
+                await client.query('DELETE FROM reservation_seat WHERE seat_id = ANY($1)', [seatIds]);
+            }
+
+            await client.query('COMMIT');
+            return res.rows;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error('Error updating bulk seat states:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    // Programacion methods
+    async addToProgramacion(eventId, mes, anio) {
+        const query = `
+        INSERT INTO programacion (event_id, mes, anio)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (event_id, mes, anio) DO NOTHING
+        RETURNING *
+        `;
+        try {
+            const res = await this.pool.query(query, [eventId, mes, anio]);
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error adding to programacion:', error);
+            throw error;
+        }
+    }
+
+    async removeFromProgramacion(eventId, mes, anio) {
+        const query = 'DELETE FROM programacion WHERE event_id = $1 AND mes = $2 AND anio = $3 RETURNING *';
+        try {
+            const res = await this.pool.query(query, [eventId, mes, anio]);
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error removing from programacion:', error);
+            throw error;
+        }
+    }
+
+    async getProgramacion(mes, anio) {
+        const query = `
+        SELECT e.*, p.mes as prog_mes, p.anio as prog_anio
+        FROM event e
+        INNER JOIN programacion p ON e.id = p.event_id
+        WHERE p.mes = $1 AND p.anio = $2
+        ORDER BY e.date_start ASC
+        `;
+        try {
+            const res = await this.pool.query(query, [mes, anio]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching programacion:', error);
+            throw error;
+        }
+    }
+
+    // Programacion simple methods (nueva tabla)
+    async insertProgramacionSimple(data) {
+        const query = `
+        INSERT INTO programacion_simple (nombre, categoria, compania, fecha, hora)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
+        `;
+        const values = [
+            data.nombre,
+            data.categoria,
+            data.compania || null,
+            data.fecha,
+            data.hora
+        ];
+        try {
+            const res = await this.pool.query(query, values);
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error inserting programacion:', error);
+            throw error;
+        }
+    }
+
+    async updateProgramacionSimple(id, data) {
+        const query = `
+        UPDATE programacion_simple 
+        SET nombre = $1, categoria = $2, compania = $3, fecha = $4, hora = $5
+        WHERE id = $6
+        RETURNING *
+        `;
+        const values = [
+            data.nombre,
+            data.categoria,
+            data.compania || null,
+            data.fecha,
+            data.hora,
+            id
+        ];
+        try {
+            const res = await this.pool.query(query, values);
+            if (res.rowCount === 0) {
+                throw new Error('Programación no encontrada');
+            }
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error updating programacion:', error);
+            throw error;
+        }
+    }
+
+    async deleteProgramacionSimple(id) {
+        const query = 'DELETE FROM programacion_simple WHERE id = $1 RETURNING *';
+        try {
+            const res = await this.pool.query(query, [id]);
+            if (res.rowCount === 0) {
+                throw new Error('Programación no encontrada');
+            }
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error deleting programacion:', error);
+            throw error;
+        }
+    }
+
+    async getAllProgramacionSimple() {
+        const query = 'SELECT * FROM programacion_simple ORDER BY fecha ASC, hora ASC';
+        try {
+            const res = await this.pool.query(query);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching programacion:', error);
+            throw error;
+        }
+    }
+
+    async getProgramacionSimpleById(id) {
+        const query = 'SELECT * FROM programacion_simple WHERE id = $1';
+        try {
+            const res = await this.pool.query(query, [id]);
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error fetching programacion by id:', error);
             throw error;
         }
     }

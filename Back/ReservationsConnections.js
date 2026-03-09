@@ -16,35 +16,38 @@ export class ReservationsConnections {
         this.eventConnections = new EventConnections();
     }
 
-    async makeReservation(eventId, seatId, userEmail) {
-        // Check if seat is exist and is available
-        const seatState = await this.eventConnections.getSeatState(eventId, seatId);
-        if (!seatState.exists) {
-            throw new Error('Seat does not exist for this event');
-        }
-        if (seatState.state !== 'available') {
-            throw new Error('Seat is not available');
-        }
-        // Create reservation
-        const reservationId = crypto.randomUUID();
-        const buyId = crypto.randomUUID();
-        const insertQuery = `INSERT INTO reservations ("id", "event_id", "seat_id", "user_email", "buy_id") VALUES ($1, $2, $3, $4, $5)`;
-        const values = [reservationId, eventId, seatId, userEmail, buyId];
-
-        console.log('Executing reservation insert:');
-        console.log('Query:', insertQuery);
-        console.log('Values:', values);
-
+    async makeBulkReservation(eventId, seatIds, userEmail, payMethod, totalQuantity, totalPrice) {
+        const client = await this.pool.connect();
         try {
-            await this.pool.query(insertQuery, values);
+            await client.query('BEGIN');
+
+            const reservationId = crypto.randomUUID();
+
+            // 1. Insert into reservations
+            // Schema: id, event_id, user_email, buy_date, qr, pay_method, tickets_quantity, total_price
+            const insertResQuery = `
+                INSERT INTO reservations (id, event_id, user_email, pay_method, tickets_quantity, total_price)
+                VALUES ($1, $2, $3, $4, $5, $6)
+            `;
+            await client.query(insertResQuery, [reservationId, eventId, userEmail, payMethod, totalQuantity, totalPrice]);
+
+            // 2. Insert into reservation_seat and update event_seats
+            for (const seatId of seatIds) {
+                // Link seat to reservation
+                await client.query('INSERT INTO reservation_seat (reservation_id, seat_id) VALUES ($1, $2)', [reservationId, seatId]);
+
+                // Update seat state
+                await client.query('UPDATE event_seats SET state = $1 WHERE event_id = $2 AND seat_id = $3', ['reserved', eventId, seatId]);
+            }
+
+            await client.query('COMMIT');
+            return { reservationId };
         } catch (error) {
-            console.error('Database error in makeReservation:', error);
+            await client.query('ROLLBACK');
+            console.error('Database error in makeBulkReservation:', error);
             throw error;
+        } finally {
+            client.release();
         }
-        // Update seat state to 'reserved'
-        await this.eventConnections.updateSeatState(eventId, seatId, 'reserved');
-        return { reservationId, buyId };
     }
-
-
 }

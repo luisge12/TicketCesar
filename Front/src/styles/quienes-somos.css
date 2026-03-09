@@ -1,14 +1,23 @@
 /* Styles for QuienesSomos page — only use var(--grey), var(--beige), var(--black) and white */
 
 .quienes-page {
-  width: 90vw;
-  padding: 2rem;
-  margin: 3rem;
+  width: 95vw;
+  padding: 1.5rem;
+  margin: 1.5rem auto;
   min-height: 100vh;
   background-color: var(--beige);
   color: var(--black);
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .quienes-page {
+    width: 100vw;
+    margin: 0;
+    padding: 1rem;
+    border-radius: 0;
+  }
 }
 
 .quienes-page h1 {
@@ -73,7 +82,8 @@
 
 /* Keep them vertical on all screen sizes */
 
-.quienes-page strong, .quienes-page b {
+.quienes-page strong,
+.quienes-page b {
   color: var(--black);
 }
 

@@ -21,7 +21,7 @@ const reservationsConnect = new ReservationsConnections();
 const app = express();
 app.use(cors({
   origin: [
-    'http://localhost:5173', 
+    'http://localhost:5173',
     'https://ticketcesar.onrender.com',
   ],
   credentials: true
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
   try {
     const data = jwt.verify(token, JWT_SECRET);
-    
+
     req.session.user = {
       email: data.email,
       name: data.name,
@@ -43,7 +43,7 @@ app.use((req, res, next) => {
       phone: data.phone, //
       role: data.role
     };
-    
+
   } catch (error) {
     if (token) {
       console.log('Token error:', error.message);

@@ -32,29 +32,24 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         try {
-            // Process each seat reservation
-            // The current backend endpoint /reservations takes eventId and seatId
-            const reservationPromises = selectedSeats.map(seatId =>
-                fetch(`${API_URL}/reservations`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        eventId: event.id,
-                        seatId: seatId
-                    })
-                }).then(async res => {
-                    if (!res.ok) {
-                        const errData = await res.json();
-                        throw new Error(errData.error || `Error reservando el asiento ${seatId}`);
-                    }
-                    return res.json();
+            const response = await fetch(`${API_URL}/reservations`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    eventId: event.id,
+                    seatId: selectedSeats,
+                    paymentMethod: 'credit_card',
+                    totalPrice: totalPrice
                 })
-            );
+            });
 
-            await Promise.all(reservationPromises);
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Error al procesar la reserva');
+            }
 
             setIsProcessing(false);
             onReservationSuccess();

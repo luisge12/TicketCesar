@@ -109,10 +109,9 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
   .header-main {
-    height: 2.5rem;
-    padding: 0 0.25rem;
+    height: 3rem;
+    padding: 0 0.5rem;
   }
-
 }
 
 .hidden-header {
@@ -165,12 +164,9 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
   .nav-buttons {
-    font-size: 0.1rem;
-    /* text-xs */
-    margin-top: 0rem;
-    /* mt-1 */
+    font-size: 0.7rem;
+    margin-top: 0.1rem;
   }
-
 }
 
 
@@ -186,11 +182,9 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
   .first-menu {
-    font-size: 0.5rem;
-    /* text-xs */
-    padding: 0.25rem;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
   }
-
 }
 
 .first-menu:hover {
@@ -226,7 +220,7 @@ input:-webkit-autofill:active {
   width: 3rem;
   height: 1.5rem;
   background-color: transparent !important;
-  border: 1px solid var(--grey);
+  border: 1px solid var(--black);
   border-radius: 9999px;
   padding: 0.25rem 1rem;
   color: white;
@@ -265,10 +259,11 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
   .logo-button {
-    margin: 0.25rem 0rem;
+    margin: 0rem;
     padding: 0rem;
+    display: flex;
+    align-items: center;
   }
-
 }
 
 .logo-button:hover {

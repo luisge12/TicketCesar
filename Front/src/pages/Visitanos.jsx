@@ -17,21 +17,12 @@ export default function Visitanos() {
         </div>
       </nav>
 
-      <h1>Visítanos</h1>
+      <h1>Teatro César Rengifo: Un Espacio Vivo para la Cultura</h1>
 
       <section>
-        <h2>Sobre el Teatro</h2>
         <p>
-          El Teatro César es un espacio dedicado a la difusión de las artes escénicas: música, danza, teatro y actividades culturales. Contamos con programación variada durante todo el año, ciclos de formación y espacios para muestras locales.
+          Te invitamos a ser parte de la historia viva de nuestro teatro. Después de un meticuloso proceso de recuperación y mejora de sus espacios, hemos reabierto nuestras puertas para ofrecerte una cartelera diversa y de calidad. En nuestro recinto, no solo disfrutarás de obras de teatro, sino también de ciclos de cine, charlas y eventos culturales en un ambiente cargado de historia y encanto.
         </p>
-        
-      </section>
-      <section>
-        <h2>Conoce el César</h2>
-        <p>
-          Recorrido patrimonial por el teatro, su historia, arquitectura y su importancia en la cultura de Mérida. Descubre los espacios que lo componen, desde el escenario hasta los camerinos.
-        </p>
-        
       </section>
 
       <section>
@@ -42,7 +33,7 @@ export default function Visitanos() {
 
         {/* Optional photo: place an image at `src/assets/rectorado.jpg` to show the building */}
         <div>
-          <img src="src/assets/rectorado.jpg" alt="Rectorado - Teatro César" className="visitanos-photo" onError={(e)=>{e.target.style.display='none'}} />
+          <img src="/src/assets/rectorado.jpg" alt="Rectorado - Teatro César" className="visitanos-photo" onError={(e)=>{e.target.style.display='none'}} />
         </div>
 
         <div>
@@ -60,6 +51,12 @@ export default function Visitanos() {
           />
         </div>
         
+      </section>
+
+      <section>
+        <p>
+          Ven y descubre por qué somos un referente cultural en Mérida. ¡Te esperamos para crear nuevas memorias juntos!
+        </p>
       </section>
 
       

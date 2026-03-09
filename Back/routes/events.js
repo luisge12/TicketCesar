@@ -81,11 +81,116 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
   router.put('/update_seat_state', requireAdmin, async (req, res) => {
     const { eventId, seatId, newState } = req.body;
     try {
-      await eventconnect.updateSeatState(eventId, seatId, newState);
+      if (Array.isArray(seatId)) {
+        await eventconnect.updateSeatsState(eventId, seatId, newState);
+      } else {
+        await eventconnect.updateSeatState(eventId, seatId, newState);
+      }
       res.json({ message: 'Seat state updated successfully' });
     } catch (error) {
       console.error('Error updating seat state:', error);
       res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  // Programacion routes
+  router.get('/programacion/:mes/:anio', async (req, res) => {
+    const { mes, anio } = req.params;
+    try {
+      const programacion = await eventconnect.getProgramacion(parseInt(mes), parseInt(anio));
+      res.json(programacion);
+    } catch (error) {
+      console.error('Error fetching programacion:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.post('/programacion', requireAdmin, async (req, res) => {
+    const { eventId, mes, anio } = req.body;
+    try {
+      const result = await eventconnect.addToProgramacion(eventId, mes, anio);
+      res.status(201).json(result);
+    } catch (error) {
+      console.error('Error adding to programacion:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.delete('/programacion', requireAdmin, async (req, res) => {
+    const { eventId, mes, anio } = req.body;
+    try {
+      const result = await eventconnect.removeFromProgramacion(eventId, mes, anio);
+      res.json(result);
+    } catch (error) {
+      console.error('Error removing from programacion:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  // Programacion simple routes (nueva tabla)
+  router.get('/programacion-simple', async (req, res) => {
+    try {
+      const programacion = await eventconnect.getAllProgramacionSimple();
+      res.json(programacion);
+    } catch (error) {
+      console.error('Error fetching programacion simple:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.get('/programacion-simple/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const programacion = await eventconnect.getProgramacionSimpleById(id);
+      res.json(programacion);
+    } catch (error) {
+      console.error('Error fetching programacion simple:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.post('/programacion-simple', requireAdmin, async (req, res) => {
+    const data = req.body;
+    console.log('Recibido POST /programacion-simple con datos:', data);
+    console.log('Usuario en sesión:', req.session?.user);
+    try {
+      const result = await eventconnect.insertProgramacionSimple(data);
+      console.log('Resultado de inserción:', result);
+      res.status(201).json(result);
+    } catch (error) {
+      console.error('Error creating programacion simple:', error);
+      res.status(500).json({ error: 'Internal Server Error: ' + error.message });
+    }
+  });
+
+  router.put('/programacion-simple/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    const data = req.body;
+    console.log('Recibido PUT /programacion-simple/:id:', id, data);
+    try {
+      const result = await eventconnect.updateProgramacionSimple(id, data);
+      res.json(result);
+    } catch (error) {
+      console.error('Error updating programacion simple:', error);
+      if (error.message === 'Programación no encontrada') {
+        return res.status(404).json({ error: error.message });
+      }
+      res.status(500).json({ error: 'Internal Server Error: ' + error.message });
+    }
+  });
+
+  router.delete('/programacion-simple/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    console.log('Recibido DELETE /programacion-simple/:id:', id);
+    try {
+      const result = await eventconnect.deleteProgramacionSimple(id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error deleting programacion simple:', error);
+      if (error.message === 'Programación no encontrada') {
+        return res.status(404).json({ error: error.message });
+      }
+      res.status(500).json({ error: 'Internal Server Error: ' + error.message });
     }
   });
 

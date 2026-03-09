@@ -1,14 +1,23 @@
 /* Styles for Equipo page */
 
 .equipo-page {
-  width: 90vw;
-  padding: 2rem;
-  margin: 3rem auto;
+  width: 95vw;
+  padding: 1.5rem;
+  margin: 1.5rem auto;
   min-height: 100vh;
   background-color: var(--beige);
   color: var(--black);
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .equipo-page {
+    width: 100vw;
+    margin: 0;
+    padding: 1rem;
+    border-radius: 0;
+  }
 }
 
 .equipo-title {
@@ -95,22 +104,17 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .equipo-page {
-    padding: 1.5rem;
-    margin: 2rem 1rem;
-  }
-
   .equipo-title {
     font-size: 2rem;
   }
 
   .equipo-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  
+
   .equipo-card-image {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 16 / 9;
   }
 }
 

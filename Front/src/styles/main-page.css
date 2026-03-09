@@ -22,29 +22,26 @@ html {
 
 .mainpage-container {
     width: 90vw;
-    height: 90vh;
-    background-color: var(--beige);
+    height: auto;
     color: var(--black);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
     position: relative;
     overflow: hidden;
-    top: 1rem;
-    margin: 1rem auto;
+    margin: 2rem auto;
 }
 
 @media (max-width: 768px) {
     .mainpage-container {
-        width: 80vw;
-        height: 80vh;
+        width: 95vw;
+        height: auto;
+        min-height: auto;
         margin: 1rem auto;
-        padding-bottom: 0rem;
+        padding-bottom: 0;
     }
-
 }
 
 .image-slider {
@@ -190,11 +187,14 @@ html {
 }
 
 @media (max-width: 768px) {
+    .events-slider {
+        margin-top: 1.5rem;
+    }
+
     .events-slider h1 {
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
     }
-
 }
 
 .events-container {
@@ -213,9 +213,10 @@ html {
     .events-container {
         height: auto;
         padding: 0.5rem;
-
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
     }
-
 }
 
 .event-card {
@@ -230,10 +231,11 @@ html {
 
 @media (max-width: 768px) {
     .event-card {
-        gap: 0.5rem;
+        flex-direction: column;
+        width: 100%;
+        gap: 1.5rem;
         height: auto;
     }
-
 }
 
 .event-item {
@@ -255,13 +257,12 @@ html {
 
 @media (max-width: 768px) {
     .event-item {
-        flex: 0 0 50%;
-        min-width: 40%;
-        max-width: calc(50% - 0.5rem);
-        height: 100%;
-        padding: 0.5rem;
+        flex: 0 0 100%;
+        min-width: 100%;
+        max-width: 100%;
+        height: auto;
+        padding: 1rem;
     }
-
 }
 
 .event-item:hover {
@@ -273,8 +274,8 @@ html {
 }
 
 .event-image {
-    width: 20vw;
-    height: 19vw !important;
+    width: 100%;
+    height: 200px !important;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 0.5rem;
@@ -287,6 +288,7 @@ html {
     color: var(--beige) !important;
     font-family: var(--subtitle);
 }
+
 .event-title_ {
     font-size: 3rem !important;
     font-weight: bold;

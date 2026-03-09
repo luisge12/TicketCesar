@@ -3,134 +3,199 @@
 .mainpage-insert-event {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2.5rem;
+    padding: 3rem 1.5rem;
+    background-color: transparent;
+    gap: 3rem;
 }
 
 .insert-event-container {
-    background: var(--beige);
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-    padding: 2.5rem 2rem;
-    max-width: 520px;
+    background: white;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 1000px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    padding: 3rem;
+    transition: transform 0.3s ease;
 }
 
-.mainpage-container h2,
 .insert-event-container h2 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
     color: var(--black);
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: -0.02em;
 }
 
 .insert-event-form {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
 .insert-event-label {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    font-size: 1rem;
-    font-weight: 500;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--black);
 }
 
-.insert-event-label .insert-event-input,
-.insert-event-label select {
-    margin-top: 0;
+/* Full width fields */
+.insert-event-label:nth-child(1),
+/* Name */
+.insert-event-label:nth-child(2),
+/* Excerpt */
+.insert-event-label:nth-child(3),
+/* Description */
+.insert-event-label:nth-child(6)
+
+/* Image */
+    {
+    grid-column: span 2;
 }
 
-.insert-event-hint {
-    font-size: 0.9rem;
-    color: orange;
-}
-
-.insert-event-preview {
-    margin-top: 0.5rem;
-}
-
-.insert-event-preview span {
-    font-size: 0.9rem;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.insert-event-preview img {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    border: 1px solid var(--grey);
-    display: block;
-}
-
-form {
+.insert-event-input {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
- .insert-event-input[type="text"],
- .insert-event-input[type="date"],
- .insert-event-input[type="number"],
- .insert-event-input,
- .insert-event-form select.insert-event-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--grey);
-    border-radius: 8px;
+    padding: 0.9rem 1.25rem;
+    border: 2px solid var(--black);
+    border-radius: 12px;
     font-size: 1rem;
-    background: var(--beige);
+    background: #f8fafc;
     color: var(--black);
-    transition: border 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
- .insert-event-input[type="text"]:focus,
- .insert-event-input[type="date"]:focus,
- .insert-event-input[type="number"]:focus,
- .insert-event-input:focus,
- .insert-event-form select.insert-event-input:focus {
-    border: 1.5px solid var(--black);
+.insert-event-input:focus {
+    border-color: var(--grey);
+    background: white;
     outline: none;
+    box-shadow: 0 0 0 4px rgba(128, 128, 128, 0.1);
 }
 
-textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    color: var(--black);
+textarea.insert-event-input {
+    min-height: 120px;
+    line-height: 1.6;
 }
 
 button[type="submit"] {
+    grid-column: span 2;
     background: var(--black);
-    color: var(--beige);
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
+    border-radius: 14px;
+    padding: 1.25rem;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.2s, color 0.2s;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 button[type="submit"]:hover {
     background: var(--grey);
     color: var(--black);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .mainpage-insert-event {
+        padding: 1.5rem 1rem;
+        gap: 2rem;
+    }
+
+    .insert-event-container {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+    }
+
+    .insert-event-form {
+        grid-template-columns: 1fr;
+    }
+
+    .insert-event-label {
+        grid-column: span 1 !important;
+    }
+
+    button[type="submit"] {
+        grid-column: span 1;
+    }
+
+    .insert-event-container h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Table styles */
+.programacion-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+    display: block;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+}
+
+.programacion-table th,
+.programacion-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #edf2f7;
+    color: var(--black);
+    font-size: 0.95rem;
+}
+
+.programacion-table th {
+    font-weight: 700;
+    background: #f8fafc;
+    color: var(--black);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.programacion-table tr:last-child td {
+    border-bottom: none;
+}
+
+.programacion-table tr:hover {
+    background: #f1f5f9;
+}
+
+/* Edit and Delete buttons */
+.edit-btn,
+.delete-btn {
+    background: var(--black);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: var(--grey);
+    color: var(--black);
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background: #ef4444;
+    /* Modern red */
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
 }
