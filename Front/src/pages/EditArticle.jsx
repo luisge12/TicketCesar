@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../config.js';
 import './../styles/insert-event.css'
 
-export default function InsertArticle() {
-    const location = useLocation();
+export default function EditArticle() {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
@@ -20,6 +20,76 @@ export default function InsertArticle() {
         date: '',
         autor: ''
     });
+
+    useEffect(() => {
+        const checkAuthStatus = async () => {
+            try {
+                const response = await fetch(`${API_URL}/session`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                const data = await response.json();
+                setIsAuthenticated(data.isAuthenticated);
+                if (data.isAuthenticated && data.user) {
+                    setUserRole(data.user.role);
+                } else {
+                    setUserRole(null);
+                }
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                setIsAuthenticated(false);
+                setUserRole(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuthStatus();
+    }, []);
+
+    // Fetch existing article data
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchArticle = async () => {
+            try {
+                const response = await fetch(`${API_URL}/articles/${id}`);
+                const data = await response.json();
+                if (data && !data.error) {
+                    setForm({
+                        title: data.title || '',
+                        excerpt: data.excerpt || '',
+                        content: Array.isArray(data.content) 
+                            ? data.content.map(c => typeof c === 'object' ? { text: c.text || '', subtitle: c.subtitle || '' } : { text: c, subtitle: '' }) 
+                            : [{ text: data.content || '', subtitle: '' }],
+                        images: Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []),
+                        category: data.cathegory || data.category || '',
+                        date: data.date ? new Date(data.date).toISOString().split('T')[0] : '',
+                        autor: data.author || ''
+                    });
+                } else {
+                    alert('Artículo no encontrado');
+                    navigate('/blog');
+                }
+            } catch (err) {
+                console.error('Error fetching article:', err);
+                alert('Error al cargar el artículo');
+            }
+        };
+
+        fetchArticle();
+    }, [id, navigate]);
+
+    useEffect(() => {
+        if (!loading && !isAuthenticated) {
+            navigate('/');
+            return;
+        }
+        if (!loading && userRole !== 'admin') {
+            alert('Acceso denegado. Solo administradores pueden acceder a esta página.');
+            navigate('/');
+        }
+    }, [loading, userRole, isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -71,75 +141,32 @@ export default function InsertArticle() {
         setForm({ ...form, images: form.images.filter((_, i) => i !== index) });
     };
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [location]);
-
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
-                setIsAuthenticated(data.isAuthenticated);
-                if (data.isAuthenticated && data.user) {
-                    setUserRole(data.user.role);
-                } else {
-                    setUserRole(null);
-                }
-            } catch (error) {
-                console.error('Error verificando autenticación:', error);
-                setIsAuthenticated(false);
-                setUserRole(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAuthStatus();
-    }, []);
-
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            navigate('/');
-            return;
-        }
-        if (!loading && userRole !== 'admin') {
-            alert('Acceso denegado. Solo administradores pueden acceder a esta página.');
-            navigate('/');
-        }
-    }, [loading, userRole, isAuthenticated, navigate]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
             title: form.title,
             excerpt: form.excerpt,
-            content: form.content, // Now an array
-            images: form.images,   // Now an array
+            content: form.content,
+            images: form.images,
             category: form.category,
-            autor: form.autor,
+            author: form.autor,
             date: form.date
         };
 
-        console.log('Submitting article payload:', payload);
-
         try {
-            const response = await fetch(`${API_URL}/create-article`, {
-                method: 'POST',
+            const response = await fetch(`${API_URL}/articles/${id}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
                 credentials: 'include'
             });
             if (response.ok) {
-                alert('Artículo guardado correctamente');
-                setForm({ title: '', excerpt: '', content: [{ text: '', subtitle: '' }], images: [], category: '', autor: '', date: '' });
+                alert('Artículo actualizado correctamente');
+                navigate(`/blog/${id}`);
             } else {
                 const text = await response.text().catch(() => null);
-                console.error('Create-article response not OK', response.status, text);
-                alert('Error al guardar el artículo');
+                console.error('Update-article response not OK', response.status, text);
+                alert('Error al actualizar el artículo');
             }
         } catch (error) {
             alert('Error de conexión');
@@ -147,10 +174,12 @@ export default function InsertArticle() {
         }
     };
 
+    if (loading) return <div className="mainpage-insert-event">Cargando...</div>;
+
     return (
         <div className="mainpage-insert-event">
             <div className="insert-event-container">
-                <h2>Insertar Artículo</h2>
+                <h2>Editar Artículo</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: 700 }}>
                     <div className="form-group">
                         <label>Título</label>
@@ -239,7 +268,10 @@ export default function InsertArticle() {
                         <input type="text" name="autor" className="insert-event-input" placeholder="Autor" value={form.autor} onChange={handleChange} required />
                     </div>
                     
-                    <button type="submit" style={{ padding: '1rem', background: 'var(--grey)', color: 'var(--black)', fontWeight: 'bold', fontSize: '1.1rem', borderRadius: '8px', cursor: 'pointer', border: 'none', marginTop: '1rem' }}>Guardar Artículo</button>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button type="submit" style={{ flex: 1, padding: '1rem', background: 'var(--grey)', color: 'var(--black)', fontWeight: 'bold', fontSize: '1.1rem', borderRadius: '8px', cursor: 'pointer', border: 'none', marginTop: '1rem' }}>Actualizar Artículo</button>
+                        <button type="button" onClick={() => navigate('/blog')} style={{ flex: 1, padding: '1rem', background: '#e2e8f0', color: 'var(--black)', fontWeight: 'bold', fontSize: '1.1rem', borderRadius: '8px', cursor: 'pointer', border: 'none', marginTop: '1rem' }}>Cancelar</button>
+                    </div>
                 </form>
             </div>
         </div>

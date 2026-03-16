@@ -15,6 +15,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import BlogArticle from './pages/BlogArticle';
+import EditArticle from './pages/EditArticle';
 import Quienesomos from './pages/QuienesSomos';
 import Visitanos from './pages/Visitanos';
 import Equipo from './pages/Equipo';
@@ -105,6 +106,7 @@ export default function App() {
                         <Route path="/event/:id" element={<ReservEvent openLoginModal={openLoginModal} />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogArticle />} />
+                        <Route path="/editArticle/:id" element={<EditArticle />} />
                         <Route path="/quienes-somos" element={<Quienesomos />} />
                         <Route path="/visitanos" element={<Visitanos />} />
                         <Route path="/equipo" element={<Equipo />} />

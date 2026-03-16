@@ -29,6 +29,21 @@
     letter-spacing: -0.02em;
 }
 
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.form-group label {
+    font-weight: 700;
+    color: var(--black);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 .insert-event-form {
     display: grid;
     grid-template-columns: 1fr 1fr;

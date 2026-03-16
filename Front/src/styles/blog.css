@@ -1,14 +1,4 @@
-.read-more-btn {
-  background: var(--grey);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.2rem;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: text-decoration 0.2s, background 0.2s;
-}
+/* read-more-btn styles moved/updated lower in file */
 
 .read-more-btn:hover {
   text-decoration: underline;
@@ -284,17 +274,88 @@
   color: var(--black);
 }
 
-.read-more-btn {
+.article-card {
+  position: relative;
+}
+
+.article-admin-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
   display: flex;
-  flex-direction: row;
-  flex: 1;
+  gap: 0.8rem;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.article-card:hover .article-admin-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.admin-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  flex: 1;
-  order: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.2s;
+  background: white;
+  color: var(--black);
+}
+
+.admin-action-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.admin-action-btn.edit:hover {
+  background: var(--black);
+  color: white;
+}
+
+.admin-action-btn.delete {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.admin-action-btn.delete:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.admin-action-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--black);
+  border: 1.5px solid var(--black);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.read-more-btn:hover {
+  background: var(--black);
+  color: white;
+  text-decoration: none;
+  transform: translateX(5px);
 }
 
 /* La definición correcta de .blog-sidebar ya está arriba, estas líneas sueltas se eliminan para evitar errores de sintaxis. */

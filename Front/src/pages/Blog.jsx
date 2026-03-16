@@ -10,6 +10,7 @@ const BlogHome = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,22 +22,33 @@ const BlogHome = () => {
   };
 
 
-  // Cargar artículos desde el backend
+  // Cargar artículos y sesión desde el backend
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/get-articles`)
-      .then(res => res.json())
-      .then(data => {
-          console.log('Artículos recibidos del backend:', data);
-        setArticles(data);
-        setFilteredArticles(data);
-        setLoading(false);
+    
+    // Fetch articles
+    const fetchArticles = fetch(`${API_URL}/get-articles`)
+      .then(res => res.json());
+
+    // Fetch session
+    const fetchSession = fetch(`${API_URL}/session`, { credentials: 'include' })
+      .then(res => res.json());
+
+    Promise.all([fetchArticles, fetchSession])
+      .then(([articlesData, sessionData]) => {
+        console.log('Artículos recibidos del backend:', articlesData);
+        setArticles(articlesData);
+        setFilteredArticles(articlesData);
+        
+        if (sessionData.isAuthenticated && sessionData.user) {
+          setUserRole(sessionData.user.role);
+        }
       })
       .catch(err => {
-        setArticles([]);
-        setFilteredArticles([]);
+        console.error('Error fetching data:', err);
+      })
+      .finally(() => {
         setLoading(false);
-        console.error('Error fetching articles:', err);
       });
   }, []);
 
@@ -122,22 +134,74 @@ const BlogHome = () => {
               <div className="articles-grid">
                 {currentArticles.map(article => (
                   <article key={article.id} className="article-card">
-                    <div className="article-image">
+                    {userRole === 'admin' && (
+                      <div className="article-admin-actions">
+                        <button 
+                          className="admin-action-btn edit" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/editArticle/${article.id}`);
+                          }}
+                          title="Editar artículo"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                        <button 
+                          className="admin-action-btn delete" 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (window.confirm('¿Estás seguro de que deseas eliminar este artículo?')) {
+                              try {
+                                const res = await fetch(`${API_URL}/articles/${article.id}`, { 
+                                  method: 'DELETE',
+                                  credentials: 'include' 
+                                });
+                                if (res.ok) {
+                                  setArticles(prev => prev.filter(a => a.id !== article.id));
+                                  alert('Artículo eliminado');
+                                } else {
+                                  alert('Error al eliminar artículo');
+                                }
+                              } catch (err) {
+                                console.error(err);
+                                alert('Error de conexión');
+                              }
+                            }
+                          }}
+                          title="Eliminar artículo"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    <div className="article-image" onClick={() => navigate(`/blog/${article.id}`)} style={{ cursor: 'pointer' }}>
                       <img src={article.image} alt={article.title} />
                       <span className="article-category">{article.category}</span>
                     </div>
                     <div className="article-content">
-                      <h2 className="article-title">{article.title}</h2>
+                      <h2 className="article-title" onClick={() => navigate(`/blog/${article.id}`)} style={{ cursor: 'pointer' }}>{article.title}</h2>
                       <p className="article-excerpt">{article.excerpt}</p>
                       <div className="article-meta">
                         <span className="article-author">{article.author}</span>
                         <span className="article-date">{formatDate(article.date)}</span>
-                        {/* <span className="article-read-time">{article.readTime} de lectura</span> */}
                       </div>
-                      <button className="read-more-btn" onClick={() => {
-                        console.log('Navegando a /blog/' + article.id);
-                        navigate(`/blog/${article.id}`);
-                      }}>Leer más</button>
+                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <button className="read-more-btn" onClick={() => navigate(`/blog/${article.id}`)}>
+                          Leer más
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </article>
                 ))}
