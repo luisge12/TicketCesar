@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -22,58 +22,23 @@ import Equipo from './pages/Equipo';
 import Alquiler from './pages/Alquiler';
 import Programacion from './pages/Programacion';
 import InsertProgramacion from './pages/InsertProgramacion';
-import { API_URL } from './config.js';
+import InsertEquipo from './pages/InsertEquipo';
+import UserProfile from './pages/UserProfile';
+import PasswordResetOptions from './components/Modal-login';
+import { useAuth } from './context/AuthContext.jsx';
 import './styles/app.css'
 
 export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [userRole, setUserRole] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { userRole, isLoading } = useAuth();
 
-    // Función para abrir el modal de login desde otros componentes
     const openLoginModal = () => {
         setIsModalOpen(true);
     };
 
-    // Verificar autenticación al cargar la app
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
-
-                // Si está autenticado, guardar el rol del usuario
-                if (data.isAuthenticated && data.user) {
-                    setUserRole(data.user.role);
-                } else {
-                    setUserRole(null);
-                }
-
-            } catch (error) {
-                console.error('Error verificando autenticación:', error);
-                setUserRole(null);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkAuthStatus();
-    }, []);
-
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
-
-    const onLogout = () => {
-        setUserRole(null);
-    };
-
-    const inLoginAdmin = () => {
-        setUserRole('admin');
-    }
 
     return (
         <Router>
@@ -82,8 +47,6 @@ export default function App() {
                 onLoginClick={toggleModal}
                 isModalOpen={isModalOpen}
                 onModalClose={() => setIsModalOpen(false)}
-                onLogout={onLogout}
-                inLoginAdmin={inLoginAdmin}
             />
             <div className="page-with-admin-bar">
                 <div className="mainpage-div">
@@ -91,7 +54,6 @@ export default function App() {
                         <div className='color-white bg-black'>Cargando...</div>
                     )
                     }
-
 
                     <Routes>
                         <Route path="/" element={<MainPage />} />
@@ -113,6 +75,8 @@ export default function App() {
                         <Route path="/alquiler" element={<Alquiler />} />
                         <Route path="/programacion" element={<Programacion />} />
                         <Route path="/insertProgramacion" element={<InsertProgramacion />} />
+                        <Route path="/insertEquipo" element={<InsertEquipo />} />
+                        <Route path="/userprofile" element={<UserProfile />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>
@@ -123,4 +87,3 @@ export default function App() {
     );
 
 }
-

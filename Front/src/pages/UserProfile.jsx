@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/user-profile.css';
 
 export default function UserProfile() {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { user, isLoading: loading } = useAuth();
     const [showQRFor, setShowQRFor] = useState(null);
 
     const pad = (n) => String(n).padStart(2, '0');
@@ -68,29 +67,10 @@ export default function UserProfile() {
         } catch { return false; }
     }
 
-    useEffect(() => {
-        const fetchSessionUser = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`${API_URL}/session`, { credentials: 'include' });
-                const data = await res.json();
-                if (data.isAuthenticated && data.user) {
-                    setUser(data.user);
-                } else {
-                    setError('No hay sesión iniciada');
-                }
-            } catch (err) {
-                setError(err.message || 'Error al obtener sesión');
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        fetchSessionUser();
-    }, []);
 
     if (loading) return <div>Cargando perfil...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (!user) return <div>Error: No hay sesión iniciada</div>;
 
     return (
         <div className="user-profile-page">

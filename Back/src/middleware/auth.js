@@ -1,9 +1,3 @@
-/**
- * Middleware de autenticación.
- * requireAuth: exige usuario autenticado.
- * requireAdmin: exige usuario autenticado con rol admin.
- */
-
 export function requireAuth(req, res, next) {
   if (!req.session?.user) {
     return res.status(401).json({ error: 'Debes iniciar sesión para realizar esta acción' });

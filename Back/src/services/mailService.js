@@ -3,21 +3,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create a transporter using SMTP
-// You will need to configure EMAIL_USER and EMAIL_PASS in your .env file
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // You can change this to your preferred service
+    service: 'gmail', 
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
 });
 
-/**
- * Sends a verification email to the user
- * @param {string} to - The user's email address
- * @param {string} token - The verification token
- */
 export const sendVerificationEmail = async (to, token) => {
     const verificationUrl = `http://localhost:5173/verify-email?token=${token}`;
 
@@ -44,11 +37,6 @@ export const sendVerificationEmail = async (to, token) => {
     }
 };
 
-/**
- * Sends a password reset email to the user
- * @param {string} to - The user's email address
- * @param {string} token - The password reset token
- */
 export const sendPasswordResetEmail = async (to, token) => {
     const resetUrl = `http://localhost:5173/reset-password?token=${token}`;
 

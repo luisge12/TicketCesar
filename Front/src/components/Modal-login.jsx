@@ -1,48 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/header.css';
 
-export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
-
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default function ModalContent({ onClose }) {
+    const { isAuthenticated, user, login, logout, isLoading: isAuthLoading } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
-    const [userData, setUserData] = useState("");
-
-    // This useEffect hook runs every time the modal is opened
-    // to check if the user is authenticated.
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
-                setIsAuthenticated(data.isAuthenticated);
-                setUserData(data.user || null);
-
-            } catch (error) {
-                console.error('Error checking login status:', error);
-                setIsAuthenticated(false);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkLoginStatus();
-    }, [setIsAuthenticated]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const userData = {
+        const userDataParams = {
             email: email,
             password: password
         };
 
+        setIsSubmitting(true);
         try {
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
@@ -50,15 +26,14 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify(userData),
+                body: JSON.stringify(userDataParams),
             });
 
             if (response.ok) {
                 const data = await response.json();
-                data.user.role === 'admin' && inLoginAdmin()
-                setIsAuthenticated(true);
+                login(data.user);
                 setMessage("");
-                setTimeout(onClose, 2000);
+                setTimeout(() => { if(onClose) onClose(); }, 1500);
             } else {
                 const errorData = await response.json();
                 console.error('Login failed:', errorData);
@@ -68,10 +43,12 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
         } catch (error) {
             console.error('Error during login:', error);
             setMessage('Ocurrió un error durante el login');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    if (isLoading) {
+    if (isAuthLoading) {
         return <div className="loading-container">Cargando...</div>;
     }
 
@@ -81,13 +58,10 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
                 method: 'POST',
                 credentials: 'include',
             });
-            setIsAuthenticated(false);
+            logout();
             setMessage('Sesión cerrada correctamente.');
-            if (onLogout) {
-                onLogout(); // ← NOTIFICA AL APP QUE SE CERRÓ SESIÓN
-            }
         } catch (error) {
-            setMessage('Error al cerrar sesión.', error);
+            setMessage('Error al cerrar sesión.');
         }
     };
 
@@ -95,9 +69,9 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
         <div className="modal-main">
             {isAuthenticated ? (
                 <div className="">
-                    {userData && (
+                    {user && (
                         <div className="welcome-message">
-                            <h2>Bienvenido, {userData.name} {userData.lastname}!</h2>
+                            <h2>Bienvenido, {user.name} {user.lastname}!</h2>
                         </div>
                     )}
                     <button
@@ -136,8 +110,9 @@ export default function ModalContent({ onClose, onLogout, inLoginAdmin }) {
                     <button
                         type="submit"
                         className="modal-buttons"
+                        disabled={isSubmitting}
                     >
-                        Iniciar Sesión
+                        {isSubmitting ? 'Iniciando...' : 'Iniciar Sesión'}
                     </button>
                     <div style={{ textAlign: 'center', margin: '0.5rem 0' }}>
                         <a href="/forgot-password" style={{ color: 'black', textDecoration: 'underline', fontSize: '0.9rem' }}>

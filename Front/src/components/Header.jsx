@@ -1,128 +1,41 @@
-// This code is a part of TicketCesar 
-// Created by Luis González
-
-import { useState, useEffect, useMemo } from "react";
-
-import { API_URL } from '../config.js';
-const BLOG_SECTIONS = ['Articulos', 'Reportajes', 'Critica', 'Entrevistas', 'Noticias'];
+import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import './../styles/header.css';
 import ModalContent from "./Modal-login";
 import { useNavigate } from 'react-router-dom';
+import { useNavData } from '../hooks/useNavData.js';
 
-// Configura el elemento app para react-modal (solo una vez al cargar la app)
 Modal.setAppElement('#root');
 
-
-export default function Header({ onLogout, inLoginAdmin, isModalOpen, onLoginClick, onModalClose }) {
+export default function Header({ isModalOpen, onLoginClick, onModalClose }) {
   const navigate = useNavigate();
-    const [hidden, setHidden] = useState(false);
-    const [lastScroll, setLastScroll] = useState(0);
-    const [categories] = useState(['Danza', 'Musica', 'Teatro', 'Grados', 'Recorridos']);
-    const [categoryEvents, setCategoryEvents] = useState({});
-    const [articles, setArticles] = useState([]);
-    const [loadingArticles, setLoadingArticles] = useState(true);
+  const [hidden, setHidden] = useState(false);
+  const [lastScroll, setLastScroll] = useState(0);
 
-    // Usar props si se proporcionan, sino usar estado local (para compatibilidad)
-    const isOpen = isModalOpen !== undefined ? isModalOpen : false;
-    const handleModalOpen = onLoginClick || (() => {});
-    const handleModalClose = onModalClose || (() => {});
+  const { BLOG_SECTIONS, categoryEvents, groupedArticles, loadingArticles } = useNavData();
 
-    useEffect(() => {
-        const handleScroll = () => {
-        const currentScroll = window.scrollY;
-      
-        if (currentScroll > lastScroll && currentScroll > 60 && !isOpen) {
-            setHidden(true);
-        } else if (currentScroll < lastScroll) {
-            setHidden(false);
-        }
-        setLastScroll(currentScroll);
+  const isOpen = isModalOpen !== undefined ? isModalOpen : false;
+  const handleModalOpen = onLoginClick || (() => {});
+  const handleModalClose = onModalClose || (() => {});
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+
+      if (currentScroll > lastScroll && currentScroll > 60 && !isOpen) {
+        setHidden(true);
+      } else if (currentScroll < lastScroll) {
+        setHidden(false);
+      }
+      setLastScroll(currentScroll);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScroll, isOpen]);
 
-  // get the name events for categories
-  useEffect(() => {
-  // Limpia el estado antes de cargar nuevos datos si lo deseas
-  setCategoryEvents({});
-
-  for (const category of categories) {
-    fetch(`${API_URL}/events/category/${category}`, {
-      credentials: 'include'
-    })
-      .then(response => response.json())
-      .then(data => {
-        setCategoryEvents(prev => ({
-          ...prev,
-          [category]: data
-        }));
-      })
-      .catch(error => {
-        console.error('Error fetching events:', error);
-      });
-  }
-
-}, [categories]);
-
-  // get blog articles
-    useEffect(() => {
-    setArticles([]);
-    setLoadingArticles(true);
-    fetch(`${API_URL}/get-articles`, { credentials: 'include' })
-      .then((response) => response.json())
-      .then((data) => {
-        const arr = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.articles)
-          ? data.articles
-          : [];
-        setArticles(arr);
-      })
-      .catch((error) => {
-        console.error('Error fetching articles:', error);
-      })
-      .finally(() => setLoadingArticles(false));
-  }, []);
-
-  // Group articles into sections defined by `blogSections`.
-  const groupedArticles = useMemo(() => {
-    const groups = {};
-    for (const s of BLOG_SECTIONS) groups[s] = [];
-
-    // Place each article in the group that matches its category exactly (case-insensitive).
-    // We check `category` and `categoria` fields (common variants).
-    for (const a of articles) {
-      const cat = (a.category || a.categoria || '').toString().trim().toLowerCase();
-      let placed = false;
-      for (const s of BLOG_SECTIONS) {
-        const key = s.toLowerCase();
-        if (cat === key) {
-          groups[s].push(a);
-          placed = true;
-          break;
-        }
-      }
-
-      if (!placed) {
-        // Default bucket: 'Articulos'
-        groups['Articulos'].push(a);
-      }
-    }
-
-    return groups;
-  }, [articles]);
-/* // Debugging: muestra los eventos de la categoría "Danza" en la consola
-useEffect(() => {
-  console.log("categorias: ", categoryEvents['Danza']);
-}, [categoryEvents]);
-*/
-
-    return (
+  return (
     <header className={`header-main ${hidden ? 'hidden-header' : ''}`}>
-      {/* Modal for user menu */}
       <Modal
         isOpen={isOpen}
         onRequestClose={handleModalClose}
@@ -131,10 +44,9 @@ useEffect(() => {
         overlayClassName="modal-overlay"
         ariaHideApp={false}
       >
-        <ModalContent onLogout={onLogout} inLoginAdmin={inLoginAdmin}/>
+        <ModalContent onClose={handleModalClose}/>
       </Modal>
 
-      {/*===== Left part of the header =====*/}
       <div className="div-left">
         <button className="logo-button" onClick={() => navigate('/')}> 
           <img src="/src/assets/logoteatro.jpg" className="logo-img" alt="Logo" />
@@ -207,7 +119,6 @@ useEffect(() => {
               </ul>
             </li>
             
-            
             <li
               className="first-menu"
               onClick={() => {
@@ -232,7 +143,6 @@ useEffect(() => {
             <li className="first-menu" onClick={() => navigate('/alquiler')} style={{ cursor: 'pointer' }}>
               Alquiler
             </li>
-            {/* For shop*/}
             <li className="first-menu">
               Kiosco César
             </li>
@@ -269,14 +179,10 @@ useEffect(() => {
                 ))}
               </ul>
             </li>
-            
-            
-
           </ul>
         </div>
       </div>
 
-      {/*===== Right part of the header =====*/}
       <div className="div-right">
         <input
           type="text"
@@ -290,6 +196,4 @@ useEffect(() => {
       </div>
     </header>
   );
-
 }
-

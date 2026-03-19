@@ -22,6 +22,7 @@ export default function Programacion() {
     const [loading, setLoading] = useState(true);
     const [mes, setMes] = useState(new Date().getMonth() + 1);
     const [anio, setAnio] = useState(new Date().getFullYear());
+    const [sortOrder, setSortOrder] = useState('asc');
 
     const fetchProgramacion = useCallback(async () => {
         setLoading(true);
@@ -39,6 +40,13 @@ export default function Programacion() {
                 return itemDate.getMonth() + 1 === mes && itemDate.getFullYear() === anio;
             });
             
+            // Sort by fecha and hora based on sortOrder
+            filteredData.sort((a, b) => {
+                const dateA = new Date(`${a.fecha.split('T')[0]}T${a.hora}`);
+                const dateB = new Date(`${b.fecha.split('T')[0]}T${b.hora}`);
+                return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+            
             setProgramacion(filteredData);
         } catch (error) {
             console.error('Error fetching programacion:', error);
@@ -46,7 +54,7 @@ export default function Programacion() {
         } finally {
             setLoading(false);
         }
-    }, [mes, anio]);
+    }, [mes, anio, sortOrder]);
 
     useEffect(() => {
         fetchProgramacion();
@@ -99,6 +107,18 @@ export default function Programacion() {
                 <button className="nav-btn" onClick={() => cambiarMes('anterior')}> Anterior </button>
                 <span className="mes-año">{getMesNombre(mes)} {anio}</span>
                 <button className="nav-btn" onClick={() => cambiarMes('siguiente')}> Siguiente </button>
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <label style={{ marginRight: '10px', fontWeight: 'bold' }}>Ordenar por fecha: </label>
+                <select 
+                    value={sortOrder} 
+                    onChange={(e) => setSortOrder(e.target.value)} 
+                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                >
+                    <option value="asc">Más antiguos primero</option>
+                    <option value="desc">Más recientes primero</option>
+                </select>
             </div>
 
             {loading ? (

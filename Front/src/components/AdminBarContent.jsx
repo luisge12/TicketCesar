@@ -14,6 +14,7 @@ const AdminBarContent = ({ onClose }) => {
         <button onClick={() => navigate('/insertEvent')}>Insertar Eventos</button>
         <button onClick={() => navigate('/insertArticle')}>Insertar Artículo</button>
         <button onClick={() => navigate('/insertProgramacion')}>Programación</button>
+        <button onClick={() => navigate('/insertEquipo')}>Equipo</button>
       </div>
     </div>
   );

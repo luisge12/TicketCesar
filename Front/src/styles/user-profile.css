@@ -1,0 +1,7 @@
+/* user-profile.css */
+.user-profile-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 60vh;
+}

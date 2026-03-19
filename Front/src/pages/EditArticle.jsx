@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/insert-event.css'
 
 export default function EditArticle() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRole, setUserRole] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { isAuthenticated, userRole, isLoading: loading } = useAuth();
     const IMGBB_API_KEY = 'ea4c603101243f497005da25b031c07f';
 
     const [form, setForm] = useState({
@@ -21,31 +20,7 @@ export default function EditArticle() {
         autor: ''
     });
 
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
-                setIsAuthenticated(data.isAuthenticated);
-                if (data.isAuthenticated && data.user) {
-                    setUserRole(data.user.role);
-                } else {
-                    setUserRole(null);
-                }
-            } catch (error) {
-                console.error('Error verificando autenticación:', error);
-                setIsAuthenticated(false);
-                setUserRole(null);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        checkAuthStatus();
-    }, []);
 
     // Fetch existing article data
     useEffect(() => {

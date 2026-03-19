@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Pool } from 'pg';
-import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } from './config.js';
+import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT } from '../config/index.js';
 
 const PALCO_ROWS = [
     { row: 'A', seats: 15 }, { row: 'B', seats: 15 }, { row: 'C', seats: 15 }, { row: 'D', seats: 15 },
@@ -27,7 +27,6 @@ export class EventConnections {
             port: parseInt(DB_PORT, 10),
         });
 
-        // Create programacion table if it doesn't exist
         this.initProgramacionTable();
     }
 
@@ -95,7 +94,6 @@ export class EventConnections {
             const res = await this.pool.query(query, values);
             const newEvent = res.rows[0];
 
-            // Generate seats automatically for the new event
             await this.generateSeatsForEvent(newEvent.id);
 
             return newEvent;
@@ -111,7 +109,6 @@ export class EventConnections {
         let query = '';
         let values = [];
 
-        // Check if excerpt needs to be truncated
         const rawExcerpt = typeof event_data.excerpt === 'string'
             ? event_data.excerpt.trim()
             : '';
@@ -178,7 +175,6 @@ export class EventConnections {
     }
 
     async generateSeatsForEvent(eventId) {
-        // Palco
         for (const group of PALCO_ROWS) {
             for (let i = 1; i <= group.seats; i++) {
                 await this.pool.query(
@@ -187,8 +183,6 @@ export class EventConnections {
                 );
             }
         }
-
-        // Platea
         for (const group of PLATEA_ROWS) {
             for (let i = 1; i <= group.seats; i++) {
                 await this.pool.query(
@@ -201,7 +195,6 @@ export class EventConnections {
 
     async getEvents() {
         const query = 'SELECT * FROM event'
-
         try {
             const res = await this.pool.query(query);
             return res.rows;
@@ -276,11 +269,9 @@ export class EventConnections {
         const client = await this.pool.connect();
         try {
             await client.query('BEGIN');
-
             const query = 'UPDATE event_seats SET state = $3 WHERE event_id = $1 AND seat_id = ANY($2) RETURNING *';
             const res = await client.query(query, [eventId, seatIds, newState]);
 
-            // If we are liberating seats, remove them from reservation_seat
             if (newState === 'available') {
                 await client.query('DELETE FROM reservation_seat WHERE seat_id = ANY($1)', [seatIds]);
             }
@@ -296,7 +287,6 @@ export class EventConnections {
         }
     }
 
-    // Programacion methods
     async addToProgramacion(eventId, mes, anio) {
         const query = `
         INSERT INTO programacion (event_id, mes, anio)
@@ -341,7 +331,6 @@ export class EventConnections {
         }
     }
 
-    // Programacion simple methods (nueva tabla)
     async insertProgramacionSimple(data) {
         const query = `
         INSERT INTO programacion_simple (nombre, categoria, compania, fecha, hora)
@@ -427,8 +416,3 @@ export class EventConnections {
         }
     }
 }
-
-/*//code for test the class
-const eventConnections = new EventConnections();
-eventConnections.getEvets().then(events => console.log(events));
-*/

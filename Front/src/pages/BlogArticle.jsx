@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/blog-article.css';
 
 export default function BlogArticle() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const { userRole } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
@@ -16,22 +17,12 @@ export default function BlogArticle() {
     setArticle(null);
 
     // Fetch article
-    const fetchArticle = fetch(`${API_URL}/articles/${id}`)
-      .then(res => res.json());
-
-    // Fetch session
-    const fetchSession = fetch(`${API_URL}/session`, { credentials: 'include' })
-      .then(res => res.json());
-
-    Promise.all([fetchArticle, fetchSession])
-      .then(([articleData, sessionData]) => {
+    fetch(`${API_URL}/articles/${id}`)
+      .then(res => res.json())
+      .then((articleData) => {
         console.log('Artículo recibido del backend:', articleData);
         if (articleData && !articleData.error) {
           setArticle(articleData);
-        }
-
-        if (sessionData.isAuthenticated && sessionData.user) {
-          setUserRole(sessionData.user.role);
         }
       })
       .catch((err) => {

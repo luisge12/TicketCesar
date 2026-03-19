@@ -3,6 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { API_URL } from '../config.js';
 import '../styles/reserv-event.css';
 import PaymentModal from '../components/PaymentModal.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const plateaRows = [
   { row: 'A', seats: 10 }, { row: 'C', seats: 11 }, { row: 'E', seats: 10 }, { row: 'G', seats: 10 },
@@ -26,7 +27,7 @@ export default function ReservEvent({ openLoginModal }) {
   const [event, setEvent] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatStates, setSeatStates] = useState({});
-  const [userRole, setUserRole] = useState(null);
+  const { userRole } = useAuth();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [adminPaymentMethod, setAdminPaymentMethod] = useState('');
@@ -38,15 +39,6 @@ export default function ReservEvent({ openLoginModal }) {
   }, [location]);
 
   useEffect(() => {
-    fetch(`${API_URL}/session`, { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.isAuthenticated) {
-          setUserRole(data.user.role);
-        }
-      })
-      .catch(err => console.error(err));
-
     fetch(`${API_URL}/event/${id}`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setEvent(data))

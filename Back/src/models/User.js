@@ -1,9 +1,6 @@
-import pg from 'pg';
 import { Pool } from 'pg';
-import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT, SALT_ROUNDS } from './config.js'
-import { Console } from 'console';
+import { DB_USER, DB_HOST, DB_DATABASE, DB_PASSWORD, DB_PORT, SALT_ROUNDS } from '../config/index.js'
 
 
 export class UserConnections {
@@ -31,20 +28,15 @@ export class UserConnections {
             return res.rows[0];
         } catch (err) {
             console.error('Error creating user:', err);
-
-            // Verifica si el error es de duplicidad
             if (err.code === '23505') {
-                // Lanza un error con un mensaje específico para el cliente
                 throw new Error('User with this email already exists.');
             } else {
-                // Lanza otros errores sin cambiar el mensaje
                 throw err;
             }
         }
     }
 
     async loginUser(email, password) {
-
         const query = 'SELECT * FROM users WHERE email = $1';
         const values = [email];
         try {
@@ -96,7 +88,6 @@ export class UserConnections {
 
     async resetPassword(token, newPassword) {
         try {
-            // First check if token is valid and not expired
             const checkQuery = 'SELECT * FROM users WHERE reset_password_token = $1 AND reset_password_expires > NOW()';
             const checkRes = await this.pool.query(checkQuery, [token]);
 
@@ -115,15 +106,3 @@ export class UserConnections {
         }
     }
 }
-/* //CODIGO PARA PROBAR LAS CONEXIONES
-const prueba = new UserConnections();
-let user;
-try {
-    user = await prueba.loginUser('luisge1299@gmail.com', '1234');
-} catch (error) {
-    console.error('Login failed:', error);
-}
-console.log(user);
-prueba.close()
-
-*/

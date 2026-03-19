@@ -1,11 +1,12 @@
 import express from 'express';
 import crypto from 'crypto';
-import { sendVerificationEmail, sendPasswordResetEmail } from '../mailService.js';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../services/mailService.js';
+import { validateRequest } from '../middleware/validate.js';
+import { registerSchema, loginSchema } from '../validators/userValidator.js';
 
 export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
   const router = express.Router();
 
-  // Devuelve el estado de sesión basado en la cookie `access_token`
   router.get('/session', (req, res) => {
     const token = req.cookies && req.cookies['access_token'];
     if (!token) return res.json({ isAuthenticated: false, cookieInfo: { received: false } });
@@ -28,7 +29,7 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     }
   });
 
-  router.post('/register', async (req, res) => {
+  router.post('/register', validateRequest(registerSchema), async (req, res, next) => {
     const user = req.body;
     try {
       const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -38,7 +39,6 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
         await sendVerificationEmail(user.email, verificationToken);
       } catch (emailError) {
         console.error('Error enviando correo de verificación:', emailError);
-        // We log the error but still return success for registration.
       }
 
       res.status(201).json({
@@ -47,14 +47,13 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     } catch (error) {
       console.error('Error creating user:', error);
       if (error.message === 'User with this email already exists.') {
-        res.status(409).json({ error: error.message });
-      } else {
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(409).json({ error: error.message });
       }
+      next(error);
     }
   });
 
-  router.post('/login', async (req, res) => {
+  router.post('/login', validateRequest(loginSchema), async (req, res, next) => {
     const { email, password } = req.body;
     try {
       const result = await userconnect.loginUser(email, password);
@@ -90,7 +89,10 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
         });
     } catch (error) {
       console.error('Error:', error);
-      res.status(401).json({ error: error.message || 'Internal Server Error' });
+      if (error.message === 'Usuario no encontrado' || error.message === 'Contraseña incorrecta') {
+        return res.status(401).json({ error: error.message });
+      }
+      next(error);
     }
   });
 
@@ -122,7 +124,6 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     const { email } = req.body;
     try {
       const token = crypto.randomBytes(32).toString('hex');
-      // Format local timestamp correctly for PostgreSQL TIMESTAMP type
       const date = new Date(Date.now() + 3600000); // 1 hour from now
       const expires = date.toISOString().replace('T', ' ').substring(0, 19);
 
@@ -137,7 +138,6 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
       res.json({ message: 'Si existe una cuenta con ese correo, recibirás un enlace para recuperar tu contraseña.' });
     } catch (error) {
       if (error.message === 'User not found') {
-        // Por seguridad, no revelamos qué correos existen o no. Respondemos igual.
         res.json({ message: 'Si existe una cuenta con ese correo, recibirás un enlace para recuperar tu contraseña.' });
       } else {
         res.status(500).json({ error: 'Error al procesar la solicitud' });

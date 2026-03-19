@@ -1,7 +1,3 @@
-// This file contains the database connection logic for the blog application.
-// Updated to support multiple images and paragraphs.
-// Created by Luis González
-
 import { Pool } from 'pg';
 import { randomUUID } from 'crypto';
 import {
@@ -10,14 +6,14 @@ import {
   DB_DATABASE,
   DB_PASSWORD,
   DB_PORT,
-} from './config.js';
+} from '../config/index.js';
 
 const pool = new Pool({
   user: DB_USER,
   host: DB_HOST,
   database: DB_DATABASE,
   password: DB_PASSWORD,
-  port: DB_PORT,
+  port: parseInt(DB_PORT, 10),
 });
 
 export class BlogConnections {
@@ -52,7 +48,6 @@ export class BlogConnections {
 
   async getAllArticles() {
     try {
-      // Fetch articles with their first image for preview
       const res = await pool.query(`
         SELECT a.*, i.url as image 
         FROM articles a
@@ -63,7 +58,6 @@ export class BlogConnections {
         ) i ON true
         ORDER BY a.date DESC
       `);
-      // Map cathegory to category for compatibility with existing frontend expectations
       return res.rows.map(row => ({
         ...row,
         category: row.cathegory
@@ -80,22 +74,15 @@ export class BlogConnections {
       if (articleRes.rows.length === 0) return null;
       
       const article = articleRes.rows[0];
-      // Compatibility mapping
       article.category = article.cathegory;
 
-      // Fetch all images
       const imagesRes = await pool.query('SELECT url FROM image_article WHERE article_id = $1', [id]);
       article.images = imagesRes.rows.map(r => r.url);
-      // For compatibility with single image components
       article.image = article.images[0] || null;
       
-      // Fetch all text paragraphs with subtitles
       const textsRes = await pool.query('SELECT content, subtitle FROM text_article WHERE article_id = $1 ORDER BY order_index ASC', [id]);
       article.content = textsRes.rows.map(r => {
-        // 1. Try to parse content if it might be JSON
         const parsed = this._parseContentItem(r.content);
-        
-        // 2. Use column values as primary if they are available or if parsed values are empty
         return {
           text: parsed.text || r.content || '',
           subtitle: r.subtitle || parsed.subtitle || ''
@@ -116,7 +103,6 @@ export class BlogConnections {
       const author = articleData.author || articleData.autor || '';
       const articleId = randomUUID();
       
-      // Insert into articles table
       const articleRes = await client.query(
         `INSERT INTO articles (id, title, excerpt, cathegory, date, author)
          VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
@@ -125,7 +111,6 @@ export class BlogConnections {
       
       const newArticle = articleRes.rows[0];
       
-      // Insert images into image_article table
       if (articleData.images && Array.isArray(articleData.images)) {
         for (const url of articleData.images) {
           if (url) await client.query('INSERT INTO image_article (article_id, url) VALUES ($1, $2)', [articleId, url]);
@@ -134,7 +119,6 @@ export class BlogConnections {
         await client.query('INSERT INTO image_article (article_id, url) VALUES ($1, $2)', [articleId, articleData.image]);
       }
       
-      // Insert paragraphs into text_article table
       if (articleData.content && Array.isArray(articleData.content)) {
         for (let i = 0; i < articleData.content.length; i++) {
           const { text, subtitle } = this._parseContentItem(articleData.content[i]);
@@ -166,7 +150,6 @@ export class BlogConnections {
     try {
       await client.query('BEGIN');
       
-      // Handle articles table update
       const mainFields = {};
       ['title', 'excerpt', 'date', 'author'].forEach(f => {
         if (articleData[f] !== undefined) mainFields[f] = articleData[f];
@@ -182,7 +165,6 @@ export class BlogConnections {
         await client.query(query, values);
       }
 
-      // Handle images update (typically replace all)
       if (articleData.images && Array.isArray(articleData.images)) {
         await client.query('DELETE FROM image_article WHERE article_id = $1', [id]);
         for (const url of articleData.images) {
@@ -193,7 +175,6 @@ export class BlogConnections {
         if (articleData.image) await client.query('INSERT INTO image_article (article_id, url) VALUES ($1, $2)', [id, articleData.image]);
       }
 
-      // Handle paragraphs update (typically replace all)
       if (articleData.content !== undefined) {
         await client.query('DELETE FROM text_article WHERE article_id = $1', [id]);
         if (Array.isArray(articleData.content)) {
@@ -225,7 +206,6 @@ export class BlogConnections {
 
   async deleteArticle(id) {
     try {
-      // ON DELETE CASCADE handles related tables
       const res = await pool.query('DELETE FROM articles WHERE id = $1 RETURNING *', [id]);
       return res.rows[0] || null;
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/blog.css';
 
 const BlogHome = () => {
@@ -10,7 +11,7 @@ const BlogHome = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
+  const { userRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,27 +23,16 @@ const BlogHome = () => {
   };
 
 
-  // Cargar artículos y sesión desde el backend
+  // Cargar artículos desde el backend
   useEffect(() => {
     setLoading(true);
     
-    // Fetch articles
-    const fetchArticles = fetch(`${API_URL}/get-articles`)
-      .then(res => res.json());
-
-    // Fetch session
-    const fetchSession = fetch(`${API_URL}/session`, { credentials: 'include' })
-      .then(res => res.json());
-
-    Promise.all([fetchArticles, fetchSession])
-      .then(([articlesData, sessionData]) => {
+    fetch(`${API_URL}/get-articles`)
+      .then(res => res.json())
+      .then(articlesData => {
         console.log('Artículos recibidos del backend:', articlesData);
         setArticles(articlesData);
         setFilteredArticles(articlesData);
-        
-        if (sessionData.isAuthenticated && sessionData.user) {
-          setUserRole(sessionData.user.role);
-        }
       })
       .catch(err => {
         console.error('Error fetching data:', err);

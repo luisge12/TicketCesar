@@ -1,4 +1,6 @@
 import express from 'express';
+import { validateRequest } from '../middleware/validate.js';
+import { eventSchema, programacionSimpleSchema } from '../validators/eventValidator.js';
 
 export default function createEventsRouter({ eventconnect, requireAdmin }) {
   const router = express.Router();
@@ -13,7 +15,7 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
-  router.post('/create-event', requireAdmin, async (req, res) => {
+  router.post('/create-event', requireAdmin, validateRequest(eventSchema), async (req, res, next) => {
     const eventData = req.body;
     try {
       const newEvent = await eventconnect.insertEvent(eventData);
@@ -23,11 +25,11 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
       if (error.message === 'El excerpt debe tener máximo 240 caracteres') {
         return res.status(400).json({ error: error.message });
       }
-      res.status(500).json({ error: 'Internal Server Error' });
+      next(error);
     }
   });
 
-  router.put('/edit-event/:id', requireAdmin, async (req, res) => {
+  router.put('/edit-event/:id', requireAdmin, validateRequest(eventSchema), async (req, res, next) => {
     const { id } = req.params;
     const eventData = req.body;
     try {
@@ -41,7 +43,7 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
       if (error.message === 'Event not found') {
         return res.status(404).json({ error: error.message });
       }
-      res.status(500).json({ error: 'Internal Server Error' });
+      next(error);
     }
   });
 
@@ -66,7 +68,6 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
-  // get aviailable seats for an event
   router.get('/get_state_seat/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -93,7 +94,6 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
-  // Programacion routes
   router.get('/programacion/:mes/:anio', async (req, res) => {
     const { mes, anio } = req.params;
     try {
@@ -127,7 +127,6 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
-  // Programacion simple routes (nueva tabla)
   router.get('/programacion-simple', async (req, res) => {
     try {
       const programacion = await eventconnect.getAllProgramacionSimple();
@@ -149,24 +148,20 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
-  router.post('/programacion-simple', requireAdmin, async (req, res) => {
+  router.post('/programacion-simple', requireAdmin, validateRequest(programacionSimpleSchema), async (req, res, next) => {
     const data = req.body;
-    console.log('Recibido POST /programacion-simple con datos:', data);
-    console.log('Usuario en sesión:', req.session?.user);
     try {
       const result = await eventconnect.insertProgramacionSimple(data);
-      console.log('Resultado de inserción:', result);
       res.status(201).json(result);
     } catch (error) {
       console.error('Error creating programacion simple:', error);
-      res.status(500).json({ error: 'Internal Server Error: ' + error.message });
+      next(error);
     }
   });
 
-  router.put('/programacion-simple/:id', requireAdmin, async (req, res) => {
+  router.put('/programacion-simple/:id', requireAdmin, validateRequest(programacionSimpleSchema), async (req, res, next) => {
     const { id } = req.params;
     const data = req.body;
-    console.log('Recibido PUT /programacion-simple/:id:', id, data);
     try {
       const result = await eventconnect.updateProgramacionSimple(id, data);
       res.json(result);
@@ -175,13 +170,12 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
       if (error.message === 'Programación no encontrada') {
         return res.status(404).json({ error: error.message });
       }
-      res.status(500).json({ error: 'Internal Server Error: ' + error.message });
+      next(error);
     }
   });
 
   router.delete('/programacion-simple/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
-    console.log('Recibido DELETE /programacion-simple/:id:', id);
     try {
       const result = await eventconnect.deleteProgramacionSimple(id);
       res.json(result);

@@ -4,38 +4,32 @@ import { API_URL } from '../config.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/insert-event.css';
 
-const CATEGORIAS = [
-    { value: 'Danza', label: 'Danza' },
-    { value: 'Musica', label: 'Música' },
-    { value: 'Teatro', label: 'Teatro' },
-    { value: 'Grados', label: 'Grados' },
-    { value: 'Recorridos', label: 'Recorridos' },
-    { value: 'Otro', label: 'Otro' }
-];
-
-export default function InsertProgramacion() {
+export default function InsertEquipo() {
     const navigate = useNavigate();
     const location = useLocation();
     
     const { isAuthenticated, userRole, isLoading: loading } = useAuth();
     
-    const [programacionList, setProgramacionList] = useState([]);
+    const [equipoList, setEquipoList] = useState([]);
     const [editingId, setEditingId] = useState(null);
     const [loadingList, setLoadingList] = useState(true);
 
+    const IMGBB_API_KEY = 'ea4c603101243f497005da25b031c07f';
+    const [imageUploading, setImageUploading] = useState(false);
+    const [imagePreview, setImagePreview] = useState('');
+
     const [form, setForm] = useState({
         nombre: '',
-        categoria: '',
-        compania: '',
-        fecha: '',
-        hora: ''
+        apellido: '',
+        rol: '',
+        descripcion: '',
+        foto: '',
+        orden: ''
     });
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location]);
-
-
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
@@ -48,27 +42,53 @@ export default function InsertProgramacion() {
         }
     }, [loading, userRole, isAuthenticated, navigate]);
 
-    // Fetch programacion list
-    useEffect(() => {
-        const fetchProgramacion = async () => {
-            setLoadingList(true);
-            try {
-                const response = await fetch(`${API_URL}/programacion-simple`, {
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                setProgramacionList(data);
-            } catch (error) {
-                console.error('Error fetching programacion:', error);
-            } finally {
-                setLoadingList(false);
-            }
-        };
+    // Fetch equipo list
+    const fetchEquipo = async () => {
+        setLoadingList(true);
+        try {
+            const response = await fetch(`${API_URL}/equipo`, {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            setEquipoList(data);
+        } catch (error) {
+            console.error('Error fetching equipo:', error);
+        } finally {
+            setLoadingList(false);
+        }
+    };
 
+    useEffect(() => {
         if (!loading && userRole === 'admin') {
-            fetchProgramacion();
+            fetchEquipo();
         }
     }, [loading, userRole]);
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setImageUploading(true);
+        setImagePreview('');
+        const formData = new FormData();
+        formData.append('image', file);
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await res.json();
+            if (data.success) {
+                setForm(prev => ({ ...prev, foto: data.data.url }));
+                setImagePreview(data.data.url);
+            } else {
+                alert('Error al subir la imagen a ImgBB');
+            }
+        } catch (error) {
+            console.error('ImgBB upload error:', error);
+            alert('Error de conexión con ImgBB');
+        }
+        setImageUploading(false);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -81,19 +101,22 @@ export default function InsertProgramacion() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!form.nombre || !form.categoria || !form.fecha || !form.hora) {
-            alert('Por favor, completa todos los campos requeridos');
+        if (imageUploading) {
+            alert('Por favor, espera a que la imagen se termine de subir.');
+            return;
+        }
+
+        if (!form.nombre || !form.apellido || !form.rol) {
+            alert('Por favor, completa nombre, apellido y rol.');
             return;
         }
 
         try {
             let response;
             const url = editingId 
-                ? `${API_URL}/programacion-simple/${editingId}` 
-                : `${API_URL}/programacion-simple`;
+                ? `${API_URL}/equipo/${editingId}` 
+                : `${API_URL}/equipo`;
             const method = editingId ? 'PUT' : 'POST';
-
-            console.log('Enviando datos:', { url, method, body: form });
 
             response = await fetch(url, {
                 method: method,
@@ -102,29 +125,18 @@ export default function InsertProgramacion() {
                 body: JSON.stringify(form)
             });
 
-            console.log('Respuesta del servidor:', response.status, response.statusText);
-
-            // Try to get error details from response
-            let errorMessage = 'Error al guardar la programación';
+            let errorMessage = 'Error al guardar el miembro';
             try {
                 const errorData = await response.json();
-                console.log('Datos de error:', errorData);
                 if (errorData.error) {
                     errorMessage = errorData.error;
                 }
-            } catch (parseError) {
-                console.error('Error al parsear respuesta de error:', parseError);
-            }
+            } catch (parseError) {}
 
             if (response.ok) {
-                alert(editingId ? 'Programación actualizada correctamente' : 'Programación guardada correctamente');
+                alert(editingId ? 'Miembro actualizado correctamente' : 'Miembro guardado correctamente');
                 resetForm();
-                // Refresh list
-                const listResponse = await fetch(`${API_URL}/programacion-simple`, {
-                    credentials: 'include'
-                });
-                const data = await listResponse.json();
-                setProgramacionList(data);
+                await fetchEquipo();
             } else {
                 alert(errorMessage);
             }
@@ -135,22 +147,15 @@ export default function InsertProgramacion() {
     };
 
     const handleEdit = (item) => {
-        // Format date for input type="date" (YYYY-MM-DD)
-        let formattedFecha = '';
-        if (item.fecha) {
-            const date = new Date(item.fecha);
-            if (!isNaN(date.getTime())) {
-                formattedFecha = date.toISOString().split('T')[0];
-            }
-        }
-        
         setForm({
             nombre: item.nombre,
-            categoria: item.categoria,
-            compania: item.compania || '',
-            fecha: formattedFecha,
-            hora: item.hora
+            apellido: item.apellido,
+            rol: item.rol,
+            descripcion: item.descripcion || '',
+            foto: item.foto || '',
+            orden: item.orden !== null && item.orden !== undefined ? item.orden : ''
         });
+        setImagePreview(item.foto || '');
         setEditingId(item.id);
 
         setTimeout(() => {
@@ -162,24 +167,19 @@ export default function InsertProgramacion() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('¿Estás seguro de eliminar esta programación?')) return;
+        if (!confirm('¿Estás seguro de eliminar a este miembro del equipo?')) return;
 
         try {
-            const response = await fetch(`${API_URL}/programacion-simple/${id}`, {
+            const response = await fetch(`${API_URL}/equipo/${id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });
 
             if (response.ok) {
-                alert('Programación eliminada correctamente');
-                // Refresh list
-                const listResponse = await fetch(`${API_URL}/programacion-simple`, {
-                    credentials: 'include'
-                });
-                const data = await listResponse.json();
-                setProgramacionList(data);
+                alert('Miembro eliminado correctamente');
+                await fetchEquipo();
             } else {
-                alert('Error al eliminar la programación');
+                alert('Error al eliminar al miembro');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -190,21 +190,14 @@ export default function InsertProgramacion() {
     const resetForm = () => {
         setForm({
             nombre: '',
-            categoria: '',
-            compania: '',
-            fecha: '',
-            hora: ''
+            apellido: '',
+            rol: '',
+            descripcion: '',
+            foto: '',
+            orden: ''
         });
+        setImagePreview('');
         setEditingId(null);
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
     };
 
     if (loading) {
@@ -213,33 +206,33 @@ export default function InsertProgramacion() {
 
     return (
         <div className="mainpage-insert-event">
-            {/* Left side - Programación Registrada */}
+            {/* Left side - Equipo Registrado */}
             <div className="insert-event-container">
-                <h2>Programación Registrada</h2>
+                <h2>Equipo Registrado</h2>
                 {loadingList ? (
                     <p>Cargando...</p>
-                ) : programacionList.length === 0 ? (
-                    <p>No hay programación registrada.</p>
+                ) : equipoList.length === 0 ? (
+                    <p>No hay miembros registrados.</p>
                 ) : (
                     <table className="programacion-table">
                         <thead>
                             <tr>
+                                <th>Orden</th>
+                                <th>Foto</th>
                                 <th>Nombre</th>
-                                <th>Categoría</th>
-                                <th>Compañía</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
+                                <th>Rol</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {programacionList.map(item => (
+                            {equipoList.map(item => (
                                 <tr key={item.id}>
-                                    <td>{item.nombre}</td>
-                                    <td>{item.categoria}</td>
-                                    <td>{item.compania || '-'}</td>
-                                    <td>{formatDate(item.fecha)}</td>
-                                    <td>{item.hora}</td>
+                                    <td style={{ fontWeight: 'bold', textAlign: 'center' }}>{item.orden !== null ? item.orden : '-'}</td>
+                                    <td>
+                                        {item.foto ? <img src={item.foto} alt={item.nombre} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} /> : '-'}
+                                    </td>
+                                    <td>{item.nombre} {item.apellido}</td>
+                                    <td>{item.rol}</td>
                                     <td>
                                         <button onClick={() => handleEdit(item)} className="edit-btn">
                                             Editar
@@ -257,7 +250,7 @@ export default function InsertProgramacion() {
 
             {/* Right side - Form */}
             <div className="insert-event-container" id="formulario-edicion">
-                <h2>{editingId ? 'Editar Programación' : 'Agregar Programación'}</h2>
+                <h2>{editingId ? 'Editar Miembro' : 'Agregar Miembro'}</h2>
                 <form onSubmit={handleSubmit} className="insert-event-form">
                     <label className="insert-event-label">
                         Nombre *
@@ -272,59 +265,73 @@ export default function InsertProgramacion() {
                     </label>
 
                     <label className="insert-event-label">
-                        Categoría *
-                        <select
-                            name="categoria"
-                            className="insert-event-input"
-                            value={form.categoria}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Seleccione una categoría</option>
-                            {CATEGORIAS.map(cat => (
-                                <option key={cat.value} value={cat.value}>{cat.label}</option>
-                            ))}
-                        </select>
-                    </label>
-
-                    <label className="insert-event-label">
-                        Compañía
+                        Apellido *
                         <input 
                             type="text" 
-                            name="compania" 
+                            name="apellido" 
                             className="insert-event-input" 
-                            value={form.compania} 
-                            onChange={handleChange} 
-                            placeholder="Nombre de la compañía o grupo"
-                        />
-                    </label>
-
-                    <label className="insert-event-label">
-                        Fecha *
-                        <input 
-                            type="date" 
-                            name="fecha" 
-                            className="insert-event-input" 
-                            value={form.fecha} 
+                            value={form.apellido} 
                             onChange={handleChange} 
                             required 
                         />
                     </label>
 
                     <label className="insert-event-label">
-                        Hora *
+                        Rol *
                         <input 
-                            type="time" 
-                            name="hora" 
+                            type="text" 
+                            name="rol" 
                             className="insert-event-input" 
-                            value={form.hora} 
+                            value={form.rol} 
                             onChange={handleChange} 
                             required 
                         />
+                    </label>
+
+                    <label className="insert-event-label">
+                        Orden de aparición (número)
+                        <input 
+                            type="number" 
+                            name="orden" 
+                            className="insert-event-input" 
+                            value={form.orden} 
+                            onChange={handleChange} 
+                            onWheel={(e) => e.target.blur()}
+                            placeholder="1, 2, 3..."
+                        />
+                    </label>
+
+                    <label className="insert-event-label">
+                        Descripción
+                        <textarea 
+                            name="descripcion" 
+                            className="insert-event-input" 
+                            value={form.descripcion} 
+                            onChange={handleChange}
+                            rows="4"
+                        />
+                    </label>
+
+                    <label className="insert-event-label">
+                        Fotografía
+                        <input
+                            type="file"
+                            className="insert-event-input"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={imageUploading}
+                        />
+                        {imageUploading && <span className="insert-event-hint">Subiendo imagen...</span>}
+                        {imagePreview && (
+                            <div className="insert-event-preview">
+                                <span>Imagen actual:</span>
+                                <img src={imagePreview} alt="Preview" style={{ maxWidth: '100px', borderRadius: '8px' }} />
+                            </div>
+                        )}
                     </label>
 
                     <div className="form-buttons">
-                        <button type="submit">{editingId ? 'Actualizar' : 'Guardar'}</button>
+                        <button type="submit" disabled={imageUploading}>{editingId ? 'Actualizar' : 'Guardar'}</button>
                         {editingId && (
                             <button type="button" onClick={resetForm} className="cancel-btn">
                                 Cancelar

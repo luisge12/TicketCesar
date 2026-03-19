@@ -8,6 +8,7 @@ import img4 from '../assets/carousel/4.webp';
 import img5 from '../assets/carousel/5.webp';
 import img6 from '../assets/carousel/6.webp';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 // Importa más imágenes si tienes
 
 const images = [
@@ -28,7 +29,7 @@ export default function MainPage() {
     const sliderRef = useRef();
     const intervalRef = useRef(null);
     const [events, setEvents] = useState([]);
-    const [userRole, setUserRole] = useState(null);
+    const { userRole } = useAuth();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -91,29 +92,7 @@ export default function MainPage() {
         }
     }, [transition]);
 
-    //useEffect para datos de usuarios
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
 
-                if (data.isAuthenticated && data.user) {
-                    setUserRole(data.user.role);
-                } else {
-                    setUserRole(null);
-                }
-            } catch (error) {
-                console.error('Error verificando autenticación:', error);
-                setUserRole(null);
-            }
-        };
-
-        checkAuthStatus();
-    }, []);
     function formatDate(dateString) {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');

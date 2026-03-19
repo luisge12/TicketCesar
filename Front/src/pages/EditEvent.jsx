@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API_URL } from '../config.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './../styles/insert-event.css'
 
 export default function EditEvent() {
@@ -42,9 +43,7 @@ export default function EditEvent() {
     const location = useLocation();
     const navigate = useNavigate();
     const { id } = useParams();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRole, setUserRole] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { isAuthenticated, userRole, isLoading: loading } = useAuth();
 
     const [form, setForm] = useState({
         attendance: '',
@@ -74,34 +73,7 @@ export default function EditEvent() {
         window.scrollTo(0, 0);
     }, [location]);
 
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await fetch(`${API_URL}/session`, {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                const data = await response.json();
 
-                setIsAuthenticated(data.isAuthenticated);
-
-                if (data.isAuthenticated && data.user) {
-                    setUserRole(data.user.role);
-                } else {
-                    setUserRole(null);
-                }
-
-            } catch (error) {
-                console.error('Error verificando autenticación:', error);
-                setIsAuthenticated(false);
-                setUserRole(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAuthStatus();
-    }, []); // Eliminada dependencia de userRole para evitar bucles
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
