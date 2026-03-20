@@ -439,9 +439,10 @@ export default function ReservEvent({ openLoginModal }) {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onRequestClose={() => setIsPaymentModalOpen(false)}
+        mode="ticket"
         event={event}
         selectedSeats={selectedSeats}
-        onReservationSuccess={handleReservationSuccess}
+        onSuccess={handleReservationSuccess}
       />
 
       {isAdminModalOpen && (

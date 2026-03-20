@@ -58,5 +58,32 @@ export default function createProductsRouter({ productsConnect, requireAdmin }) 
         }
     });
 
+    // POST /purchase – descuenta el stock al finalizar una compra del Kiosko
+    // El usuario debe estar autenticado (tiene sesión activa)
+    router.post('/purchase', async (req, res, next) => {
+        try {
+            const { items } = req.body;
+
+            if (!Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({ error: 'Se requiere un arreglo de items con id y quantity.' });
+            }
+
+            // Validar que cada item tenga id y quantity positivos
+            for (const item of items) {
+                if (!item.id || !Number.isInteger(item.quantity) || item.quantity < 1) {
+                    return res.status(400).json({ error: 'Cada item debe tener un id válido y una cantidad entera positiva.' });
+                }
+            }
+
+            await productsConnect.purchaseItems(items);
+            res.json({ success: true, message: 'Compra procesada. Stock actualizado.' });
+        } catch (error) {
+            if (error.message.includes('Stock insuficiente') || error.message.includes('no encontrado')) {
+                return res.status(409).json({ error: error.message });
+            }
+            next(error);
+        }
+    });
+
     return router;
 }

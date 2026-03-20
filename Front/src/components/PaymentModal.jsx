@@ -3,10 +3,34 @@ import Modal from 'react-modal';
 import { API_URL } from '../config.js';
 import '../styles/payment-modal.css';
 
-// Modal.setAppElement('#root') is already called in Header.jsx, 
-// but we can ensure it here if needed, or assume it's set.
-
-export default function PaymentModal({ isOpen, onRequestClose, event, selectedSeats, onReservationSuccess }) {
+/**
+ * PaymentModal – componente unificado para pagos.
+ *
+ * Modos disponibles (prop `mode`):
+ *   - "ticket"  → confirma reserva de asientos en un evento (hace llamada real al backend).
+ *   - "cart"    → finaliza compra del Kiosko (simulación).
+ *
+ * Props comunes:
+ *   isOpen, onRequestClose, onSuccess
+ *
+ * Props para modo "ticket":
+ *   event, selectedSeats
+ *
+ * Props para modo "cart":
+ *   cart, totalPrice
+ */
+export default function PaymentModal({
+    isOpen,
+    onRequestClose,
+    onSuccess,
+    // Ticket mode
+    mode = 'ticket',
+    event,
+    selectedSeats,
+    // Cart mode
+    cart,
+    totalPrice: cartTotalPrice,
+}) {
     const [formData, setFormData] = useState({
         cardName: '',
         cardNumber: '',
@@ -16,7 +40,10 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState(null);
 
-    const totalPrice = selectedSeats.length * (event.ticket_price || 0);
+    // Precio total según el modo
+    const totalPrice = mode === 'ticket'
+        ? (selectedSeats?.length ?? 0) * (event?.ticket_price ?? 0)
+        : (cartTotalPrice ?? 0);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,66 +55,120 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
         setIsProcessing(true);
         setError(null);
 
-        // Simulate payment processing delay
+        // Simular delay de procesamiento
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        try {
-            const response = await fetch(`${API_URL}/reservations`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    eventId: event.id,
-                    seatId: selectedSeats,
-                    paymentMethod: 'credit_card',
-                    totalPrice: totalPrice
-                })
-            });
+        if (mode === 'ticket') {
+            // Hacer llamada real al backend para crear la reserva
+            try {
+                const response = await fetch(`${API_URL}/reservations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        eventId: event.id,
+                        seatId: selectedSeats,
+                        paymentMethod: 'credit_card',
+                        totalPrice: totalPrice
+                    })
+                });
 
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Error al procesar la reserva');
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Error al procesar la reserva');
+                }
+
+                setIsProcessing(false);
+                onSuccess?.();
+                onRequestClose();
+            } catch (err) {
+                console.error('Error en el proceso de reserva:', err);
+                setError(err.message || 'Ocurrió un error al procesar la reserva. Intente nuevamente.');
+                setIsProcessing(false);
             }
+        } else {
+            // Modo "cart": llamada real al backend para descontar stock
+            try {
+                const items = cart.map(item => ({ id: item.id, quantity: item.quantity }));
 
-            setIsProcessing(false);
-            onReservationSuccess();
-            onRequestClose();
-        } catch (err) {
-            console.error('Error in reservation process:', err);
-            setError(err.message || 'Ocurrió un error al procesar la reserva. Intente nuevamente.');
-            setIsProcessing(false);
+                const response = await fetch(`${API_URL}/products/purchase`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ items })
+                });
+
+                if (!response.ok) {
+                    // Parsear el error de forma segura (puede ser JSON o HTML)
+                    let errorMessage = 'Error al procesar la compra';
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        const errData = await response.json();
+                        errorMessage = errData.error || errorMessage;
+                    } else {
+                        errorMessage = `Error ${response.status}: ${response.statusText || 'Ruta no encontrada'}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                setIsProcessing(false);
+                onSuccess?.();
+                onRequestClose();
+            } catch (err) {
+                setError(err.message || 'Ocurrió un error al procesar la compra. Intente nuevamente.');
+                setIsProcessing(false);
+            }
         }
     };
+
+    const isTicketMode = mode === 'ticket';
 
     return (
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            contentLabel="Procesar Pago"
+            contentLabel={isTicketMode ? 'Procesar Pago' : 'Finalizar Compra'}
             className="payment-modal"
             overlayClassName="payment-modal-overlay"
             ariaHideApp={false}
         >
-            <h2>Detalles de la Reserva</h2>
+            <h2>{isTicketMode ? 'Detalles de la Reserva' : 'Finalizar Compra - Pago Simulado'}</h2>
 
             {isProcessing && (
                 <div className="processing-overlay">
                     <div className="spinner"></div>
-                    <p>Procesando pago y reserva...</p>
+                    <p>{isTicketMode ? 'Procesando pago y reserva...' : 'Procesando pago...'}</p>
                 </div>
             )}
 
+            {/* Resumen de la compra */}
             <div className="reservation-details">
-                <p><strong>Evento:</strong> {event.name}</p>
-                <p><strong>Asientos:</strong> {selectedSeats.join(', ')}</p>
-                <p><strong>Total a pagar:</strong> ${totalPrice.toLocaleString()}</p>
+                {isTicketMode ? (
+                    <>
+                        <p><strong>Evento:</strong> {event?.name}</p>
+                        <p><strong>Asientos:</strong> {selectedSeats?.join(', ')}</p>
+                        <p><strong>Total a pagar:</strong> ${totalPrice.toLocaleString()}</p>
+                    </>
+                ) : (
+                    <>
+                        <p><strong>Artículos:</strong> {cart?.length} productos distintos</p>
+                        <div style={{ maxHeight: '100px', overflowY: 'auto', fontSize: '0.9rem', margin: '0.5rem 0' }}>
+                            {cart?.map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span>{item.nombre} x{item.quantity}</span>
+                                    <span>${(Number(item.precio) * item.quantity).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <p><strong>Total a pagar:</strong> ${totalPrice.toFixed(2)}</p>
+                    </>
+                )}
             </div>
 
+            {/* Formulario de tarjeta (idéntico para ambos modos) */}
             <form className="payment-form" onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="cardName">Nombre en la tarjeta</label>
+                    <label htmlFor="cardName">NOMBRE EN LA TARJETA</label>
                     <input
                         type="text"
                         id="cardName"
@@ -99,7 +180,7 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="cardNumber">Número de tarjeta</label>
+                    <label htmlFor="cardNumber">NÚMERO DE TARJETA</label>
                     <input
                         type="text"
                         id="cardNumber"
@@ -114,7 +195,7 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
                 </div>
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="expiry">Vencimiento</label>
+                        <label htmlFor="expiry">VENCIMIENTO</label>
                         <input
                             type="text"
                             id="expiry"
@@ -149,7 +230,7 @@ export default function PaymentModal({ isOpen, onRequestClose, event, selectedSe
                         Cancelar
                     </button>
                     <button type="submit" className="btn-pay" disabled={isProcessing}>
-                        Pagar y Reservar
+                        {isTicketMode ? 'Pagar y Reservar' : 'Pagar y Finalizar'}
                     </button>
                 </div>
             </form>

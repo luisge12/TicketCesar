@@ -8,7 +8,7 @@ import './../styles/shop.css';
 export default function ProductDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { addToCart, totalItems, isCartOpen, setIsCartOpen } = useCart();
+    const { addToCart, totalItems, isCartOpen, setIsCartOpen, purchaseCount } = useCart();
     
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function ProductDetail() {
             }
         };
         fetchProduct();
-    }, [id, navigate]);
+    }, [id, navigate, purchaseCount]);
 
     const handleAddToCart = () => {
         if (!product) return;

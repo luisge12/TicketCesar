@@ -7,7 +7,7 @@ import CartSidebar from '../components/CartSidebar.jsx';
 
 export default function Shop() {
     const navigate = useNavigate();
-    const { totalItems, isCartOpen, setIsCartOpen } = useCart();
+    const { totalItems, isCartOpen, setIsCartOpen, purchaseCount } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,7 @@ export default function Shop() {
             }
         };
         fetchProducts();
-    }, []);
+    }, [purchaseCount]);
 
     // Helper hook or function could go here to cycle images, but for now we'll show a simple horizontal scroll if there are multiple, or just the main one.
 

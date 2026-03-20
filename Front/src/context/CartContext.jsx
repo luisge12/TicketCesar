@@ -56,6 +56,10 @@ export const CartProvider = ({ children }) => {
 
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [purchaseCount, setPurchaseCount] = useState(0);
+
+    // Llamar después de una compra exitosa para que las páginas recarguen el stock
+    const triggerStockRefresh = () => setPurchaseCount(c => c + 1);
 
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = cart.reduce((sum, item) => sum + (Number(item.precio) * item.quantity), 0);
@@ -72,7 +76,9 @@ export const CartProvider = ({ children }) => {
             isCartOpen,
             setIsCartOpen,
             isPaymentModalOpen,
-            setIsPaymentModalOpen
+            setIsPaymentModalOpen,
+            purchaseCount,
+            triggerStockRefresh
         }}>
             {children}
         </CartContext.Provider>

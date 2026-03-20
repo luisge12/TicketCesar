@@ -30,13 +30,13 @@ import UserProfile from './pages/UserProfile';
 import PasswordResetOptions from './components/Modal-login';
 import { useAuth } from './context/AuthContext.jsx';
 import { useCart } from './context/CartContext.jsx';
-import CartPaymentModal from './components/CartPaymentModal.jsx';
+import PaymentModal from './components/PaymentModal.jsx';
 import './styles/app.css'
 
 export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { userRole, isLoading } = useAuth();
-    const { isPaymentModalOpen, setIsPaymentModalOpen, cart, totalPrice, clearCart } = useCart();
+    const { isPaymentModalOpen, setIsPaymentModalOpen, cart, totalPrice, clearCart, triggerStockRefresh } = useCart();
 
     const openLoginModal = () => {
         setIsModalOpen(true);
@@ -50,6 +50,7 @@ export default function App() {
         alert('¡Pago procesado con éxito! Gracias por tu compra.');
         clearCart();
         setIsPaymentModalOpen(false);
+        triggerStockRefresh();
     };
 
     return (
@@ -98,12 +99,13 @@ export default function App() {
             </div>
             {userRole === 'admin' && <AdminBar />}
             <Footer />
-            <CartPaymentModal 
+            <PaymentModal 
                 isOpen={isPaymentModalOpen} 
                 onRequestClose={() => setIsPaymentModalOpen(false)}
+                mode="cart"
                 cart={cart}
                 totalPrice={totalPrice}
-                onCheckoutSuccess={handleCheckoutSuccess}
+                onSuccess={handleCheckoutSuccess}
             />
         </Router>
     );

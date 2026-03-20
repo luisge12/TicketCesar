@@ -147,4 +147,48 @@ export class ProductConnections {
             throw error;
         }
     }
+
+    /**
+     * Descuenta el stock de varios productos en una sola transacción atómica.
+     * @param {Array<{id: number, quantity: number}>} items
+     * @throws {Error} si algún producto no tiene stock suficiente
+     */
+    async purchaseItems(items) {
+        const client = await this.pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            for (const item of items) {
+                // Bloqueo de fila para evitar condiciones de carrera
+                const { rows } = await client.query(
+                    'SELECT cantidad FROM products WHERE id = $1 FOR UPDATE',
+                    [item.id]
+                );
+
+                if (rows.length === 0) {
+                    throw new Error(`Producto con id ${item.id} no encontrado`);
+                }
+
+                const stockActual = rows[0].cantidad;
+                if (stockActual < item.quantity) {
+                    throw new Error(
+                        `Stock insuficiente para el producto id ${item.id}. Disponible: ${stockActual}, solicitado: ${item.quantity}`
+                    );
+                }
+
+                await client.query(
+                    'UPDATE products SET cantidad = cantidad - $1 WHERE id = $2',
+                    [item.quantity, item.id]
+                );
+            }
+
+            await client.query('COMMIT');
+            return { success: true };
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
 }
