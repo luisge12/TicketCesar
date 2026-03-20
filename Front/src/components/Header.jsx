@@ -143,7 +143,7 @@ export default function Header({ isModalOpen, onLoginClick, onModalClose }) {
             <li className="first-menu" onClick={() => navigate('/alquiler')} style={{ cursor: 'pointer' }}>
               Alquiler
             </li>
-            <li className="first-menu">
+            <li className="first-menu" onClick={() => navigate('/shop')} style={{ cursor: 'pointer' }}>
               Kiosco César
             </li>
             <li className="first-menu" onClick={() => navigate('/visitanos')} style={{ cursor: 'pointer' }}>
@@ -194,6 +194,7 @@ export default function Header({ isModalOpen, onLoginClick, onModalClose }) {
           <img src="/src/assets/user.png" alt="userslogo" className="user-img" />
         </button>
       </div>
+
     </header>
   );
 }

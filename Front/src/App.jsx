@@ -23,14 +23,20 @@ import Alquiler from './pages/Alquiler';
 import Programacion from './pages/Programacion';
 import InsertProgramacion from './pages/InsertProgramacion';
 import InsertEquipo from './pages/InsertEquipo';
+import InsertProduct from './pages/InsertProduct';
+import ProductDetail from './pages/ProductDetail';
+import Shop from './pages/Shop';
 import UserProfile from './pages/UserProfile';
 import PasswordResetOptions from './components/Modal-login';
 import { useAuth } from './context/AuthContext.jsx';
+import { useCart } from './context/CartContext.jsx';
+import CartPaymentModal from './components/CartPaymentModal.jsx';
 import './styles/app.css'
 
 export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { userRole, isLoading } = useAuth();
+    const { isPaymentModalOpen, setIsPaymentModalOpen, cart, totalPrice, clearCart } = useCart();
 
     const openLoginModal = () => {
         setIsModalOpen(true);
@@ -38,6 +44,12 @@ export default function App() {
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
+    };
+
+    const handleCheckoutSuccess = () => {
+        alert('¡Pago procesado con éxito! Gracias por tu compra.');
+        clearCart();
+        setIsPaymentModalOpen(false);
     };
 
     return (
@@ -76,6 +88,9 @@ export default function App() {
                         <Route path="/programacion" element={<Programacion />} />
                         <Route path="/insertProgramacion" element={<InsertProgramacion />} />
                         <Route path="/insertEquipo" element={<InsertEquipo />} />
+                        <Route path="/shop" element={<Shop />} />
+                        <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/insertProduct" element={<InsertProduct />} />
                         <Route path="/userprofile" element={<UserProfile />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
@@ -83,7 +98,13 @@ export default function App() {
             </div>
             {userRole === 'admin' && <AdminBar />}
             <Footer />
+            <CartPaymentModal 
+                isOpen={isPaymentModalOpen} 
+                onRequestClose={() => setIsPaymentModalOpen(false)}
+                cart={cart}
+                totalPrice={totalPrice}
+                onCheckoutSuccess={handleCheckoutSuccess}
+            />
         </Router>
     );
-
 }

@@ -5,11 +5,13 @@ import { EventConnections } from './models/Event.js';
 import { BlogConnections } from './models/Blog.js';
 import { ReservationsConnections } from './models/Reservation.js';
 import { EquipoConnections } from './models/Equipo.js';
+import { ProductConnections } from './models/Product.js';
 import createUserRouter from './routes/users.js';
 import createEventsRouter from './routes/events.js';
 import createBlogRouter from './routes/blog.js';
 import createReservationsRouter from './routes/reservations.js';
 import createEquipoRouter from './routes/equipo.js';
+import createProductsRouter from './routes/products.js';
 import { requireAuth, requireAdmin } from './middleware/auth.js';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
@@ -21,6 +23,7 @@ const eventconnect = new EventConnections();
 const blogconnect = new BlogConnections();
 const reservationsConnect = new ReservationsConnections();
 const equipoconnect = new EquipoConnections();
+const productsConnect = new ProductConnections();
 
 const app = express();
 app.use(cors({
@@ -57,6 +60,7 @@ app.use((req, res, next) => {
 });
 
 // Routers (grouped by request type) -- registered after app and middleware
+app.use('/api/products', createProductsRouter({ productsConnect, requireAdmin }));
 app.use('/api', createUserRouter({ userconnect, jwt, JWT_SECRET }));
 app.use('/api', createEventsRouter({ eventconnect, requireAdmin }));
 app.use('/api', createBlogRouter({ blogconnect, requireAdmin }));
