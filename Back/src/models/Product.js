@@ -12,9 +12,7 @@ export class ProductConnections {
             port: DB_PORT,
         });
 
-        this.initTable()
-            .then(() => console.log('Tablas del Kiosko (products) inicializadas'))
-            .catch(err => console.error('Error al inicializar products:', err));
+
     }
 
     async initTable() {

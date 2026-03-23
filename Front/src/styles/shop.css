@@ -32,20 +32,22 @@
 }
 
 .kiosko-gallery {
-    max-width: 95%;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
 }
 
 .kiosko-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
+    gap: 1.5rem;
+    padding: 1rem 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     .kiosko-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }
 
@@ -65,7 +67,7 @@
 }
 
 .kiosko-image-container {
-    height: 250px;
+    height: 220px;
     background: #eee;
     overflow: hidden;
     position: relative;
@@ -112,7 +114,7 @@
 }
 
 .kiosko-details {
-    padding: 1.5rem;
+    padding: 1.2rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;

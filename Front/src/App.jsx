@@ -64,7 +64,7 @@ export default function App() {
             <div className="page-with-admin-bar">
                 <div className="mainpage-div">
                     {(isLoading) && (
-                        <div className='color-white bg-black'>Cargando...</div>
+<div className="loading-overlay"><div className="spinner"></div></div>
                     )
                     }
 

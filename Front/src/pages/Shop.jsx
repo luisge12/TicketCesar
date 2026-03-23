@@ -53,7 +53,7 @@ export default function Shop() {
 
             <section className="kiosko-gallery">
                 {loading ? (
-                    <div className="loading-spinner">Cargando productos del catálogo...</div>
+<div className="loading-overlay"><div className="spinner"></div></div>
                 ) : products.length === 0 ? (
                     <p className="no-products">Actualmente no hay productos disponibles en el Kiosko. ¡Vuelve pronto!</p>
                 ) : (
