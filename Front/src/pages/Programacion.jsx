@@ -122,7 +122,7 @@ export default function Programacion() {
             </div>
 
             {loading ? (
-                <div className="loading">Cargando programación...</div>
+<div className="loading-overlay"><div className="spinner"></div></div>
             ) : programacion.length === 0 ? (
                 <div className="no-programacion">
                     <p>No hay programación programada para {getMesNombre(mes)} {anio}.</p>

@@ -1,26 +1,20 @@
 @font-face {
     font-family: 'Title';
-    /* Este es el nombre que usarás en CSS */
     src: url('../assets/fonts/Bohemian-Soul.otf') format('opentype');
-    /* Asegúrate de que la ruta y el formato sean correctos */
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'subtitle';
-    /* Este es el nombre que usarás en CSS */
     src: url('../assets/fonts/Aileron-Bold_1.otf') format('opentype');
-    /* Asegúrate de que la ruta y el formato sean correctos */
     font-weight: 700;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'text';
-    /* Este es el nombre que usarás en CSS */
     src: url('../assets/fonts/Aileron-Regular.otf') format('opentype');
-    /* Asegúrate de que la ruta y el formato sean correctos */
     font-weight: 400;
     font-style: normal;
 }
@@ -37,4 +31,48 @@
 
 body {
     font-family: var(--text);
+}
+
+/* Loading Spinner */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top: 5px solid var(--beige);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+}
+
+.spinner-small {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid var(--beige);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }

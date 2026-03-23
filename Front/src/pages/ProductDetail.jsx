@@ -8,31 +8,28 @@ import './../styles/shop.css';
 export default function ProductDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { addToCart, totalItems, isCartOpen, setIsCartOpen, purchaseCount } = useCart();
+    const { addToCart, totalItems, isCartOpen, setIsCartOpen } = useCart();
     
     const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [activeImage, setActiveImage] = useState(0);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         const fetchProduct = async () => {
             try {
                 const res = await fetch(`${API_URL}/products/${id}`);
-                if (!res.ok) throw new Error('Producto no encontrado');
+                if (!res.ok) {
+                    setProduct(null);
+                    return;
+                }
                 const data = await res.json();
                 setProduct(data);
-            } catch (err) {
-                console.error("Error fetching product:", err);
-                alert("Error: " + err.message);
-                navigate('/shop');
-            } finally {
-                setLoading(false);
+            } catch {
+                setProduct(null);
             }
         };
         fetchProduct();
-    }, [id, navigate, purchaseCount]);
+    }, [id]);
 
     const handleAddToCart = () => {
         if (!product) return;
@@ -40,8 +37,14 @@ export default function ProductDetail() {
         alert(`${quantity} ${product.nombre} añadido al carrito`);
     };
 
-    if (loading) return <div className="loading-spinner">Cargando detalles del producto...</div>;
-    if (!product) return null;
+    if (!product) return (
+        <div className="product-detail-page">
+            <nav className="blog-nav" style={{ background: 'none', color: 'var(--black)', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button className="blog-nav-btn" onClick={() => navigate('/shop')}>← Volver al Kiosko</button>
+            </nav>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>Producto no encontrado.</div>
+        </div>
+    );
 
     const inStock = product.cantidad > 0;
 
