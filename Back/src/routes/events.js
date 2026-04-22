@@ -68,6 +68,28 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
+  router.get('/event-report/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+      const report = await eventconnect.getReportByEvent(id);
+      res.json(report);
+    } catch (error) {
+      console.error('Error fetching event report:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.put('/close-event/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await eventconnect.closeEvent(id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error closing event:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   router.get('/get_state_seat/:id', async (req, res) => {
     const { id } = req.params;
     try {

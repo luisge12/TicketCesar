@@ -39,7 +39,7 @@
 
 .kiosko-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
     padding: 1rem 0;
 }
@@ -217,11 +217,11 @@
 /* Product Detail Specific Styles */
 
 .product-detail-container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 2rem auto;
     display: flex;
     gap: 4rem;
-    padding: 3rem 1.5rem; /* Combinando paddings */
+    padding: 3rem 5%; /* Fluid padding */
 }
 
 .product-detail-media {

@@ -34,7 +34,7 @@ export default function ProductDetail() {
     const handleAddToCart = () => {
         if (!product) return;
         addToCart(product, quantity);
-        alert(`${quantity} ${product.nombre} añadido al carrito`);
+        setIsCartOpen(true);
     };
 
     if (!product) return (

@@ -27,6 +27,7 @@ import InsertProduct from './pages/InsertProduct';
 import ProductDetail from './pages/ProductDetail';
 import Shop from './pages/Shop';
 import UserProfile from './pages/UserProfile';
+import AdminReports from './pages/AdminReports';
 import PasswordResetOptions from './components/Modal-login';
 import { useAuth } from './context/AuthContext.jsx';
 import { useCart } from './context/CartContext.jsx';
@@ -93,6 +94,7 @@ export default function App() {
                         <Route path="/product/:id" element={<ProductDetail />} />
                         <Route path="/insertProduct" element={<InsertProduct />} />
                         <Route path="/userprofile" element={<UserProfile />} />
+                        <Route path="/admin-reportes" element={<AdminReports />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>

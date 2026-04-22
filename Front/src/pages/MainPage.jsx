@@ -41,7 +41,7 @@ export default function MainPage() {
                 credentials: 'include'
             });
             const data = await response.json();
-            setEvents(data);
+            setEvents(data.filter(event => event.is_active === true));
         };
 
         fetchEvents();

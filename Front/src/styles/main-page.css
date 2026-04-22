@@ -21,8 +21,8 @@ html {
 }
 
 .mainpage-container {
-    width: 90vw;
-    height: auto;
+    width: 85vw;
+    height: 80vh;
     color: var(--black);
     display: flex;
     flex-direction: column;

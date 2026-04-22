@@ -53,26 +53,44 @@
     box-sizing: border-box;
     font-size: 16px;
     transition: border-color 0.3s;
+    color: var(--black);
+    background-color: var(--beige);
+}
+
+.user-register-input::placeholder {
+    color: var(--grey);
+}
+
+.user-register-input:focus {
+    outline: none;
+    border-color: var(--grey);
 }
 
 /* Estilos para el botón de envío */
-.user-register-input {
+/* Button styles moved to .registro-container button below */
+
+.registro-container button[type="submit"] {
     width: 100%;
-    /* Ya está correcto */
     padding: 15px;
     background-color: transparent;
-    color: white;
+    color: var(--black);
     font-size: 18px;
     font-weight: bold;
-    border: none;
+    border: 1px solid var(--grey);
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border: 1px solid var(--grey);
+    margin-top: 1rem;
 }
 
-.registro-container button:hover {
+.registro-container button[type="submit"]:hover {
     background-color: var(--grey);
+    color: var(--beige);
+}
+
+.registro-container button[type="submit"]:active {
+    background-color: var(--black);
+    color: var(--beige);
 }
 
 .registro-container button:active {

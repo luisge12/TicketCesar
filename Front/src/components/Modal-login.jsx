@@ -125,7 +125,7 @@ export default function ModalContent({ onClose }) {
                     <button
                         type="button"
                         className="modal-buttons"
-                        onClick={() => window.location.href = "./UserRegister"}
+                        onClick={() => window.location.href = "/UserRegister"}
                     >
                         Registrarse
                     </button>

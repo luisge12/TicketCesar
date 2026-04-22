@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../services/mailService.js';
 import { validateRequest } from '../middleware/validate.js';
 import { registerSchema, loginSchema } from '../validators/userValidator.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 
 export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
   const router = express.Router();
@@ -29,7 +30,7 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     }
   });
 
-  router.post('/register', validateRequest(registerSchema), async (req, res, next) => {
+  router.post('/register', authLimiter, validateRequest(registerSchema), async (req, res, next) => {
     const user = req.body;
     try {
       const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -53,7 +54,7 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     }
   });
 
-  router.post('/login', validateRequest(loginSchema), async (req, res, next) => {
+  router.post('/login', authLimiter, validateRequest(loginSchema), async (req, res, next) => {
     const { email, password } = req.body;
     try {
       const result = await userconnect.loginUser(email, password);
@@ -120,7 +121,7 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     }
   });
 
-  router.post('/forgot-password', async (req, res) => {
+  router.post('/forgot-password', authLimiter, async (req, res) => {
     const { email } = req.body;
     try {
       const token = crypto.randomBytes(32).toString('hex');
@@ -145,7 +146,7 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     }
   });
 
-  router.post('/reset-password', async (req, res) => {
+  router.post('/reset-password', authLimiter, async (req, res) => {
     const { token, newPassword } = req.body;
     if (!token || !newPassword) return res.status(400).json({ error: 'Faltan parámetros' });
 

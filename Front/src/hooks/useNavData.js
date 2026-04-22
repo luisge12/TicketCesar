@@ -19,7 +19,7 @@ export function useNavData() {
                 .then(data => {
                     setCategoryEvents(prev => ({
                         ...prev,
-                        [category]: data
+                        [category]: data.filter(event => event.is_active === true)
                     }));
                 })
                 .catch(error => {

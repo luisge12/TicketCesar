@@ -30,6 +30,7 @@ export default function ReservEvent({ openLoginModal }) {
   const { userRole } = useAuth();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdminActionModalOpen, setIsAdminActionModalOpen] = useState(false);
   const [adminPaymentMethod, setAdminPaymentMethod] = useState('');
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [ticketInputValue, setTicketInputValue] = useState('1');
@@ -44,16 +45,25 @@ export default function ReservEvent({ openLoginModal }) {
       .then(data => setEvent(data))
       .catch(err => console.error(err));
 
-    fetch(`${API_URL}/get_state_seat/${id}`, { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        const stateMap = {};
-        data.forEach(seat => {
-          stateMap[seat.seat_id] = seat.state;
-        });
-        setSeatStates(stateMap);
-      })
-      .catch(err => console.error(err));
+    const fetchSeats = () => {
+      fetch(`${API_URL}/get_state_seat/${id}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          const stateMap = {};
+          data.forEach(seat => {
+            stateMap[seat.seat_id] = seat.state;
+          });
+          setSeatStates(stateMap);
+        })
+        .catch(err => console.error(err));
+    };
+
+    fetchSeats();
+    
+    // Polling para mantener los estados de los asientos en tiempo real (cada 3 segundos)
+    const interval = setInterval(fetchSeats, 3000);
+
+    return () => clearInterval(interval);
   }, [id]);
 
   const handleSelect = (section, row, seat) => {
@@ -87,7 +97,34 @@ export default function ReservEvent({ openLoginModal }) {
       return;
     }
 
-    const newState = action === 'disponible' ? 'available' : 'occupied';
+    if (action === 'ocupado') {
+      try {
+        const response = await fetch(`${API_URL}/reservations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            eventId: id,
+            seatId: selectedSeats,
+            paymentMethod: 'reserva_interna',
+            totalPrice: 0,
+            seatState: 'occupied'
+          })
+        });
+
+        if (response.ok) {
+          handleReservationSuccess();
+        } else {
+          const data = await response.json();
+          alert('Error al procesar reserva interna: ' + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+      return;
+    }
+
+    const newState = 'available';
 
     try {
       const response = await fetch(`${API_URL}/update_seat_state`, {
@@ -413,27 +450,33 @@ export default function ReservEvent({ openLoginModal }) {
         </div>
       )}
 
-      {isAdmin ? (
-        <div className="admin-confirm-container">
-          {selectedSeats.length > 0 && (
-            <div className="admin-floating-actions">
-              <span>{selectedSeats.length} seleccionados</span>
-              <div className="admin-buttons-group">
-                <button onClick={() => handleAdminAction('disponible')} className="btn-admin-action available">Liberar</button>
-                <button onClick={() => handleAdminAction('ocupado')} className="btn-admin-action occupied">Reserva Interna</button>
-                <button onClick={() => handleAdminAction('vender')} className="btn-admin-confirm">Vender</button>
-              </div>
+      <button
+        className="reserve-btn"
+        onClick={() => {
+          if (isAdmin) {
+            setIsAdminActionModalOpen(true);
+          } else {
+            handleReserve();
+          }
+        }}
+        disabled={(selectedSeats.length === 0 && !isRecorrido) || (isRecorrido && ticketInputValue.trim() === '')}
+      >
+        {isAdmin ? 'Gestionar Asientos' : 'Comprar'}
+        {!isRecorrido && selectedSeats.length > 0 && ` (${selectedSeats.length})`}
+      </button>
+
+      {isAdminActionModalOpen && (
+        <div className="admin-seat-modal-overlay">
+          <div className="admin-seat-modal">
+            <h4>¿Qué desea hacer con los {selectedSeats.length} asientos?</h4>
+            <div className="admin-actions">
+              <button onClick={() => { setIsAdminActionModalOpen(false); handleAdminAction('vender'); }} className="btn-confirm">Venta de Taquilla (Comprar)</button>
+              <button onClick={() => { setIsAdminActionModalOpen(false); handleAdminAction('ocupado'); }} className="btn-reserved">Reserva Interna</button>
+              <button onClick={() => { setIsAdminActionModalOpen(false); handleAdminAction('disponible'); }} className="btn-available">Liberar Asientos</button>
+              <button onClick={() => setIsAdminActionModalOpen(false)} className="btn-cancel" style={{marginTop: '0.5rem'}}>Cancelar</button>
             </div>
-          )}
+          </div>
         </div>
-      ) : (
-        <button
-          className="reserve-btn"
-          onClick={handleReserve}
-          disabled={(selectedSeats.length === 0 && !isRecorrido) || (isRecorrido && ticketInputValue.trim() === '')}
-        >
-          Comprar
-        </button>
       )}
 
       <PaymentModal

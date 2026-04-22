@@ -7,7 +7,7 @@ import CartSidebar from '../components/CartSidebar.jsx';
 
 export default function Shop() {
     const navigate = useNavigate();
-    const { totalItems, isCartOpen, setIsCartOpen, purchaseCount } = useCart();
+    const { addToCart, totalItems, isCartOpen, setIsCartOpen, purchaseCount } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -83,8 +83,18 @@ export default function Shop() {
                                         </span>
                                     </div>
                                     {/* Action button mimicking a store interact */}
-                                    <button className={`kiosko-buy-btn ${product.cantidad === 0 ? 'disabled' : ''}`} disabled={product.cantidad === 0}>
-                                        {product.cantidad > 0 ? 'Lo Quiero' : 'Sin disponibilidad'}
+                                    <button 
+                                        className={`kiosko-buy-btn ${product.cantidad === 0 ? 'disabled' : ''}`} 
+                                        disabled={product.cantidad === 0}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (product.cantidad > 0) {
+                                                addToCart(product, 1);
+                                                setIsCartOpen(true);
+                                            }
+                                        }}
+                                    >
+                                        {product.cantidad > 0 ? 'Añadir al carrito' : 'Sin disponibilidad'}
                                     </button>
                                 </div>
                             </article>

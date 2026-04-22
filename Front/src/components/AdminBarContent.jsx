@@ -15,7 +15,8 @@ const AdminBarContent = ({ onClose }) => {
         <button onClick={() => navigate('/insertArticle')}>Insertar Artículo</button>
         <button onClick={() => navigate('/insertProgramacion')}>Programación</button>
         <button onClick={() => navigate('/insertEquipo')}>Equipo</button>
-        <button onClick={() => navigate('/insertProduct')}>Kiosko</button>
+        <button onClick={() => navigate('/admin-reportes')}>Reportes</button>
+        {/* <button onClick={() => navigate('/insertProduct')}>Kiosko</button> */}
       </div>
     </div>
   );

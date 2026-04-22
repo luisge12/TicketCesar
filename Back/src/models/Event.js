@@ -82,7 +82,7 @@ export class EventConnections {
             event_data.date_start,
             null,
             event_data.image,
-            false,
+            true,
             0,
             0,
             event_data.ticket_price,
@@ -170,6 +170,50 @@ export class EventConnections {
             return res.rows[0];
         } catch (error) {
             console.error('Error updating event:', error);
+            throw error;
+        }
+    }
+
+    async closeEvent(id) {
+        const query = `
+            UPDATE event 
+            SET is_active = false, 
+                date_end = CURRENT_TIMESTAMP,
+                tickets_sold = (
+                    CASE 
+                        WHEN EXISTS (SELECT 1 FROM event_seats WHERE event_id = $1) THEN
+                            (SELECT COUNT(*) FROM event_seats WHERE event_id = $1 AND state IN ('reserved', 'occupied'))
+                        ELSE
+                            COALESCE((SELECT SUM(tickets_quantity) FROM reservations WHERE event_id = $1), 0)
+                    END
+                )
+            WHERE id = $1
+            RETURNING *
+        `;
+        try {
+            const res = await this.pool.query(query, [id]);
+            if (res.rowCount === 0) {
+                throw new Error('Event not found');
+            }
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error closing event:', error);
+            throw error;
+        }
+    }
+
+    async getReportByEvent(id) {
+        const query = `
+            SELECT pay_method, SUM(tickets_quantity) as total_tickets, SUM(total_price) as total_revenue
+            FROM reservations
+            WHERE event_id = $1
+            GROUP BY pay_method
+        `;
+        try {
+            const res = await this.pool.query(query, [id]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching event report:', error);
             throw error;
         }
     }

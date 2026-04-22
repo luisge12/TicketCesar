@@ -17,6 +17,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middleware/errorHandler.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 
 const userconnect = new UserConnections();
 const eventconnect = new EventConnections();
@@ -35,6 +36,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(generalLimiter);
 
 app.use((req, res, next) => {
   const token = req.cookies['access_token'];
@@ -59,6 +61,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Routers (grouped by request type) -- registered after app and middleware
 app.use('/api/products', createProductsRouter({ productsConnect, requireAdmin }));
 app.use('/api', createUserRouter({ userconnect, jwt, JWT_SECRET }));
@@ -70,6 +80,8 @@ app.use('/api', createEquipoRouter({ equipoconnect, requireAdmin }));
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor funcionando' });
 });
+
+
 
 // Global Error Handler must be the last middleware
 app.use(errorHandler);
