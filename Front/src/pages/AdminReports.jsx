@@ -36,7 +36,7 @@ export default function AdminReports() {
         try {
             const res = await fetch(`${API_URL}/get-events`);
             const data = await res.json();
-            setEvents(data);
+            setEvents(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error("Error fetching events for reports:", err);
         } finally {
@@ -70,7 +70,7 @@ export default function AdminReports() {
         try {
             const res = await fetch(`${API_URL}/analytics/top-events/${selectedMonth}/${selectedYear}`, { credentials: 'include' });
             const data = await res.json();
-            setTopEvents(data);
+            setTopEvents(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error("Error fetching top events:", err);
         }
@@ -268,7 +268,7 @@ export default function AdminReports() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {selectedReport.data.map((item, index) => {
+                                    {Array.isArray(selectedReport.data) && selectedReport.data.map((item, index) => {
                                         let methodName = item.pay_method;
                                         if (methodName === 'reserva_interna') methodName = 'Reserva Interna (Cortesía)';
                                         if (methodName === 'efectivo_bs') methodName = 'Efectivo Bs';
@@ -287,8 +287,8 @@ export default function AdminReports() {
                                 <tfoot>
                                     <tr>
                                         <th>Total Comercial</th>
-                                        <th>{selectedReport.data.reduce((sum, item) => sum + parseInt(item.total_tickets), 0)}</th>
-                                        <th>${selectedReport.data.reduce((sum, item) => sum + parseFloat(item.total_revenue || 0), 0).toFixed(2)}</th>
+                                        <th>{Array.isArray(selectedReport.data) ? selectedReport.data.reduce((sum, item) => sum + parseInt(item.total_tickets), 0) : 0}</th>
+                                        <th>${Array.isArray(selectedReport.data) ? selectedReport.data.reduce((sum, item) => sum + parseFloat(item.total_revenue || 0), 0).toFixed(2) : '0.00'}</th>
                                     </tr>
                                 </tfoot>
                             </table>
