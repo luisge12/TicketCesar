@@ -2,6 +2,9 @@
 // Created by Luis González
 import './../styles/footer.css';
 import { useNavigate } from 'react-router-dom';
+import logoH from '../assets/TCR_H.png';
+import tiktokIcon from '../assets/tiktok.png';
+import igIcon from '../assets/ig.png';
 
 export default function Footer() {
     const navigate = useNavigate();
@@ -14,7 +17,7 @@ export default function Footer() {
                 {/* Lista izquierda */}
                 <div className="colum">
                     <button className="logo-foot" onClick={() => { navigate('/'); }} >
-                        <img src="/src/assets/TCR_H.png" className="logo-h-foot" alt="Logo" />
+                        <img src={logoH} className="logo-h-foot" alt="Logo" />
                     </button>
                     <p>
                         Un escenario con más de dos siglos de historia. Descubre su cartelera y visítanos.
@@ -43,8 +46,8 @@ export default function Footer() {
 
                 {/* Redes sociales a la derecha */}
                 <ul className="social">
-                    <li><a href='https://www.tiktok.com/@teatrocesarrengifoula' className='social-links'><img src="/src/assets/tiktok.png" alt="tiktok" className="inline-block h-6 w-6 mr-2" /></a></li>
-                    <li><a href='https://www.instagram.com/teatrocesarrengifoula/?hl=es' className='social-links'><img src="/src/assets/ig.png" alt="ig" className="inline-block h-6 w-6 mr-2" /></a></li>
+                    <li><a href='https://www.tiktok.com/@teatrocesarrengifoula' className='social-links'><img src={tiktokIcon} alt="tiktok" className="inline-block h-6 w-6 mr-2" /></a></li>
+                    <li><a href='https://www.instagram.com/teatrocesarrengifoula/?hl=es' className='social-links'><img src={igIcon} alt="ig" className="inline-block h-6 w-6 mr-2" /></a></li>
                 </ul>
             </div>
 

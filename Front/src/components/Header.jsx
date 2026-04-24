@@ -4,6 +4,8 @@ import './../styles/header.css';
 import ModalContent from "./Modal-login";
 import { useNavigate } from 'react-router-dom';
 import { useNavData } from '../hooks/useNavData.js';
+import logoTeatro from '../assets/logoteatro.jpg';
+import userLogo from '../assets/user.png';
 
 Modal.setAppElement('#root');
 
@@ -49,7 +51,7 @@ export default function Header({ isModalOpen, onLoginClick, onModalClose }) {
 
       <div className="div-left">
         <button className="logo-button" onClick={() => navigate('/')}> 
-          <img src="/src/assets/logoteatro.jpg" className="logo-img" alt="Logo" />
+          <img src={logoTeatro} className="logo-img" alt="Logo" />
         </button>
         <div className="">
           <ul className="nav-buttons-cont">
@@ -193,7 +195,7 @@ export default function Header({ isModalOpen, onLoginClick, onModalClose }) {
           name="search_input"
         />
         <button className="user-button" onClick={handleModalOpen}>
-          <img src="/src/assets/user.png" alt="userslogo" className="user-img" />
+          <img src={userLogo} alt="userslogo" className="user-img" />
         </button>
       </div>
 
