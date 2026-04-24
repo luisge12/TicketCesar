@@ -90,7 +90,39 @@ export default function ReservEvent({ openLoginModal }) {
   };
 
   const handleAdminAction = async (action) => {
-    if (selectedSeats.length === 0) return;
+    // Para recorridos, si no hay asientos seleccionados pero hay una cantidad, los generamos
+    if (selectedSeats.length === 0) {
+      if (isRecorrido) {
+        const qty = parseInt(ticketInputValue, 10);
+        if (isNaN(qty) || qty < 1) {
+          alert('Seleccione al menos 1 ticket');
+          return;
+        }
+
+        const confirmed = window.confirm(`¿Deseas procesar la venta de ${qty} tickets para este recorrido?`);
+        if (!confirmed) return;
+
+        const tickets = [];
+        for (let i = 0; i < qty; i++) {
+          tickets.push(`recorrido-general-${Date.now()}-${i + 1}`);
+        }
+        // No podemos esperar al estado porque es asíncrono para el siguiente paso, 
+        // así que usaremos una variable local o pasaremos los asientos.
+        // Pero para simplificar, actualizaremos el estado y usaremos los tickets locales para la acción inmediata.
+        setSelectedSeats(tickets);
+        
+        if (action === 'vender') {
+          setIsAdminModalOpen(true);
+          return;
+        }
+        // Si es otra acción (como ocupado), continuamos con 'tickets'
+        if (action === 'ocupado') {
+          await processAdminInternalReservation(tickets);
+          return;
+        }
+      }
+      return;
+    }
 
     if (action === 'vender') {
       setIsAdminModalOpen(true);
@@ -98,29 +130,7 @@ export default function ReservEvent({ openLoginModal }) {
     }
 
     if (action === 'ocupado') {
-      try {
-        const response = await fetch(`${API_URL}/reservations`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            eventId: id,
-            seatId: selectedSeats,
-            paymentMethod: 'reserva_interna',
-            totalPrice: 0,
-            seatState: 'occupied'
-          })
-        });
-
-        if (response.ok) {
-          handleReservationSuccess();
-        } else {
-          const data = await response.json();
-          alert('Error al procesar reserva interna: ' + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      await processAdminInternalReservation(selectedSeats);
       return;
     }
 
@@ -184,6 +194,8 @@ export default function ReservEvent({ openLoginModal }) {
 
   const handleReservationSuccess = () => {
     setSelectedSeats([]);
+    setTicketQuantity(1);
+    setTicketInputValue('1');
     // Refresh states
     fetch(`${API_URL}/get_state_seat/${id}`, { credentials: 'include' })
       .then(res => res.json())
@@ -213,11 +225,37 @@ export default function ReservEvent({ openLoginModal }) {
     }
   };
 
-  const isRecorrido = event?.category?.toLowerCase() === 'recorridos';
+  const processAdminInternalReservation = async (seats) => {
+    try {
+      const response = await fetch(`${API_URL}/reservations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          eventId: id,
+          seatId: seats,
+          paymentMethod: 'reserva_interna',
+          totalPrice: 0,
+          seatState: 'occupied'
+        })
+      });
+
+      if (response.ok) {
+        handleReservationSuccess();
+      } else {
+        const data = await response.json();
+        alert('Error al procesar reserva interna: ' + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const isRecorrido = event?.category?.toLowerCase()?.includes('recorrido');
 
   const handleReserve = async () => {
+    const qty = parseInt(ticketInputValue, 10);
     if (isRecorrido) {
-      const qty = parseInt(ticketInputValue, 10);
       if (isNaN(qty) || qty < 1) {
         alert('La cantidad mínima de tickets es 1');
         return;
@@ -226,6 +264,9 @@ export default function ReservEvent({ openLoginModal }) {
         alert('La cantidad máxima de tickets es 15');
         return;
       }
+
+      const confirmed = window.confirm(`¿Seguro que deseas proceder con la compra de ${qty} tickets para este recorrido?`);
+      if (!confirmed) return;
     }
 
     try {
@@ -244,15 +285,16 @@ export default function ReservEvent({ openLoginModal }) {
 
     if (isRecorrido) {
       const tickets = [];
-      const qty = parseInt(ticketInputValue, 10);
       for (let i = 0; i < qty; i++) {
-        tickets.push(`recorrido-general-${i + 1}`);
+        tickets.push(`recorrido-general-${Date.now()}-${i + 1}`);
       }
-      // We set them immediately here for the modal to use
       setSelectedSeats(tickets);
+      // Forzamos un pequeño delay o aseguramos que el modal se abra con datos
+      // En React, el render usará el nuevo estado en el siguiente ciclo.
+      setIsPaymentModalOpen(true);
+    } else {
+      setIsPaymentModalOpen(true);
     }
-
-    setIsPaymentModalOpen(true);
   };
 
   if (!event) return <div className="loading-container">Cargando...</div>;
@@ -454,15 +496,21 @@ export default function ReservEvent({ openLoginModal }) {
         className="reserve-btn"
         onClick={() => {
           if (isAdmin) {
-            setIsAdminActionModalOpen(true);
+            // Si es recorrido y no hay asientos (normal), intentamos procesar directamente o abrir modal
+            if (isRecorrido) {
+              handleAdminAction('vender');
+            } else {
+              setIsAdminActionModalOpen(true);
+            }
           } else {
             handleReserve();
           }
         }}
-        disabled={(selectedSeats.length === 0 && !isRecorrido) || (isRecorrido && ticketInputValue.trim() === '')}
+        disabled={(selectedSeats.length === 0 && !isRecorrido) || (isRecorrido && (ticketInputValue.trim() === '' || parseInt(ticketInputValue) <= 0))}
       >
-        {isAdmin ? 'Gestionar Asientos' : 'Comprar'}
+        {isAdmin ? (isRecorrido ? 'Procesar Venta' : 'Gestionar Asientos') : 'Comprar'}
         {!isRecorrido && selectedSeats.length > 0 && ` (${selectedSeats.length})`}
+        {isRecorrido && parseInt(ticketInputValue) > 0 && ` (${parseInt(ticketInputValue)})`}
       </button>
 
       {isAdminActionModalOpen && (
@@ -492,8 +540,8 @@ export default function ReservEvent({ openLoginModal }) {
         <div className="admin-seat-modal-overlay">
           <div className="admin-seat-modal">
             <h3>Confirmar Venta en Taquilla</h3>
-            <p><strong>Asientos:</strong> {selectedSeats.join(', ')}</p>
-            <p><strong>Total:</strong> ${selectedSeats.length * (event.ticket_price || 0)}</p>
+            <p><strong>Tickets:</strong> {isRecorrido ? selectedSeats.length : selectedSeats.join(', ')}</p>
+            <p><strong>Total:</strong> ${ (isRecorrido ? parseInt(ticketInputValue) : selectedSeats.length) * (event.ticket_price || 0)}</p>
 
             <form onSubmit={handleAdminSale} className="admin-sale-form">
               <label>Método de Pago:</label>

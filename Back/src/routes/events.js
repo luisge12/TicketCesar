@@ -210,5 +210,27 @@ export default function createEventsRouter({ eventconnect, requireAdmin }) {
     }
   });
 
+  router.get('/analytics/monthly-sales/:year', requireAdmin, async (req, res) => {
+    const { year } = req.params;
+    try {
+      const sales = await eventconnect.getMonthlySalesAnalytics(parseInt(year));
+      res.json(sales);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  router.get('/analytics/top-events/:month/:year', requireAdmin, async (req, res) => {
+    const { month, year } = req.params;
+    try {
+      const topEvents = await eventconnect.getTopEventsByMonth(parseInt(month), parseInt(year));
+      res.json(topEvents);
+    } catch (error) {
+      console.error('Error fetching top events:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   return router;
 }

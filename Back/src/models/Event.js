@@ -179,14 +179,7 @@ export class EventConnections {
             UPDATE event 
             SET is_active = false, 
                 date_end = CURRENT_TIMESTAMP,
-                tickets_sold = (
-                    CASE 
-                        WHEN EXISTS (SELECT 1 FROM event_seats WHERE event_id = $1) THEN
-                            (SELECT COUNT(*) FROM event_seats WHERE event_id = $1 AND state IN ('reserved', 'occupied'))
-                        ELSE
-                            COALESCE((SELECT SUM(tickets_quantity) FROM reservations WHERE event_id = $1), 0)
-                    END
-                )
+                tickets_sold = COALESCE((SELECT SUM(tickets_quantity) FROM reservations WHERE event_id = $1), 0)
             WHERE id = $1
             RETURNING *
         `;
@@ -456,6 +449,51 @@ export class EventConnections {
             return res.rows[0];
         } catch (error) {
             console.error('Error fetching programacion by id:', error);
+            throw error;
+        }
+    }
+
+    async getMonthlySalesAnalytics(year) {
+        const query = `
+            SELECT 
+                EXTRACT(MONTH FROM e.date_start) as month,
+                SUM(r.total_price) as total_revenue,
+                SUM(r.tickets_quantity) as total_tickets
+            FROM reservations r
+            JOIN event e ON r.event_id = e.id
+            WHERE EXTRACT(YEAR FROM e.date_start) = $1
+            GROUP BY month
+            ORDER BY month ASC
+        `;
+        try {
+            const res = await this.pool.query(query, [year]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching monthly sales analytics:', error);
+            throw error;
+        }
+    }
+
+    async getTopEventsByMonth(month, year) {
+        const query = `
+            SELECT 
+                e.id,
+                e.name,
+                SUM(r.total_price) as revenue,
+                SUM(r.tickets_quantity) as tickets
+            FROM reservations r
+            JOIN event e ON r.event_id = e.id
+            WHERE EXTRACT(MONTH FROM e.date_start) = $1 
+              AND EXTRACT(YEAR FROM e.date_start) = $2
+            GROUP BY e.id, e.name
+            ORDER BY revenue DESC
+            LIMIT 5
+        `;
+        try {
+            const res = await this.pool.query(query, [month, year]);
+            return res.rows;
+        } catch (error) {
+            console.error('Error fetching top events by month:', error);
             throw error;
         }
     }
