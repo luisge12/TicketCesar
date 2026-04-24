@@ -42,17 +42,19 @@ export class UserConnections {
         try {
             const res = await this.pool.query(query, values);
             if (res.rows.length === 0) {
-                throw new Error('User not found');
+                throw new Error('Usuario no encontrado');
             }
-            if (!res.rows[0].is_verified) {
-                throw new Error('Por favor verifica tu correo electrónico antes de iniciar sesión.');
-            }
-            const hashedPassword = res.rows[0].password;
-            const match = await bcrypt.compare(password, hashedPassword);
+
+            const user = res.rows[0];
+            const match = await bcrypt.compare(password, user.password);
+            
             if (!match) {
-                throw new Error('Invalid password');
+                throw new Error('Contraseña incorrecta');
             }
-            return { user: res.rows[0] };
+
+            // Si la contraseña es correcta, devolvemos el usuario. 
+            // La ruta decidirá si lo deja pasar o si le pide verificar correo.
+            return { user };
         } catch (err) {
             console.error('Error logging in user:', err);
             throw err;

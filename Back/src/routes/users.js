@@ -59,6 +59,20 @@ export default function createUserRouter({ userconnect, jwt, JWT_SECRET }) {
     try {
       const result = await userconnect.loginUser(email, password);
       const userData = result.user;
+
+      if (!userData.is_verified) {
+        // Reenviar correo de verificación si no está verificado
+        try {
+          await sendVerificationEmail(userData.email, userData.verification_token);
+          return res.status(403).json({ 
+            error: 'Correo no verificado', 
+            message: 'Tu cuenta no está verificada. Te hemos reenviado el correo de activación. Por favor revísalo.' 
+          });
+        } catch (mailError) {
+          return res.status(500).json({ error: 'Tu cuenta no está verificada y hubo un error al reenviar el correo.' });
+        }
+      }
+
       const token = jwt.sign(
         {
           email: userData.email,
