@@ -29,6 +29,7 @@ import Shop from './pages/Shop';
 import UserProfile from './pages/UserProfile';
 import AdminReports from './pages/AdminReports';
 import PasswordResetOptions from './components/Modal-login';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import { useCart } from './context/CartContext.jsx';
 import PaymentModal from './components/PaymentModal.jsx';
@@ -76,25 +77,25 @@ export default function App() {
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/event" element={<div>Acá vamos a ver los eventos y el manejo de ventas</div>} />
-                        <Route path="/insertEvent" element={<InsertEvent />} />
-                        <Route path="/editEvent/:id" element={<EditEvent />} />
-                        <Route path="/insertArticle" element={<InsertArticle />} />
+                        <Route path="/insertEvent" element={<ProtectedRoute><InsertEvent /></ProtectedRoute>} />
+                        <Route path="/editEvent/:id" element={<ProtectedRoute><EditEvent /></ProtectedRoute>} />
+                        <Route path="/insertArticle" element={<ProtectedRoute><InsertArticle /></ProtectedRoute>} />
                         <Route path="/event/:id" element={<ReservEvent openLoginModal={openLoginModal} />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogArticle />} />
-                        <Route path="/editArticle/:id" element={<EditArticle />} />
+                        <Route path="/editArticle/:id" element={<ProtectedRoute><EditArticle /></ProtectedRoute>} />
                         <Route path="/quienes-somos" element={<Quienesomos />} />
                         <Route path="/visitanos" element={<Visitanos />} />
                         <Route path="/equipo" element={<Equipo />} />
                         <Route path="/alquiler" element={<Alquiler />} />
                         <Route path="/programacion" element={<Programacion />} />
-                        <Route path="/insertProgramacion" element={<InsertProgramacion />} />
-                        <Route path="/insertEquipo" element={<InsertEquipo />} />
+                        <Route path="/insertProgramacion" element={<ProtectedRoute><InsertProgramacion /></ProtectedRoute>} />
+                        <Route path="/insertEquipo" element={<ProtectedRoute><InsertEquipo /></ProtectedRoute>} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/product/:id" element={<ProductDetail />} />
-                        <Route path="/insertProduct" element={<InsertProduct />} />
+                        <Route path="/insertProduct" element={<ProtectedRoute><InsertProduct /></ProtectedRoute>} />
                         <Route path="/userprofile" element={<UserProfile />} />
-                        <Route path="/admin-reportes" element={<AdminReports />} />
+                        <Route path="/admin-reportes" element={<ProtectedRoute><AdminReports /></ProtectedRoute>} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>
