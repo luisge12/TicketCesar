@@ -31,6 +31,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://ticketcesar.onrender.com',
+    'https://ticketcesarfrontend.onrender.com',
   ],
   credentials: true
 }));
