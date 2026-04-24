@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/index.css';
 import '../styles/app.css';
 import '../styles/visitanos.css';
-import rectoradoImg from '../assets/rectorado.jpg';
+// import rectoradoImg from '../assets/rectorado.jpg';
 
 export default function Visitanos() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function Visitanos() {
 
         {/* Optional photo: place an image at `src/assets/rectorado.jpg` to show the building */}
         <div>
-          <img src={rectoradoImg} alt="Rectorado - Teatro César" className="visitanos-photo" onError={(e)=>{e.target.style.display='none'}} />
+          {/* <img src={rectoradoImg} alt="Rectorado - Teatro César" className="visitanos-photo" onError={(e)=>{e.target.style.display='none'}} /> */}
         </div>
 
         <div>
