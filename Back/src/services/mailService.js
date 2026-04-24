@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { FRONTEND_URL } from '../config/index.js';
 
 dotenv.config();
 
@@ -12,8 +13,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (to, token) => {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
+    console.log('Using FRONTEND_URL:', FRONTEND_URL);
+    const verificationUrl = `${FRONTEND_URL}/verify-email?token=${token}`;
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -39,8 +40,8 @@ export const sendVerificationEmail = async (to, token) => {
 };
 
 export const sendPasswordResetEmail = async (to, token) => {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
+    console.log('Using FRONTEND_URL:', FRONTEND_URL);
+    const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
