@@ -12,6 +12,8 @@ import createBlogRouter from './routes/blog.js';
 import createReservationsRouter from './routes/reservations.js';
 import createEquipoRouter from './routes/equipo.js';
 import createProductsRouter from './routes/products.js';
+import createPaypalRouter from './routes/paypal.js';
+import createAdminPaymentsRouter from './routes/adminPayments.js';
 import { requireAuth, requireAdmin } from './middleware/auth.js';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
@@ -25,8 +27,11 @@ const blogconnect = new BlogConnections();
 const reservationsConnect = new ReservationsConnections();
 const equipoconnect = new EquipoConnections();
 const productsConnect = new ProductConnections();
+import { OrderConnections } from './models/Order.js';
+const orderConnections = new OrderConnections();
 
 const app = express();
+app.locals.orderConnections = orderConnections;
 app.use(cors({
   origin: [
     'http://localhost:5173',
@@ -77,6 +82,8 @@ app.use('/api', createEventsRouter({ eventconnect, requireAdmin }));
 app.use('/api', createBlogRouter({ blogconnect, requireAdmin }));
 app.use('/api', createReservationsRouter({ reservationsConnect, requireAuth }));
 app.use('/api', createEquipoRouter({ equipoconnect, requireAdmin }));
+app.use('/api/paypal', createPaypalRouter({ productsConnect, reservationsConnect, requireAuth }));
+app.use('/api/admin/payments', createAdminPaymentsRouter({ reservationsConnect, orderConnections, requireAdmin }));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor funcionando' });

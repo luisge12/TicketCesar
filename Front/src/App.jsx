@@ -28,11 +28,14 @@ import ProductDetail from './pages/ProductDetail';
 import Shop from './pages/Shop';
 import UserProfile from './pages/UserProfile';
 import AdminReports from './pages/AdminReports';
+import AdminPagos from './pages/AdminPagos';
 import PasswordResetOptions from './components/Modal-login';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import { useCart } from './context/CartContext.jsx';
 import PaymentModal from './components/PaymentModal.jsx';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { PAYPAL_CLIENT_ID } from './config.js';
 import './styles/app.css'
 
 export default function App() {
@@ -56,8 +59,9 @@ export default function App() {
     };
 
     return (
-        <Router>
-            <ScrollToTop />
+        <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID, currency: "USD", intent: "capture" }}>
+            <Router>
+                <ScrollToTop />
             <Header
                 onLoginClick={toggleModal}
                 isModalOpen={isModalOpen}
@@ -96,6 +100,7 @@ export default function App() {
                         <Route path="/insertProduct" element={<ProtectedRoute><InsertProduct /></ProtectedRoute>} />
                         <Route path="/userprofile" element={<UserProfile />} />
                         <Route path="/admin-reportes" element={<ProtectedRoute><AdminReports /></ProtectedRoute>} />
+                        <Route path="/admin-pagos" element={<ProtectedRoute><AdminPagos /></ProtectedRoute>} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Routes>
                 </div>
@@ -111,5 +116,6 @@ export default function App() {
                 onSuccess={handleCheckoutSuccess}
             />
         </Router>
+        </PayPalScriptProvider>
     );
 }

@@ -16,7 +16,7 @@ export class ReservationsConnections {
         this.eventConnections = new EventConnections();
     }
 
-    async makeBulkReservation(eventId, seatIds, userEmail, payMethod, totalQuantity, totalPrice, seatState = 'reserved') {
+    async makeBulkReservation(eventId, seatIds, userEmail, payMethod, totalQuantity, totalPrice, seatState = 'reserved', paymentReference = null) {
         const client = await this.pool.connect();
         try {
             await client.query('BEGIN');
@@ -39,10 +39,12 @@ export class ReservationsConnections {
             const reservationId = crypto.randomUUID();
 
             const insertResQuery = `
-                INSERT INTO reservations (id, event_id, user_email, pay_method, tickets_quantity, total_price)
-                VALUES ($1, $2, $3, $4, $5, $6)
+                INSERT INTO reservations (id, event_id, user_email, pay_method, tickets_quantity, total_price, payment_reference, status)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             `;
-            await client.query(insertResQuery, [reservationId, eventId, userEmail, payMethod, totalQuantity, totalPrice]);
+            // Si seatState es 'pending_verification', el estado de la orden es 'pending', sino 'approved'
+            const reservationStatus = seatState === 'pending_verification' ? 'pending' : 'approved';
+            await client.query(insertResQuery, [reservationId, eventId, userEmail, payMethod, totalQuantity, totalPrice, paymentReference, reservationStatus]);
 
             for (const seatId of seatIds) {
                 if (!seatId.startsWith('recorrido-general')) {
@@ -61,6 +63,76 @@ export class ReservationsConnections {
         } catch (error) {
             await client.query('ROLLBACK');
             console.error('Database error in makeBulkReservation:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    async getPendingReservations() {
+        const query = `
+            SELECT r.*, e.name as event_name, 
+            COALESCE(json_agg(rs.seat_id) FILTER (WHERE rs.seat_id IS NOT NULL), '[]') as seats
+            FROM reservations r
+            JOIN event e ON r.event_id = e.id
+            LEFT JOIN reservation_seat rs ON r.id = rs.reservation_id
+            WHERE r.status = 'pending'
+            GROUP BY r.id, e.name
+            ORDER BY r.buy_date DESC
+        `;
+        const { rows } = await this.pool.query(query);
+        return rows;
+    }
+
+    async approveReservation(reservationId) {
+        const client = await this.pool.connect();
+        try {
+            await client.query('BEGIN');
+            const res = await client.query(
+                "UPDATE reservations SET status = 'approved' WHERE id = $1 AND status = 'pending' RETURNING event_id",
+                [reservationId]
+            );
+            if (res.rows.length === 0) throw new Error("Reserva no encontrada o ya procesada");
+            const eventId = res.rows[0].event_id;
+
+            // Cambiar los asientos a occupied (o dejarlos en reserved, depende del flujo. Usualmente paid/occupied)
+            const { rows: seats } = await client.query('SELECT seat_id FROM reservation_seat WHERE reservation_id = $1', [reservationId]);
+            for(let s of seats) {
+                await client.query("UPDATE event_seats SET state = 'occupied' WHERE event_id = $1 AND seat_id = $2", [eventId, s.seat_id]);
+            }
+            await client.query('COMMIT');
+            return true;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    async rejectReservation(reservationId) {
+        const client = await this.pool.connect();
+        try {
+            await client.query('BEGIN');
+            const res = await client.query(
+                "UPDATE reservations SET status = 'rejected' WHERE id = $1 AND status = 'pending' RETURNING event_id",
+                [reservationId]
+            );
+            if (res.rows.length === 0) throw new Error("Reserva no encontrada o ya procesada");
+            const eventId = res.rows[0].event_id;
+
+            // Liberar los asientos
+            const { rows: seats } = await client.query('SELECT seat_id FROM reservation_seat WHERE reservation_id = $1', [reservationId]);
+            for(let s of seats) {
+                await client.query("UPDATE event_seats SET state = 'available' WHERE event_id = $1 AND seat_id = $2", [eventId, s.seat_id]);
+            }
+            // Borramos la relación de asientos
+            await client.query('DELETE FROM reservation_seat WHERE reservation_id = $1', [reservationId]);
+
+            await client.query('COMMIT');
+            return true;
+        } catch (error) {
+            await client.query('ROLLBACK');
             throw error;
         } finally {
             client.release();

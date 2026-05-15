@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import PayPalCheckoutButton from './PayPalCheckoutButton.jsx';
+import PagoMovilForm from './PagoMovilForm.jsx';
 import { API_URL } from '../config.js';
 import '../styles/payment-modal.css';
 
@@ -31,36 +33,31 @@ export default function PaymentModal({
     cart,
     totalPrice: cartTotalPrice,
 }) {
-    const [formData, setFormData] = useState({
-        cardName: '',
-        cardNumber: '',
-        expiry: '',
-        cvv: ''
-    });
-    const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedMethod, setSelectedMethod] = useState(null); // 'paypal' o 'pago_movil'
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Precio total según el modo
     const totalPrice = mode === 'ticket'
         ? (selectedSeats?.length ?? 0) * (event?.ticket_price ?? 0)
         : (cartTotalPrice ?? 0);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    const isTicketMode = mode === 'ticket';
+
+    const handlePayPalSuccess = () => {
+        onSuccess?.();
+        onRequestClose();
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handlePayPalError = (errMsg) => {
+        setError(errMsg);
+    };
+
+    const handlePagoMovilSubmit = async (payMethod, reference) => {
         setIsProcessing(true);
         setError(null);
-
-        // Simular delay de procesamiento
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        if (mode === 'ticket') {
-            // Hacer llamada real al backend para crear la reserva
-            try {
+        try {
+            if (mode === 'ticket') {
                 const response = await fetch(`${API_URL}/reservations`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -68,60 +65,46 @@ export default function PaymentModal({
                     body: JSON.stringify({
                         eventId: event.id,
                         seatId: selectedSeats,
-                        paymentMethod: 'credit_card',
-                        totalPrice: totalPrice
+                        paymentMethod: payMethod,
+                        totalPrice: totalPrice,
+                        paymentReference: reference,
+                        seatState: 'pending_verification'
                     })
                 });
-
                 if (!response.ok) {
                     const errData = await response.json();
-                    throw new Error(errData.error || 'Error al procesar la reserva');
+                    throw new Error(errData.error || 'Error al procesar la reserva manual');
                 }
-
-                setIsProcessing(false);
-                onSuccess?.();
-                onRequestClose();
-            } catch (err) {
-                console.error('Error en el proceso de reserva:', err);
-                setError(err.message || 'Ocurrió un error al procesar la reserva. Intente nuevamente.');
-                setIsProcessing(false);
-            }
-        } else {
-            // Modo "cart": llamada real al backend para descontar stock
-            try {
+            } else if (mode === 'cart') {
+                // Nuevo endpoint para crear ordenes de tienda
                 const items = cart.map(item => ({ id: item.id, quantity: item.quantity }));
-
-                const response = await fetch(`${API_URL}/products/purchase`, {
+                const response = await fetch(`${API_URL}/products/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ items })
+                    body: JSON.stringify({
+                        items,
+                        paymentMethod: payMethod,
+                        paymentReference: reference,
+                        totalPrice: totalPrice
+                    })
                 });
-
                 if (!response.ok) {
-                    // Parsear el error de forma segura (puede ser JSON o HTML)
-                    let errorMessage = 'Error al procesar la compra';
-                    const contentType = response.headers.get('content-type') || '';
-                    if (contentType.includes('application/json')) {
-                        const errData = await response.json();
-                        errorMessage = errData.error || errorMessage;
-                    } else {
-                        errorMessage = `Error ${response.status}: ${response.statusText || 'Ruta no encontrada'}`;
-                    }
-                    throw new Error(errorMessage);
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Error al crear la orden de la tienda');
                 }
-
-                setIsProcessing(false);
-                onSuccess?.();
-                onRequestClose();
-            } catch (err) {
-                setError(err.message || 'Ocurrió un error al procesar la compra. Intente nuevamente.');
-                setIsProcessing(false);
             }
+            
+            setIsProcessing(false);
+            alert('Pago reportado exitosamente. Queda en espera de verificación.');
+            onSuccess?.();
+            onRequestClose();
+        } catch (err) {
+            console.error('Error procesando pago manual:', err);
+            setError(err.message || 'Error de conexión');
+            setIsProcessing(false);
         }
     };
-
-    const isTicketMode = mode === 'ticket';
 
     return (
         <Modal
@@ -132,12 +115,12 @@ export default function PaymentModal({
             overlayClassName="payment-modal-overlay"
             ariaHideApp={false}
         >
-            <h2>{isTicketMode ? 'Detalles de la Reserva' : 'Finalizar Compra - Pago Simulado'}</h2>
+            <h2>{isTicketMode ? 'Detalles de la Reserva' : 'Finalizar Compra'}</h2>
 
             {isProcessing && (
                 <div className="processing-overlay">
                     <div className="spinner"></div>
-                    <p>{isTicketMode ? 'Procesando pago y reserva...' : 'Procesando pago...'}</p>
+                    <p>Enviando información...</p>
                 </div>
             )}
 
@@ -165,75 +148,56 @@ export default function PaymentModal({
                 )}
             </div>
 
-            {/* Formulario de tarjeta (idéntico para ambos modos) */}
-            <form className="payment-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="cardName">NOMBRE EN LA TARJETA</label>
-                    <input
-                        type="text"
-                        id="cardName"
-                        name="cardName"
-                        required
-                        value={formData.cardName}
-                        onChange={handleChange}
-                        placeholder="Juan Pérez"
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="cardNumber">NÚMERO DE TARJETA</label>
-                    <input
-                        type="text"
-                        id="cardNumber"
-                        name="cardNumber"
-                        required
-                        pattern="\d{16}"
-                        maxLength="16"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        placeholder="0000 0000 0000 0000"
-                    />
-                </div>
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="expiry">VENCIMIENTO</label>
-                        <input
-                            type="text"
-                            id="expiry"
-                            name="expiry"
-                            required
-                            placeholder="MM/YY"
-                            maxLength="5"
-                            value={formData.expiry}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="cvv">CVV</label>
-                        <input
-                            type="text"
-                            id="cvv"
-                            name="cvv"
-                            required
-                            pattern="\d{3,4}"
-                            maxLength="4"
-                            value={formData.cvv}
-                            onChange={handleChange}
-                            placeholder="123"
-                        />
+            {error && <p style={{ color: 'red', fontSize: '0.9rem', margin: '0.5rem 0', textAlign: 'center' }}>{error}</p>}
+
+            {!selectedMethod ? (
+                <div className="payment-options-container" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
+                    <p style={{ textAlign: 'center', marginBottom: '10px', fontWeight: 'bold' }}>Selecciona tu método de pago:</p>
+                    
+                    <button 
+                        onClick={() => setSelectedMethod('paypal')}
+                        style={{ padding: '15px', backgroundColor: '#ffc439', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+                    >
+                        💳 Pagar Automáticamente (PayPal / Tarjeta)
+                    </button>
+                    
+                    <button 
+                        onClick={() => setSelectedMethod('pago_movil')}
+                        style={{ padding: '15px', backgroundColor: '#00a4e4', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+                    >
+                        📱 Pago Móvil (Verificación Manual)
+                    </button>
+                    
+                    <div className="payment-actions" style={{ marginTop: '20px' }}>
+                        <button type="button" className="btn-cancel" onClick={onRequestClose} style={{ width: '100%' }}>
+                            Cancelar
+                        </button>
                     </div>
                 </div>
-
-                {error && <p style={{ color: 'red', fontSize: '0.9rem', margin: '0.5rem 0' }}>{error}</p>}
-
-                <div className="payment-actions">
-                    <button type="button" className="btn-cancel" onClick={onRequestClose}>
-                        Cancelar
-                    </button>
-                    <button type="submit" className="btn-pay" disabled={isProcessing}>
-                        {isTicketMode ? 'Pagar y Reservar' : 'Pagar y Finalizar'}
-                    </button>
+            ) : selectedMethod === 'paypal' ? (
+                <div className="payment-options-container">
+                    <PayPalCheckoutButton 
+                        totalPrice={totalPrice}
+                        mode={mode}
+                        eventId={event?.id}
+                        selectedSeats={selectedSeats}
+                        cart={cart}
+                        onSuccess={handlePayPalSuccess}
+                        onError={handlePayPalError}
+                    />
+                    <div className="payment-actions" style={{ marginTop: '20px' }}>
+                        <button type="button" className="btn-cancel" onClick={() => setSelectedMethod(null)} style={{ width: '100%' }}>
+                            Volver a métodos de pago
+                        </button>
+                    </div>
                 </div>
-            </form>
+            ) : (
+                <PagoMovilForm 
+                    totalPrice={totalPrice} 
+                    onSuccess={handlePagoMovilSubmit} 
+                    onCancel={() => setSelectedMethod(null)} 
+                />
+            )}
         </Modal>
     );
 }

@@ -58,6 +58,35 @@ export default function createProductsRouter({ productsConnect, requireAdmin }) 
         }
     });
 
+    // POST /orders - Crear una orden (Pago Móvil / Pendiente)
+    router.post('/orders', async (req, res, next) => {
+        try {
+            const { items, paymentMethod, paymentReference, totalPrice } = req.body;
+            // Necesitamos acceder a orderConnections para guardarlo. 
+            // Esto implica que necesitamos inyectarlo aquí o pasarlo en app.js
+            // Vamos a requerirlo
+            const { orderConnections } = req.app.locals;
+
+            if (!orderConnections) {
+                return res.status(500).json({ error: 'Configuración de base de datos incompleta' });
+            }
+
+            if (!Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({ error: 'Se requiere un arreglo de items con id y quantity.' });
+            }
+
+            const userEmail = req.session?.user?.email || 'anonimo@ticketcesar.com'; // O requerir auth
+
+            const orderId = await orderConnections.createPendingOrder(userEmail, totalPrice, paymentMethod, paymentReference, items);
+            res.json({ success: true, orderId, message: 'Orden pendiente creada.' });
+        } catch (error) {
+            if (error.message.includes('Stock insuficiente') || error.message.includes('no encontrado')) {
+                return res.status(409).json({ error: error.message });
+            }
+            next(error);
+        }
+    });
+
     // POST /purchase – descuenta el stock al finalizar una compra del Kiosko
     // El usuario debe estar autenticado (tiene sesión activa)
     router.post('/purchase', async (req, res, next) => {
